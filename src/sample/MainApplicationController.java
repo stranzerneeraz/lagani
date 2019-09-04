@@ -2,22 +2,24 @@ package sample;
 
 import exception.BusinessException;
 import implementation.BusinessImplementation;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Callback;
 import modal.Customers;
 import modal.User;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class MainApplicationController {
     @FXML
@@ -31,7 +33,13 @@ public class MainApplicationController {
     @FXML
     private Button btnLogout;
     @FXML
-    private ListView<Customers> customerListView;
+    private ListView<String> customerListView;
+    @FXML
+    private ListView<String> itemsListView;
+    @FXML
+    private Label nameViewLabel;
+    @FXML
+    private ContextMenu listContextMenu;
     private int id = LoginController.id();
 
     BusinessImplementation businessImplementation = new BusinessImplementation();
@@ -50,10 +58,29 @@ public class MainApplicationController {
     }
 
     public void viewCustomers() throws SQLException, BusinessException {
-        ObservableList<Customers> observableArrayList = FXCollections.observableArrayList(businessImplementation.getCustomers());
+        ArrayList customerListString = new ArrayList<String>();
+        ArrayList<Customers> csList = businessImplementation.getCustomers();
+        int index = 0;
+        for (Customers customers : csList) {
+            index++;
+            customerListString.add(index + ". " + customers.getFullName() + ",\n " + customers.getAddress());
+        }
+        ObservableList<String> observableArrayList = FXCollections.observableArrayList(customerListString);
         customerListView.setItems(observableArrayList);
-    }
+        customerListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        customerListView.getSelectionModel().selectFirst();
 
+        customerListView.getSelectionModel().selectedItemProperty().addListener(
+                (ObservableValue<? extends String> ov, String old_val, String new_val) -> {
+            String selectedItem = customerListView.getSelectionModel().getSelectedItem();
+            System.out.println("Item selected : " + selectedItem);
+
+
+        });
+
+        String selectedItem = customerListView.getSelectionModel().getSelectedItem();
+        System.out.println(selectedItem);
+    }
     public void logout() {
         Parent root;
         try {

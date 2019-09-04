@@ -3,6 +3,8 @@ package implementation;
 import database.DatabaseConnection;
 import exception.BusinessException;
 import modal.Customers;
+import modal.Installment;
+import modal.Items;
 import modal.User;
 
 import java.sql.*;
@@ -111,7 +113,7 @@ public class BusinessImplementation {
         return user;
     }
 
-    public ArrayList getCustomers() throws BusinessException, SQLException {
+    public ArrayList<Customers> getCustomers() throws BusinessException, SQLException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -126,9 +128,9 @@ public class BusinessImplementation {
 
             while (resultSet.next()) {
                 customers = new Customers();
-                customers.setCustomerID(resultSet.getInt("customer_id"));
+                customers.setCustomerID(resultSet.getInt("customerID"));
                 customers.setFullName(resultSet.getString("fullName"));
-                customers.setSpouseName(resultSet.getString("spouceName"));
+                customers.setSpouseName(resultSet.getString("spouseName"));
                 customers.setFatherName(resultSet.getString("fatherName"));
                 customers.setAddress(resultSet.getString("address"));
                 customers.setWard(resultSet.getInt("ward"));
@@ -153,5 +155,89 @@ public class BusinessImplementation {
             }
         }
         return customerList;
+    }
+
+    public ArrayList<Items> getItems() throws BusinessException, SQLException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Items items = null;
+        ArrayList<Items> itemList = null;
+
+        try {
+            String sql = "SELECT * FROM customers ORDER BY fullName ASC";
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            itemList = new ArrayList<>();
+
+            while (resultSet.next()) {
+                items = new Items();
+                items.setItemID(resultSet.getInt("itemID"));
+                items.setType(resultSet.getString("type"));
+                items.setStartDate(resultSet.getString("startDate"));
+                items.setPrincipal(resultSet.getInt("principal"));
+                items.setRate(resultSet.getDouble("rate"));
+                items.setDescription(resultSet.getString("description"));
+                items.setStatus(resultSet.getString("status"));
+                items.setCreatedAt(resultSet.getString("createdAt"));
+                items.setUpdatedAt(resultSet.getString("updatedAt"));
+                items.setCloserName(resultSet.getString("closerName"));
+                items.setTotalAmount(resultSet.getInt("totalAmount"));
+                items.setClosingAmount(resultSet.getInt("closingAmount"));
+
+                itemList.add(items);
+            }
+        } catch (SQLException se) {
+            throw new BusinessException(se);
+        } finally {
+            if (null != resultSet) {
+                resultSet.close();
+            }
+            if (null != statement) {
+                statement.close();
+            }
+            if (null != connection) {
+                connection.close();
+            }
+        }
+        return itemList;
+    }
+
+    public ArrayList<Installment> getInstallmentData() throws BusinessException, SQLException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Installment installment = null;
+        ArrayList<Installment> installmentList = null;
+
+        try {
+            String sql = "SELECT * FROM customers ORDER BY fullName ASC";
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            installmentList = new ArrayList<>();
+
+            while (resultSet.next()) {
+                installment = new Installment();
+                installment.setInstallmentID(resultSet.getInt("installmentID"));
+                installment.setDepositor(resultSet.getString("depositor"));
+                installment.setDepositAmount(resultSet.getInt("depositAmount"));
+                installment.setDate(resultSet.getString("date"));
+
+                installmentList.add(installment);
+            }
+        } catch (SQLException se) {
+            throw new BusinessException(se);
+        } finally {
+            if (null != resultSet) {
+                resultSet.close();
+            }
+            if (null != statement) {
+                statement.close();
+            }
+            if (null != connection) {
+                connection.close();
+            }
+        }
+        return installmentList;
     }
 }
