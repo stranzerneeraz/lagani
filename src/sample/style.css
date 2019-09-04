@@ -3,31 +3,44 @@
     -fx-font-family: Times New Roman;
 }
 
-#button-section {
-    -fx-spacing: 10px;
-}
-
 .button {
     -fx-background-color: rgba(0,0,0,0.08),
                           linear-gradient(#9a9a9a, #909090),
                           linear-gradient(white 0%, #f3f3f3 50%, #ececec 51%, #f2f2f2 100%);
     -fx-background-insets: 0 0 -1 0,0,1;
     -fx-background-radius: 5,5,4;
-    -fx-padding: 3 30 3 30;
+    -fx-padding: 3 10 3 10;
     -fx-text-fill: #242d35;
     -fx-font-size: 14px;
+    -fx-pref-height: 26px;
+    -fx-pref-width: 90px;
 }
 
-#login-label {
-    -fx-font-size: 20px;
-    -fx-font-family: Times New Roman;
-    -fx-weight: bold;
-    -fx-text-alignment: center;
-    -fx-color: darkolivegreen;
+.tab-pane {
+    -fx-tab-min-width:90px;
+    -fx-open-tab-animation: grow;
+    -fx-close-tab-animation: grow;
 }
 
-#header-text {
+.tab .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #333333;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.tab:selected .tab-label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: #96b946;
+}
+
+#header-label {
     -fx-font-size: 24px;
     -fx-font-family: Times New Roman;
     -fx-font-weight: bold;
+    -fx-text-alignment: center;
+}
+
+#button-section {
+    -fx-spacing: 10px;
 }

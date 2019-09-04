@@ -24,17 +24,18 @@ public class LoginController {
     public PasswordField password;
     @FXML
     private Button loginButton;
+    public static int id;
 
-    public void checkUser() throws SQLException, BusinessException {
+    public int checkUser() throws SQLException, BusinessException {
         BusinessImplementation businessImplementation = new BusinessImplementation();
-        boolean isValidUser = businessImplementation.authenticateUser(username.getText(), password.getText());
-        if (isValidUser) {
+        id = businessImplementation.authenticateUser(username.getText(), password.getText());
+        if (id != 0) {
             Parent root;
             try {
                 root = FXMLLoader.load(getClass().getResource("mainApplication.fxml"));
                 Stage stage = new Stage();
-                stage.setTitle("New Window");
-                stage.setScene(new Scene(root, 850,600));
+                stage.setTitle("Lagani");
+                stage.setScene(new Scene(root, 680,500));
                 stage.show();
 
                 Scene scene = loginButton.getScene();
@@ -55,5 +56,10 @@ public class LoginController {
 
             alert.showAndWait();
         }
+        return id;
+    }
+
+    public static int id() {
+        return id;
     }
 }

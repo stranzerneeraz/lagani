@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    public static Connection getConnection() throws BusinessException{
+    public static Connection getConnection() throws BusinessException {
         Connection connection = null;
         try {
             Class.forName(ApplicationConstants.DRIVER_NAME).newInstance();
