@@ -11,13 +11,13 @@ public class Customers {
     private boolean isActive;
     private String remarks;
     private String updatedAt;
-    private int contactNo;
+    private long contactNo;
 
     public static void getInstance() {
     }
 
     public int getCustomerID() {
-        return this.customerID;
+        return customerID;
     }
 
     public void setCustomerID(int customerID) {
@@ -96,11 +96,11 @@ public class Customers {
         this.updatedAt = updatedAt;
     }
 
-    public int getContactNo() {
-        return this.contactNo;
+    public long getContactNo() {
+        return contactNo;
     }
 
-    public void setContactNo(int contactNo) {
+    public void setContactNo(long contactNo) {
         this.contactNo = contactNo;
     }
 }

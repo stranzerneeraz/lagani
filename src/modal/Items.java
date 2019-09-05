@@ -13,6 +13,7 @@ public class Items {
     private String closerName;
     private int totalAmount;
     private int closingAmount;
+    private int customerIdFk;
 
     public int getItemID() {
         return itemID;
@@ -108,5 +109,13 @@ public class Items {
 
     public void setClosingAmount(int closingAmount) {
         this.closingAmount = closingAmount;
+    }
+
+    public int getCustomerIdFk() {
+        return customerIdFk;
+    }
+
+    public void setCustomerIdFk(int customerIdFk) {
+        this.customerIdFk = customerIdFk;
     }
 }

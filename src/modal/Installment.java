@@ -5,6 +5,7 @@ public class Installment {
     private String depositor;
     private int depositAmount;
     private String date;
+    private int itemIdFk;
 
     public int getInstallmentID() {
         return installmentID;
@@ -36,5 +37,13 @@ public class Installment {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public int getItemIdFk() {
+        return itemIdFk;
+    }
+
+    public void setItemIdFk(int itemIdFk) {
+        this.itemIdFk = itemIdFk;
     }
 }
