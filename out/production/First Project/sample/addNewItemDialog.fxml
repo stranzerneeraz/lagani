@@ -3,36 +3,45 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
-<DialogPane fx:controller="sample.AddNewItemDialogController"
-            xmlns:fx="http://javafx.com/fxml">
-    <headerText>
-            Enter New Item for
-    </headerText>
+<DialogPane fx:id="addItemDialog" fx:controller="sample.AddNewItemDialogController" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml" stylesheets="@style.css">
+    <header>
+        <HBox id="hbox-header">
+            <Label text="" fx:id="dialogHeaderLabel" id="header-label"/>
+        </HBox>
+    </header>
     <content>
         <GridPane vgap="10" hgap="10">
             <Label text="Amount" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
             <TextField fx:id="amountField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
             <Label text="Type" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <ComboBox fx:id="typeChooser" GridPane.rowIndex="1" GridPane.columnIndex="1">
-                <cellFactory>
-                    <PropertyValueFactory property="Loan"/>
-                    <PropertyValueFactory property="Land"/>
-                    <PropertyValueFactory property="Jewelery"/>
-                </cellFactory>
+            <ComboBox fx:id="typeChooser" GridPane.rowIndex="1" GridPane.columnIndex="1" >
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Loan"/>
+                        <String fx:value="Land"/>
+                        <String fx:value="Jewelery"/>
+                    </FXCollections>
+                </items>
+                <value>
+                    <String fx:value="Loan" />
+                </value>
             </ComboBox>
             <Label text="Start Date" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
             <DatePicker fx:id="startDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
             <Label text="Rate" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <TextField fx:id="rateField" value="2.5" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <TextField fx:id="rateField" GridPane.rowIndex="3" GridPane.columnIndex="1" />
             <Label text="Deadline" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
             <DatePicker fx:id="deadlinePicker" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
             <Label text="Description" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-            <TextArea fx:id="descriptionArea" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-<!--            <Button text="Add Item" fx:id="btnUpdateNewItem" GridPane.rowIndex="6" GridPane.columnIndex="1" onAction="#addNewItem"/>-->
+            <TextArea fx:id="descriptionArea" GridPane.rowIndex="5" GridPane.columnIndex="1" prefRowCount="4" prefColumnCount="6"/>
+            <Button id="btnAdd" fx:id="btnUpdateNewItem" text="Add New Item" GridPane.rowIndex="6" GridPane.columnIndex="1" />
         </GridPane>
     </content>
 </DialogPane>

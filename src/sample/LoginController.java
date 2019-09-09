@@ -35,7 +35,7 @@ public class LoginController {
                 root = FXMLLoader.load(getClass().getResource("mainApplication.fxml"));
                 Stage stage = new Stage();
                 stage.setTitle("Lagani");
-                stage.setScene(new Scene(root, 680,500));
+                stage.setScene(new Scene(root, 1260,650));
                 stage.show();
 
                 Scene scene = loginButton.getScene();

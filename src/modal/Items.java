@@ -14,6 +14,9 @@ public class Items {
     private int totalAmount;
     private int closingAmount;
     private int customerIdFk;
+    private boolean isActive;
+    private String deadline;
+    private String closingDate;
 
     public int getItemID() {
         return itemID;
@@ -109,6 +112,30 @@ public class Items {
 
     public void setClosingAmount(int closingAmount) {
         this.closingAmount = closingAmount;
+    }
+
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public String getClosingDate() {
+        return closingDate;
+    }
+
+    public void setClosingDate(String closingDate) {
+        this.closingDate = closingDate;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
     }
 
     public int getCustomerIdFk() {

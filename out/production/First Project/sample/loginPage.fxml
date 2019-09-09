@@ -5,20 +5,22 @@
 
 <GridPane alignment="center" hgap="10" stylesheets="@style.css" vgap="10" xmlns:fx="http://javafx.com/fxml/1"
           xmlns="http://javafx.com/javafx/8" fx:controller="sample.LoginController">
-   <children>
-       <Label id="header-label" text="Login Page" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0" />
-   
-       <Label text="Username" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-       <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-   
-       <Label text="Password" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-       <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-   
-       <HBox id="button-section" GridPane.columnIndex="1" GridPane.rowIndex="3">
-      <children>
-              <Button fx:id="loginButton" text="Login" onAction="#checkUser"/>
-              <Button text="Cancel" />
-      </children>
-       </HBox>
-   </children>
+    <children>
+        <HBox id="hbox-header" GridPane.columnIndex="0" GridPane.columnSpan="3"
+              GridPane.rowIndex="0">
+            <Label text="Login Page" id="header-label"/>
+        </HBox>
+        <Label text="Username" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="Password" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        <HBox id="button-section" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <children>
+                <Button fx:id="loginButton" text="Login" onAction="#checkUser"/>
+                <Button text="Cancel"/>
+            </children>
+        </HBox>
+    </children>
 </GridPane>

@@ -11,7 +11,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("loginPage.fxml"));
-        setUserAgentStylesheet(STYLESHEET_CASPIAN);
         primaryStage.setTitle("Lagani");
         primaryStage.setScene(new Scene(root, 720, 480));
 

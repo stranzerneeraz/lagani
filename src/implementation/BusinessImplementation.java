@@ -2,7 +2,6 @@ package implementation;
 
 import database.DatabaseConnection;
 import exception.BusinessException;
-import javafx.collections.ObservableList;
 import modal.Customers;
 import modal.Installment;
 import modal.Items;
@@ -138,7 +137,7 @@ public class BusinessImplementation {
                 customers.setCreatedAt(resultSet.getString("createdAt"));
                 customers.setRemarks(resultSet.getString("remarks"));
                 customers.setUpdatedAt(resultSet.getString("updatedAt"));
-                customers.setContactNo(resultSet.getInt("contactNo"));
+                customers.setContactNo(resultSet.getLong("contactNo"));
 
                 customerList.add(customers);
             }
@@ -187,7 +186,6 @@ public class BusinessImplementation {
                 items.setCloserName(resultSet.getString("closerName"));
                 items.setTotalAmount(resultSet.getInt("totalAmount"));
                 items.setClosingAmount(resultSet.getInt("closingAmount"));
-//                items.setCustomerIdFk(resultSet.getInt("customers_customer_id"));
 
                 itemList.add(items);
             }
@@ -207,23 +205,27 @@ public class BusinessImplementation {
         return itemList;
     }
 
-    public void addNewCustomerItem(String amountField, ObservableList typeChooser, LocalDate startDatePicker, String rate, LocalDate deadlinePicker, String descriptionArea)
-            throws BusinessException, SQLException {
+    public void addNewCustomer(Customers customers) throws BusinessException, SQLException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
-            String sql = "INSERT INTO items VALUES(11, ?, ?, ?, ?, ?, null,\"not paid\", \"2019-1-1\",\"2019-1-1\", 102, 1, \"2018-2-2\",\"fa\",5000,5000,5000, ?);";
+            String sql = "INSERT INTO customers (fullName, spouseName, fatherName, address, ward, createdAt, isActive, remarks, " +
+                    "updatedAt, contactNo) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             statement = connection.prepareStatement(sql);
-            statement.setString(1, String.valueOf(typeChooser));
-            statement.setDate(2, Date.valueOf(startDatePicker));
-            statement.setString(3, amountField);
-            statement.setDouble(4, Double.parseDouble(rate));
-            statement.setString(5, descriptionArea);
-            statement.setDate(6, Date.valueOf(deadlinePicker));
+            statement.setString(1, customers.getFullName());
+            statement.setString(2, customers.getSpouseName());
+            statement.setString(3, customers.getFatherName());
+            statement.setString(4, customers.getAddress());
+            statement.setInt(5, customers.getWard());
+            statement.setDate(6, Date.valueOf(LocalDate.now()));
+            statement.setInt(7, 1);
+            statement.setString(8, customers.getRemarks());
+            statement.setDate(9, Date.valueOf(LocalDate.now()));
+            statement.setLong(10, customers.getContactNo());
 
-            statement.executeQuery();
+            statement.executeUpdate();
         } catch (SQLException se) {
             throw new BusinessException(se);
         } finally {
@@ -237,6 +239,51 @@ public class BusinessImplementation {
                 connection.close();
             }
         }
+        System.out.println("Customer added successfully");
+    }
+
+    public void addNewCustomerItem(Items items, int customerID)
+            throws BusinessException, SQLException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            String sql = "INSERT INTO items (type, startDate, principal, rate, description, image, status, createdAt, updatedAt, closerName, totalAmount, " +
+                    " closingAmount, isActive, deadline, closingDate, customers_customerID) VALUES(?, ?, ?, ?,       ?, ?, ?, ?,      ?, ?, ?, ?,      ?, ?, ?, ?);";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, items.getType());
+            statement.setDate(2, Date.valueOf(items.getStartDate()));
+            statement.setInt(3, items.getPrincipal());
+            statement.setDouble(4, items.getRate());
+            statement.setString(5, items.getDescription());
+            statement.setString(6, null);
+            statement.setString(7, "not paid");
+            statement.setDate(8, Date.valueOf("2019-1-1"));
+            statement.setDate(9, Date.valueOf("2019-12-12"));
+            statement.setString(10, "Bill Gates");
+            statement.setInt(11, 10000);
+            statement.setInt(12, 5000);
+            statement.setInt(13, 1);
+            statement.setDate(14, Date.valueOf(items.getDeadline()));
+            statement.setDate(15, Date.valueOf("2019-12-30"));
+            statement.setInt(16, customerID);
+
+            statement.executeUpdate();
+        } catch (SQLException se) {
+            throw new BusinessException(se);
+        } finally {
+            if (null != resultSet) {
+                resultSet.close();
+            }
+            if (null != statement) {
+                statement.close();
+            }
+            if (null != connection) {
+                connection.close();
+            }
+        }
+        System.out.println("Item added successfully");
     }
 
     public ArrayList<Installment> getInstallmentData() throws BusinessException, SQLException {
