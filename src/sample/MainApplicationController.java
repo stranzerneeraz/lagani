@@ -35,6 +35,12 @@ public class MainApplicationController {
     @FXML
     private Button btnLogout;
     @FXML
+    private TabPane tabPane;
+    @FXML
+    private Tab customerTab;
+    @FXML
+    private TextField searchCustomer;
+    @FXML
     private ListView<Customers> customerListView;
     @FXML
     private TableView<Items> itemsTableView;
@@ -49,7 +55,7 @@ public class MainApplicationController {
     @FXML
     private TableColumn<Items, Date> itemStartDate;
     @FXML
-    private TableColumn<Items,Date> itemDeadline;
+    private TableColumn<Items, Date> itemDeadline;
     @FXML
     private TableColumn<Items, String> viewInstallment;
     @FXML
@@ -63,24 +69,35 @@ public class MainApplicationController {
     @FXML
     private Label addressViewLabel;
     @FXML
-    private Label familyViewLabel;
+    private Label fatherViewLabel;
     @FXML
     private Label contactViewLabel;
+    @FXML
+    private Label spouseViewLabel;
     @FXML
     private Button btnAddNewItem;
     @FXML
     private BorderPane mainBorderPane;
+
     private ObservableList<Customers> customersObservableList = FXCollections.observableArrayList();
     private ObservableList<Items> itemsObservableList;
     private int id = LoginController.id();
+    private String searchString = "";
+    Stage window;
 
-    BusinessImplementation businessImplementation = new BusinessImplementation();
+    private BusinessImplementation businessImplementation = new BusinessImplementation();
     private Customers selectionCustomer = new Customers();
 
+    /**
+     * Update Profile of the User
+     */
     public void updateProfile() throws SQLException, BusinessException {
         businessImplementation.updateUserProfile(nameProfile.getText(), firmnameProfile.getText(), contactProfile.getText(), addressProfile.getText(), id);
     }
 
+    /**
+     * View Profile of the User
+     */
     public void profileTab() throws SQLException, BusinessException {
         User user = businessImplementation.getUser(id);
         nameProfile.setText(user.getName());
@@ -89,9 +106,51 @@ public class MainApplicationController {
         addressProfile.setText(user.getAddress());
     }
 
+    /**
+     * View Customers who takes loan
+     * Searching of the customer
+     */
     public <customers> void viewCustomers() throws SQLException, BusinessException {
+        getCustomersForView(searchString);
+        searchCustomer.textProperty().addListener(((observable, oldValue, newValue) -> {
+            System.out.println(oldValue + "," + newValue);
+            searchString = newValue;
+            try {
+                getCustomersForView(searchString);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (BusinessException e) {
+                e.printStackTrace();
+            }
+        }));
+        customerListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        customerListView.getSelectionModel().selectFirst();
+        btnAddNewItem.setDisable(true);
+
+        customerListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (null != newValue) {
+                btnAddNewItem.setDisable(false);
+                Customers selectedCustomer = customerListView.getSelectionModel().getSelectedItem();
+                nameViewLabel.setText(selectedCustomer.getFullName());
+                fatherViewLabel.setText("F: " + selectedCustomer.getFatherName());
+                addressViewLabel.setText(selectedCustomer.getAddress());
+                spouseViewLabel.setText("S: " + selectedCustomer.getSpouseName());
+                contactViewLabel.setText("" + selectedCustomer.getContactNo());
+                selectionCustomer = selectedCustomer;
+                try {
+                    fetchCustomerItem(selectedCustomer.getCustomerID());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (BusinessException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void getCustomersForView(String searchString) throws SQLException, BusinessException {
         listContextMenu = new ContextMenu();
-        ArrayList<Customers> customerList = businessImplementation.getCustomers();
+        ArrayList<Customers> customerList = businessImplementation.getCustomers(searchString);
         customersObservableList.removeAll(customersObservableList);
         for (Customers customers : customerList) {
             customersObservableList.add(customers);
@@ -125,32 +184,12 @@ public class MainApplicationController {
                 return cell;
             }
         });
-        customerListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        customerListView.getSelectionModel().selectFirst();
-        btnAddNewItem.setDisable(true);
-
-        customerListView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    if (null != newValue) {
-                        btnAddNewItem.setDisable(false);
-                        Customers selectedCustomer = customerListView.getSelectionModel().getSelectedItem();
-                        nameViewLabel.setText(selectedCustomer.getFullName());
-                        addressViewLabel.setText(selectedCustomer.getAddress());
-                        familyViewLabel.setText(selectedCustomer.getFatherName() + "/" + selectedCustomer.getSpouseName());
-                        contactViewLabel.setText("" + selectedCustomer.getContactNo());
-                        selectionCustomer = selectedCustomer;
-                        try {
-                            fetchCustomerItem(selectedCustomer.getCustomerID());
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        } catch (BusinessException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
     }
 
+    /**
+     * Shows Item for the customer in Table View
+     * Addition and Calculation of Installment
+     */
     public void fetchCustomerItem(int id) throws SQLException, BusinessException {
         ArrayList<Items> itemList = businessImplementation.getItems(id);
         itemsObservableList = FXCollections.observableArrayList(itemList);
@@ -161,14 +200,14 @@ public class MainApplicationController {
         itemAmount.setCellValueFactory(new PropertyValueFactory<>("principal"));
         itemStartDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         itemDeadline.setCellValueFactory(new PropertyValueFactory<>("deadline"));
-        viewInstallment.setCellValueFactory(new  PropertyValueFactory<>("Dummy"));
+        viewInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
+
         Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryView = //
                 new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
                     @Override
                     public TableCell call(final TableColumn<Items, String> param) {
                         final TableCell<Items, String> cell = new TableCell<Items, String>() {
-
-                            final Button btn = new Button("View Installment");
+                            final Button btnViewInstallment = new Button("View");
 
                             @Override
                             public void updateItem(String item, boolean empty) {
@@ -177,12 +216,19 @@ public class MainApplicationController {
                                     setGraphic(null);
                                     setText(null);
                                 } else {
-                                    btn.setOnAction(event -> {
-                                        Items items = getTableView().getItems().get(getIndex());
-                                        System.out.println(items.getType()
-                                                + "   " + items.getPrincipal());
+                                    btnViewInstallment.setOnAction(event -> {
+                                        Parent root;
+                                        try {
+                                            root = FXMLLoader.load(getClass().getResource("viewInstallment.fxml"));
+                                            Stage stage = new Stage();
+                                            stage.setTitle("View Installment");
+                                            stage.setScene(new Scene(root, 800, 500));
+                                            stage.showAndWait();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                     });
-                                    setGraphic(btn);
+                                    setGraphic(btnViewInstallment);
                                     setText(null);
                                 }
                             }
@@ -192,14 +238,13 @@ public class MainApplicationController {
                 };
         viewInstallment.setCellFactory(cellFactoryView);
 
-        addInstallment.setCellValueFactory(new  PropertyValueFactory<>("Dummy"));
+        addInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
         Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryAdd = //
                 new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
                     @Override
                     public TableCell call(final TableColumn<Items, String> param) {
                         final TableCell<Items, String> cell = new TableCell<Items, String>() {
-
-                            final Button btn = new Button("Add Installment");
+                            final Button btnAddInstallment = new Button("Add");
 
                             @Override
                             public void updateItem(String item, boolean empty) {
@@ -208,12 +253,19 @@ public class MainApplicationController {
                                     setGraphic(null);
                                     setText(null);
                                 } else {
-                                    btn.setOnAction(event -> {
-                                        Items items = getTableView().getItems().get(getIndex());
-                                        System.out.println(items.getType()
-                                                + "   " + items.getPrincipal());
+                                    btnAddInstallment.setOnAction(event -> {
+                                        Parent root;
+                                        try {
+                                            root = FXMLLoader.load(getClass().getResource("addInstallment.fxml"));
+                                            Stage stage = new Stage();
+                                            stage.setTitle("Add Installment");
+                                            stage.setScene(new Scene(root, 800, 500));
+                                            stage.showAndWait();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                     });
-                                    setGraphic(btn);
+                                    setGraphic(btnAddInstallment);
                                     setText(null);
                                 }
                             }
@@ -223,14 +275,13 @@ public class MainApplicationController {
                 };
         addInstallment.setCellFactory(cellFactoryAdd);
 
-        calculate.setCellValueFactory(new  PropertyValueFactory<>("Dummy"));
+        calculate.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
         Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryCalculate = //
                 new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
                     @Override
                     public TableCell call(final TableColumn<Items, String> param) {
                         final TableCell<Items, String> cell = new TableCell<Items, String>() {
-
-                            final Button btn = new Button("Calculate");
+                            final Button btnCalculate = new Button("Calculate");
 
                             @Override
                             public void updateItem(String item, boolean empty) {
@@ -239,12 +290,24 @@ public class MainApplicationController {
                                     setGraphic(null);
                                     setText(null);
                                 } else {
-                                    btn.setOnAction(event -> {
+                                    btnCalculate.setOnAction(event -> {
                                         Items items = getTableView().getItems().get(getIndex());
-                                        System.out.println(items.getType()
-                                                + "   " + items.getPrincipal());
+                                        window = new Stage();
+                                        window.initOwner(mainBorderPane.getScene().getWindow());
+                                        window.setTitle("Calculation");
+                                        try {
+                                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("calculation.fxml"));
+                                            Parent root = fxmlLoader.load();
+                                            CalculationController calculationController = fxmlLoader.getController();
+                                            calculationController.initialize(items);
+                                            Scene scene = new Scene(root, 800, 500);
+                                            window.setScene(scene);
+                                            window.showAndWait();
+                                        } catch (IOException | BusinessException e) {
+                                            e.printStackTrace();
+                                        }
                                     });
-                                    setGraphic(btn);
+                                    setGraphic(btnCalculate);
                                     setText(null);
                                 }
                             }
@@ -254,11 +317,12 @@ public class MainApplicationController {
                 };
         calculate.setCellFactory(cellFactoryCalculate);
 
-
         itemsTableView.setItems(itemsObservableList);
-
     }
 
+    /**
+     * Adds new Customer who takes loan
+     */
     @FXML
     public void addNewCustomer() throws BusinessException {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -280,6 +344,9 @@ public class MainApplicationController {
         }
     }
 
+    /**
+     * Adds new Item for the customer
+     */
     @FXML
     public void addNewItem() throws BusinessException {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -302,8 +369,7 @@ public class MainApplicationController {
     }
 
     /**
-     * When user press Logout Button
-     * Takes user to Login page
+     * Logout code
      */
     @FXML
     public void logout() {

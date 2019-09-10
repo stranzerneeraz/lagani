@@ -145,4 +145,26 @@ public class Items {
     public void setCustomerIdFk(int customerIdFk) {
         this.customerIdFk = customerIdFk;
     }
+
+    @Override
+    public String toString() {
+        return "Items{" +
+                "itemID=" + itemID +
+                ", type='" + type + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", principal=" + principal +
+                ", rate=" + rate +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", closerName='" + closerName + '\'' +
+                ", totalAmount=" + totalAmount +
+                ", closingAmount=" + closingAmount +
+                ", customerIdFk=" + customerIdFk +
+                ", isActive=" + isActive +
+                ", deadline='" + deadline + '\'' +
+                ", closingDate='" + closingDate + '\'' +
+                '}';
+    }
 }

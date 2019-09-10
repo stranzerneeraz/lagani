@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class BusinessImplementation {
-
     Connection connection = null;
 
     public int authenticateUser(String username, String password) throws BusinessException, SQLException {
@@ -20,7 +19,6 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         int id = 0;
-
         try {
             String sql = "SELECT * FROM userdata WHERE username = ? AND password = ?";
             statement = connection.prepareStatement(sql);
@@ -46,6 +44,7 @@ public class BusinessImplementation {
                 connection.close();
             }
         }
+        System.out.println(id);
         return id;
     }
 
@@ -53,7 +52,6 @@ public class BusinessImplementation {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-
         try {
             String sql = "UPDATE userdata SET Name = ?, firmName = ?, contact = ?, Address = ? WHERE userID = ?";
             statement = connection.prepareStatement(sql);
@@ -84,7 +82,6 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         User user = null;
-
         try {
             String sql = "SELECT * FROM userdata WHERE userID = ?";
             statement = connection.prepareStatement(sql);
@@ -110,19 +107,26 @@ public class BusinessImplementation {
                 connection.close();
             }
         }
+        System.out.println(user);
         return user;
     }
 
-    public ArrayList<Customers> getCustomers() throws BusinessException, SQLException {
+    public ArrayList<Customers> getCustomers(String searchString) throws BusinessException, SQLException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         Customers customers = null;
         ArrayList<Customers> customerList = null;
-
+        System.out.println("Entry of search " +searchString);
         try {
-            String sql = "SELECT * FROM customers ORDER BY fullName ASC";
+            String sql = "SELECT * FROM customers WHERE fullName like ? or address like ? or fatherName like ? or spouseName like ? " +
+                    "ORDER BY fullName ASC;";
+           // String sql = "SELECT * FROM customers ORDER BY fullName ASC;";
             statement = connection.prepareStatement(sql);
+            statement.setString(1, "%"+searchString+"%");
+            statement.setString(2, "%"+searchString+"%");
+            statement.setString(3, "%"+searchString+"%");
+            statement.setString(4, "%"+searchString+"%");
             resultSet = statement.executeQuery();
             customerList = new ArrayList<>();
 
@@ -154,6 +158,7 @@ public class BusinessImplementation {
                 connection.close();
             }
         }
+        System.out.println(customerList);
         return customerList;
     }
 
@@ -163,11 +168,9 @@ public class BusinessImplementation {
         ResultSet resultSet = null;
         Items items = null;
         ArrayList<Items> itemList = null;
-
         try {
             String sql = "SELECT * FROM items WHERE customers_customerID = ?";
             statement = connection.prepareStatement(sql);
-            System.out.println(id);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
             itemList = new ArrayList<>();
@@ -202,6 +205,7 @@ public class BusinessImplementation {
                 connection.close();
             }
         }
+        System.out.println(itemList);
         return itemList;
     }
 
@@ -209,7 +213,6 @@ public class BusinessImplementation {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-
         try {
             String sql = "INSERT INTO customers (fullName, spouseName, fatherName, address, ward, createdAt, isActive, remarks, " +
                     "updatedAt, contactNo) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -242,12 +245,10 @@ public class BusinessImplementation {
         System.out.println("Customer added successfully");
     }
 
-    public void addNewCustomerItem(Items items, int customerID)
-            throws BusinessException, SQLException {
+    public void addNewCustomerItem(Items items, int customerID) throws BusinessException, SQLException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-
         try {
             String sql = "INSERT INTO items (type, startDate, principal, rate, description, image, status, createdAt, updatedAt, closerName, totalAmount, " +
                     " closingAmount, isActive, deadline, closingDate, customers_customerID) VALUES(?, ?, ?, ?,       ?, ?, ?, ?,      ?, ?, ?, ?,      ?, ?, ?, ?);";
@@ -286,16 +287,16 @@ public class BusinessImplementation {
         System.out.println("Item added successfully");
     }
 
-    public ArrayList<Installment> getInstallmentData() throws BusinessException, SQLException {
+    public ArrayList<Installment> getInstallmentData(int itemId) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         Installment installment = null;
         ArrayList<Installment> installmentList = null;
-
         try {
-            String sql = "SELECT * FROM customers ORDER BY fullName ASC";
+            String sql = "select * from installment where items_itemId=?";
             statement = connection.prepareStatement(sql);
+            statement.setInt(1, itemId);
             resultSet = statement.executeQuery();
             installmentList = new ArrayList<>();
 
@@ -304,7 +305,7 @@ public class BusinessImplementation {
                 installment.setInstallmentID(resultSet.getInt("installmentID"));
                 installment.setDepositor(resultSet.getString("depositor"));
                 installment.setDepositAmount(resultSet.getInt("depositAmount"));
-                installment.setDate(resultSet.getString("date"));
+                installment.setDate(resultSet.getDate("date"));
                 installment.setItemIdFk(resultSet.getInt("items_itemID"));
 
                 installmentList.add(installment);
@@ -313,15 +314,28 @@ public class BusinessImplementation {
             throw new BusinessException(se);
         } finally {
             if (null != resultSet) {
-                resultSet.close();
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    throw new BusinessException(e);
+                }
             }
             if (null != statement) {
-                statement.close();
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    throw new BusinessException(e);
+                }
             }
             if (null != connection) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    throw new BusinessException(e);
+                }
             }
         }
+        System.out.println(installmentList);
         return installmentList;
     }
 }

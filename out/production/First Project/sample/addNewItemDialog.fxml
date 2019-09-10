@@ -36,7 +36,7 @@
             <Label text="Start Date" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
             <DatePicker fx:id="startDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
             <Label text="Rate" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <TextField fx:id="rateField" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+            <TextField fx:id="rateField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
             <Label text="Deadline" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
             <DatePicker fx:id="deadlinePicker" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
             <Label text="Description" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
