@@ -2,7 +2,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.HBox?>
-<DialogPane fx:id="viewInstallment" id="viewInstallment" fx:controller="sample.ViewInstallmentDialogController" xmlns="http://javafx.com/javafx/8"
+<DialogPane fx:id="viewInstallment" id="viewInstallmentDialog" fx:controller="sample.ViewInstallmentDialogController" xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml" stylesheets="@style.css">
     <header>
         <HBox id="hbox-header">

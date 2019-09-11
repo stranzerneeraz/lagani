@@ -138,19 +138,25 @@
                                                                     <center>
                                                                         <TableView fx:id="itemsTableView" prefHeight="370.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
                                                                             <columns>
-                                                                                <TableColumn fx:id="itemNo" prefWidth="60" minWidth="60" maxWidth="60" text="S.No." />
-                                                                                <TableColumn fx:id="itemType" prefWidth="90" minWidth="90" maxWidth="90" text="Type" />
-                                                                                <TableColumn fx:id="itemDescription" prefWidth="150" minWidth="150" maxWidth="150" text="Description" />
-                                                                                <TableColumn fx:id="itemAmount" prefWidth="100" minWidth="100" maxWidth="100" text="Amount" />
-                                                                                <TableColumn fx:id="itemStartDate" prefWidth="150" minWidth="150" maxWidth="150" text="StartDate" />
-                                                                                <TableColumn fx:id="itemDeadline" prefWidth="150" minWidth="150" maxWidth="150" text="Deadline" />
-                                                                                <TableColumn fx:id="viewInstallment" prefWidth="100" minWidth="100" maxWidth="100" text="Installment" />
-                                                                                <TableColumn fx:id="addInstallment" prefWidth="100" minWidth="100" maxWidth="100" text="Installment" />
-                                                                                <TableColumn fx:id="calculate" prefWidth="100" minWidth="100" maxWidth="100" text="Total" />
+                                                                                <TableColumn fx:id="itemNo" maxWidth="60" minWidth="60" prefWidth="60" text="S.No." />
+                                                                                <TableColumn fx:id="itemType" maxWidth="70" minWidth="90" prefWidth="70" text="Type" />
+                                                                                <TableColumn fx:id="itemDescription" maxWidth="150" minWidth="15" prefWidth="150" text="Description" />
+                                                                                <TableColumn fx:id="itemAmount" maxWidth="100" minWidth="10" prefWidth="100" text="Amount" />
+                                                                                <TableColumn fx:id="itemStartDate" maxWidth="140" minWidth="15" prefWidth="140" text="StartDate" />
+                                                                                <TableColumn fx:id="itemDeadline" maxWidth="140" minWidth="15" prefWidth="140" text="Deadline" />
+                                                                                <TableColumn fx:id="viewInstallment" maxWidth="100" minWidth="10" prefWidth="100" text="Installment" />
+                                                                                <TableColumn fx:id="addInstallment" maxWidth="100" minWidth="10" prefWidth="100" text="Installment1" />
+                                                                                <TableColumn fx:id="calculate" maxWidth="100" minWidth="10" prefWidth="100" text="Total" />
                                                                             </columns>
                                                                             <columnResizePolicy>
                                                                                 <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
                                                                             </columnResizePolicy>
+                                                         <BorderPane.margin>
+                                                            <Insets />
+                                                         </BorderPane.margin>
+                                                         <padding>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </padding>
                                                                         </TableView>
                                                                     </center>
                                                                 </BorderPane>
