@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
@@ -7,6 +11,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
+
 <BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1260.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MainApplicationController">
     <center>
         <VBox BorderPane.alignment="CENTER">
@@ -47,7 +52,7 @@
                                     </content>
                                 </Tab>
 
-                                <Tab onSelectionChanged="#viewCustomers" fx:id="customerTab" text="Customers">
+                                <Tab fx:id="customerTab" onSelectionChanged="#viewCustomers" text="Customers">
                                     <content>
                                         <AnchorPane maxWidth="-Infinity" minHeight="400.0" minWidth="800.0" prefHeight="600.0" prefWidth="1250.0">
                                             <children>
@@ -55,14 +60,16 @@
                                                     <items>
                                                         <AnchorPane maxWidth="-Infinity" minHeight="400.0" minWidth="200.0" prefHeight="400.0" prefWidth="250.0">
                                                             <children>
-                                                                <TextField fx:id="searchCustomer" promptText="Search Customer" alignment="CENTER" AnchorPane.bottomAnchor="520.0" AnchorPane.leftAnchor="2" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="1.0"/>
+                                                                <TextField fx:id="searchCustomer" alignment="CENTER" promptText="Search Customer" AnchorPane.bottomAnchor="520.0" AnchorPane.leftAnchor="2" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="1.0" />
                                                                 <Button AnchorPane.bottomAnchor="520.0" AnchorPane.leftAnchor="212" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="1.0">
                                                                     <tooltip>
-                                                                        <Tooltip text="Search Customers"/>
+                                                                        <Tooltip text="Search Customers" />
                                                                     </tooltip>
                                                                     <graphic>
                                                                         <ImageView>
-                                                                            <Image url="@/toolbarButtonGraphics/general/Zoom24.gif"/>
+                                                                           <image>
+                                                                               <Image url="@/toolbarButtonGraphics/general/Zoom24.gif" />
+                                                                           </image>
                                                                         </ImageView>
                                                                     </graphic>
                                                                 </Button>
@@ -131,18 +138,18 @@
                                                                     <center>
                                                                         <TableView fx:id="itemsTableView" prefHeight="370.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
                                                                             <columns>
-                                                                                <TableColumn fx:id="itemNo" prefWidth="65" text="S.No." />
-                                                                                <TableColumn fx:id="itemType" prefWidth="85.0" text="Type" />
-                                                                                <TableColumn fx:id="itemDescription" prefWidth="150.0" text="Description" />
-                                                                                <TableColumn fx:id="itemAmount" prefWidth="100.0" text="Amount" />
-                                                                                <TableColumn fx:id="itemStartDate" prefWidth="150.0" text="StartDate" />
-                                                                                <TableColumn fx:id="itemDeadline" prefWidth="150.0" text="Deadline" />
-                                                                                <TableColumn fx:id="viewInstallment" prefWidth="100.0" text="Installment" />
-                                                                                <TableColumn fx:id="addInstallment" prefWidth="100.0" text="Installment" />
-                                                                                <TableColumn fx:id="calculate" prefWidth="100.0" text="Total" />
+                                                                                <TableColumn fx:id="itemNo" prefWidth="60" minWidth="60" maxWidth="60" text="S.No." />
+                                                                                <TableColumn fx:id="itemType" prefWidth="90" minWidth="90" maxWidth="90" text="Type" />
+                                                                                <TableColumn fx:id="itemDescription" prefWidth="150" minWidth="150" maxWidth="150" text="Description" />
+                                                                                <TableColumn fx:id="itemAmount" prefWidth="100" minWidth="100" maxWidth="100" text="Amount" />
+                                                                                <TableColumn fx:id="itemStartDate" prefWidth="150" minWidth="150" maxWidth="150" text="StartDate" />
+                                                                                <TableColumn fx:id="itemDeadline" prefWidth="150" minWidth="150" maxWidth="150" text="Deadline" />
+                                                                                <TableColumn fx:id="viewInstallment" prefWidth="100" minWidth="100" maxWidth="100" text="Installment" />
+                                                                                <TableColumn fx:id="addInstallment" prefWidth="100" minWidth="100" maxWidth="100" text="Installment" />
+                                                                                <TableColumn fx:id="calculate" prefWidth="100" minWidth="100" maxWidth="100" text="Total" />
                                                                             </columns>
                                                                             <columnResizePolicy>
-                                                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                                                                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
                                                                             </columnResizePolicy>
                                                                         </TableView>
                                                                     </center>

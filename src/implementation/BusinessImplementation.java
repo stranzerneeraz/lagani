@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class BusinessImplementation {
     Connection connection = null;
 
-    public int authenticateUser(String username, String password) throws BusinessException, SQLException {
+    public int authenticateUser(String username, String password) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -35,20 +35,32 @@ public class BusinessImplementation {
             throw new BusinessException(se);
         } finally {
             if (null != resultSet) {
-                resultSet.close();
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != statement) {
-                statement.close();
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != connection) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
         System.out.println(id);
         return id;
     }
 
-    public void updateUserProfile(String nameProfile, String firmnameProfile, String contactProfile, String addressProfile, int id) throws BusinessException, SQLException {
+    public void updateUserProfile(String nameProfile, String firmnameProfile, String contactProfile, String addressProfile, int id) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -66,18 +78,30 @@ public class BusinessImplementation {
             throw new BusinessException(se);
         } finally {
             if (null != resultSet) {
-                resultSet.close();
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != statement) {
-                statement.close();
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != connection) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public User getUser(int id) throws BusinessException, SQLException {
+    public User getUser(int id) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -98,20 +122,32 @@ public class BusinessImplementation {
             e.printStackTrace();
         } finally {
             if (null != resultSet) {
-                resultSet.close();
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != statement) {
-                statement.close();
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != connection) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
         System.out.println(user);
         return user;
     }
 
-    public ArrayList<Customers> getCustomers(String searchString) throws BusinessException, SQLException {
+    public ArrayList<Customers> getCustomers(String searchString) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -121,7 +157,6 @@ public class BusinessImplementation {
         try {
             String sql = "SELECT * FROM customers WHERE fullName like ? or address like ? or fatherName like ? or spouseName like ? " +
                     "ORDER BY fullName ASC;";
-           // String sql = "SELECT * FROM customers ORDER BY fullName ASC;";
             statement = connection.prepareStatement(sql);
             statement.setString(1, "%"+searchString+"%");
             statement.setString(2, "%"+searchString+"%");
@@ -149,20 +184,32 @@ public class BusinessImplementation {
             throw new BusinessException(se);
         } finally {
             if (null != resultSet) {
-                resultSet.close();
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != statement) {
-                statement.close();
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != connection) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
         System.out.println(customerList);
         return customerList;
     }
 
-    public ArrayList<Items> getItems(int id) throws BusinessException, SQLException {
+    public ArrayList<Items> getItems(int id) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -179,7 +226,7 @@ public class BusinessImplementation {
                 items = new Items();
                 items.setItemID(resultSet.getInt("itemID"));
                 items.setType(resultSet.getString("type"));
-                items.setStartDate(resultSet.getString("startDate"));
+                items.setStartDate(resultSet.getDate("startDate"));
                 items.setPrincipal(resultSet.getInt("principal"));
                 items.setRate(resultSet.getDouble("rate"));
                 items.setDescription(resultSet.getString("description"));
@@ -196,20 +243,32 @@ public class BusinessImplementation {
             throw new BusinessException(se);
         } finally {
             if (null != resultSet) {
-                resultSet.close();
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != statement) {
-                statement.close();
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != connection) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
         System.out.println(itemList);
         return itemList;
     }
 
-    public void addNewCustomer(Customers customers) throws BusinessException, SQLException {
+    public void addNewCustomer(Customers customers) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -233,19 +292,31 @@ public class BusinessImplementation {
             throw new BusinessException(se);
         } finally {
             if (null != resultSet) {
-                resultSet.close();
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != statement) {
-                statement.close();
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != connection) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
         System.out.println("Customer added successfully");
     }
 
-    public void addNewCustomerItem(Items items, int customerID) throws BusinessException, SQLException {
+    public void addNewCustomerItem(Items items, int customerID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -254,7 +325,7 @@ public class BusinessImplementation {
                     " closingAmount, isActive, deadline, closingDate, customers_customerID) VALUES(?, ?, ?, ?,       ?, ?, ?, ?,      ?, ?, ?, ?,      ?, ?, ?, ?);";
             statement = connection.prepareStatement(sql);
             statement.setString(1, items.getType());
-            statement.setDate(2, Date.valueOf(items.getStartDate()));
+            statement.setDate(2, items.getStartDate());
             statement.setInt(3, items.getPrincipal());
             statement.setDouble(4, items.getRate());
             statement.setString(5, items.getDescription());
@@ -275,13 +346,25 @@ public class BusinessImplementation {
             throw new BusinessException(se);
         } finally {
             if (null != resultSet) {
-                resultSet.close();
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != statement) {
-                statement.close();
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
             if (null != connection) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
         System.out.println("Item added successfully");
@@ -337,5 +420,46 @@ public class BusinessImplementation {
         }
         System.out.println(installmentList);
         return installmentList;
+    }
+
+    public void addInstallment(Installment installment, int itemID) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            String sql = "INSERT INTO installment (depositor, depositAmount, date, items_itemID) VALUES(?, ?, ?, ?);";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, installment.getDepositor());
+            statement.setInt(2, installment.getDepositAmount());
+            statement.setDate(3, installment.getDate());
+            statement.setInt(4, itemID);
+
+            statement.executeUpdate();
+        } catch (SQLException se) {
+            throw new BusinessException(se);
+        } finally {
+            if (null != resultSet) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != statement) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != connection) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println("Installment added successfully");
     }
 }

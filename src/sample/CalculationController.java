@@ -2,6 +2,8 @@ package sample;
 
 import exception.BusinessException;
 import implementation.BusinessImplementation;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -17,7 +19,11 @@ import java.util.ArrayList;
 
 public class CalculationController {
     @FXML
-    private ListView calculationListView;
+    private ListView<Installment> calculationListView;
+    @FXML
+    private Label rateFieldI;
+    @FXML
+    private Label rateFieldC;
     @FXML
     private Label calculationPrincipal;
     @FXML
@@ -31,52 +37,82 @@ public class CalculationController {
     @FXML
     private Label calculationTotalAmount;
     @FXML
-    private Label calculationInvestment;
+    private Label calculationInstallment;
     @FXML
     private Label calculationGrandTotal;
 
-    ArrayList<Installment> installmentList;
+    private ObservableList<Installment> observableInstallmentList = FXCollections.observableArrayList();
+    private ArrayList<Installment> installmentList;
     private double rate;
+    private int totalInstallmentAmount = 0;
+
+    BusinessImplementation businessImplementation=new BusinessImplementation();
 
     public void initialize(Items items) throws BusinessException {
-        System.out.println(items.toString());
-        loadInstallmentData(items.getItemID());
-        ArrayList<Installment> arrayList = null;
         rate = items.getRate();
-        for (Installment installment : installmentList) {
-            arrayList.add(installment);
+        rateFieldI.setText("@" + rate);
+        rateFieldC.setText("@" + rate);
+        updateInstallmentListView(items);
+        updateCalculationSection(items);
+    }
+
+    public void updateInstallmentListView(Items items) throws BusinessException {
+        loadInstallmentData(items.getItemID());;
+        for (Installment installment: installmentList) {
+            observableInstallmentList.add(installment);
         }
-        calculationListView.getItems().add(arrayList);
-            calculationListView.setCellFactory(new Callback<ListView<Installment>, ListCell<Installment>>() {
-                @Override
-                public ListCell<Installment> call(ListView<Installment> param) {
-                    ListCell<Installment> cell = new ListCell<Installment>() {
-                        @Override
-                        protected void updateItem(Installment installment, boolean empty) {
-                            super.updateItem(installment, empty);
-                            if (empty || installment == null) {
-                                setText("");
-                            } else {
-                                setText(installment.getDepositAmount() + ", fsdfa" );
-                            }
+        calculationListView.getItems().addAll(observableInstallmentList);
+        calculationListView.setCellFactory(new Callback<ListView<Installment>, ListCell<Installment>>() {
+            @Override
+            public ListCell<Installment> call(ListView<Installment> param) {
+                ListCell<Installment> cell = new ListCell<Installment>() {
+                    @Override
+                    protected void updateItem(Installment installment, boolean empty) {
+                        super.updateItem(installment, empty);
+                        if (empty || installment == null) {
+                            setText("");
+                        } else {
+                            setText("Amount " + "\t\t\t\t\t\t\t" + installment.getDepositAmount() + "\n" +
+                                    "Depositor " + "\t\t\t\t\t\t" + installment.getDepositor() + "\n" +
+                                    "Start Date " + "\t\t\t\t\t\t" + installment.getDate() + "\n" +
+                                    "End Date " + "\t\t\t\t\t\t\t" + installment.getEndDate() + "\n" +
+                                    "Duration " + "\t\t\t\t\t\t\t" + installment.getDuration() + "\n" +
+                                    "Total Interest " + "\t\t\t\t\t\t" + installment.getTotalInterest() + "\n" +
+                                    "Total Amount " + "\t\t\t\t\t\t" + installment.getTotalAmount());
                         }
-                    };
-                    return cell;
-                }
-            });
-
-
+                    }
+                };
+                return cell;
+            }
+        });
     }
 
     public void loadInstallmentData(int itemId) throws BusinessException {
-        BusinessImplementation businessImplementation=new BusinessImplementation();
-         installmentList = businessImplementation.getInstallmentData(itemId);
+        installmentList = businessImplementation.getInstallmentData(itemId);
         for(Installment installment: installmentList){
             installment.setEndDate(LocalDate.now().toString());
             installment.setDuration(calculateDurationInMonths(installment.getDate()));
             installment.setTotalInterest(calculateInterestAmount(installment.getDuration(), rate, installment.getDepositAmount()));
             installment.setTotalAmount(installment.getTotalInterest() + installment.getDepositAmount());
+            totalInstallmentAmount += installment.getTotalAmount();
         }
+    }
+
+    public void updateCalculationSection(Items items) {
+        System.out.println(totalInstallmentAmount);
+        int principal = items.getPrincipal();
+        int duration = calculateDurationInMonths(items.getStartDate());
+        int interest = calculateInterestAmount(duration, rate, principal);
+        int totalAmount = principal + interest;
+        int grandTotal = totalAmount - totalInstallmentAmount;
+        calculationPrincipal.setText("" + principal);
+        calculationStartDate.setText("" + items.getStartDate());
+        calculationEndDate.setText(LocalDate.now().toString());
+        calculationDuration.setText("" + duration);
+        calculationInterest.setText("" + interest);
+        calculationTotalAmount.setText("" + totalAmount);
+        calculationInstallment.setText("" + totalInstallmentAmount);
+        calculationGrandTotal.setText("" + grandTotal);
     }
 
     public int calculateDurationInMonths(Date fromDate){
@@ -88,14 +124,14 @@ public class CalculationController {
 
     public int calculateInterestAmount(int noOfMonths, double rate, int amount){
         int months = noOfMonths;
-        int totalamount = amount;
+        int totalAmount = amount;
         while(months>12){
-            totalamount+=(totalamount * rate * 12)/100;
+            totalAmount+=(totalAmount * rate * 12)/100;
             months-=12;
         }
         if(months>0){
-            totalamount+=(totalamount*rate*months)/100;
+            totalAmount+=(totalAmount*rate*months)/100;
         }
-        return totalamount-amount;
+        return totalAmount-amount;
     }
 }

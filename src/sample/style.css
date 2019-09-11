@@ -94,3 +94,18 @@
     -fx-padding : 5 10 5 10;
     -fx-spacing : 5px;
 }
+
+#calculationVBox {
+    -fx-padding : 10;
+}
+
+#installmentListView {
+    -fx-background-color: #f2f2f2;
+    -fx-text-fill: black;
+}
+
+#viewInstallment {
+    -fx-padding: 0 10 0 10;
+    -fx-spacing: 10;
+    -fx-pref-width: 400px;
+}

@@ -13,9 +13,6 @@ public class Customers {
     private String updatedAt;
     private long contactNo;
 
-    public static void getInstance() {
-    }
-
     public int getCustomerID() {
         return customerID;
     }

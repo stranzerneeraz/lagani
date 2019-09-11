@@ -19,7 +19,6 @@ import modal.Items;
 import modal.User;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -34,10 +33,6 @@ public class MainApplicationController {
     private TextField addressProfile;
     @FXML
     private Button btnLogout;
-    @FXML
-    private TabPane tabPane;
-    @FXML
-    private Tab customerTab;
     @FXML
     private TextField searchCustomer;
     @FXML
@@ -83,7 +78,8 @@ public class MainApplicationController {
     private ObservableList<Items> itemsObservableList;
     private int id = LoginController.id();
     private String searchString = "";
-    Stage window;
+    private Stage window;
+    private Window dialogWindow;
 
     private BusinessImplementation businessImplementation = new BusinessImplementation();
     private Customers selectionCustomer = new Customers();
@@ -91,14 +87,14 @@ public class MainApplicationController {
     /**
      * Update Profile of the User
      */
-    public void updateProfile() throws SQLException, BusinessException {
+    public void updateProfile() throws BusinessException {
         businessImplementation.updateUserProfile(nameProfile.getText(), firmnameProfile.getText(), contactProfile.getText(), addressProfile.getText(), id);
     }
 
     /**
      * View Profile of the User
      */
-    public void profileTab() throws SQLException, BusinessException {
+    public void profileTab() throws BusinessException {
         User user = businessImplementation.getUser(id);
         nameProfile.setText(user.getName());
         firmnameProfile.setText(user.getFirmname());
@@ -110,21 +106,17 @@ public class MainApplicationController {
      * View Customers who takes loan
      * Searching of the customer
      */
-    public <customers> void viewCustomers() throws SQLException, BusinessException {
+    public <customers> void viewCustomers() throws BusinessException {
         getCustomersForView(searchString);
         searchCustomer.textProperty().addListener(((observable, oldValue, newValue) -> {
-            System.out.println(oldValue + "," + newValue);
             searchString = newValue;
             try {
                 getCustomersForView(searchString);
-            } catch (SQLException e) {
-                e.printStackTrace();
             } catch (BusinessException e) {
                 e.printStackTrace();
             }
         }));
         customerListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        customerListView.getSelectionModel().selectFirst();
         btnAddNewItem.setDisable(true);
 
         customerListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -139,8 +131,6 @@ public class MainApplicationController {
                 selectionCustomer = selectedCustomer;
                 try {
                     fetchCustomerItem(selectedCustomer.getCustomerID());
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 } catch (BusinessException e) {
                     e.printStackTrace();
                 }
@@ -148,7 +138,7 @@ public class MainApplicationController {
         });
     }
 
-    public void getCustomersForView(String searchString) throws SQLException, BusinessException {
+    public void getCustomersForView(String searchString) throws BusinessException {
         listContextMenu = new ContextMenu();
         ArrayList<Customers> customerList = businessImplementation.getCustomers(searchString);
         customersObservableList.removeAll(customersObservableList);
@@ -190,7 +180,7 @@ public class MainApplicationController {
      * Shows Item for the customer in Table View
      * Addition and Calculation of Installment
      */
-    public void fetchCustomerItem(int id) throws SQLException, BusinessException {
+    public void fetchCustomerItem(int id) throws BusinessException {
         ArrayList<Items> itemList = businessImplementation.getItems(id);
         itemsObservableList = FXCollections.observableArrayList(itemList);
 
@@ -200,15 +190,13 @@ public class MainApplicationController {
         itemAmount.setCellValueFactory(new PropertyValueFactory<>("principal"));
         itemStartDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         itemDeadline.setCellValueFactory(new PropertyValueFactory<>("deadline"));
-        viewInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
 
-        Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryView = //
-                new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
+        viewInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
+        Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryView = new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
                     @Override
                     public TableCell call(final TableColumn<Items, String> param) {
                         final TableCell<Items, String> cell = new TableCell<Items, String>() {
                             final Button btnViewInstallment = new Button("View");
-
                             @Override
                             public void updateItem(String item, boolean empty) {
                                 super.updateItem(item, empty);
@@ -217,15 +205,25 @@ public class MainApplicationController {
                                     setText(null);
                                 } else {
                                     btnViewInstallment.setOnAction(event -> {
-                                        Parent root;
+                                        Items selectionItem = getTableView().getItems().get(getIndex());
+                                        Dialog<ButtonType> dialog = new Dialog<>();
+                                        dialog.initOwner(mainBorderPane.getScene().getWindow());
+                                        dialog.setTitle("Installments");
+                                        FXMLLoader fxmlLoader = new FXMLLoader();
+                                        fxmlLoader.setLocation(getClass().getResource("viewInstallmentDialog.fxml"));
+                                        dialogWindow = dialog.getDialogPane().getScene().getWindow();
                                         try {
-                                            root = FXMLLoader.load(getClass().getResource("viewInstallment.fxml"));
-                                            Stage stage = new Stage();
-                                            stage.setTitle("View Installment");
-                                            stage.setScene(new Scene(root, 800, 500));
-                                            stage.showAndWait();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
+                                            dialog.getDialogPane().setContent(fxmlLoader.load());
+                                            ViewInstallmentDialogController viewInstallmentDialogController = fxmlLoader.getController();
+                                            viewInstallmentDialogController.initialize(selectionItem);
+                                            dialogWindow.setOnCloseRequest(closeEvent -> dialog.close());
+                                            dialog.showAndWait();
+                                        } catch (IOException | BusinessException e) {
+                                            try {
+                                                throw new BusinessException(e);
+                                            } catch (BusinessException ex) {
+                                                ex.printStackTrace();
+                                            }
                                         }
                                     });
                                     setGraphic(btnViewInstallment);
@@ -238,14 +236,12 @@ public class MainApplicationController {
                 };
         viewInstallment.setCellFactory(cellFactoryView);
 
-        addInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
-        Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryAdd = //
-                new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
+        addInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy1"));
+        Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryAdd = new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
                     @Override
                     public TableCell call(final TableColumn<Items, String> param) {
                         final TableCell<Items, String> cell = new TableCell<Items, String>() {
                             final Button btnAddInstallment = new Button("Add");
-
                             @Override
                             public void updateItem(String item, boolean empty) {
                                 super.updateItem(item, empty);
@@ -254,15 +250,25 @@ public class MainApplicationController {
                                     setText(null);
                                 } else {
                                     btnAddInstallment.setOnAction(event -> {
-                                        Parent root;
+                                        Items selectedItem = getTableView().getItems().get(getIndex());
+                                        Dialog<ButtonType> dialog = new Dialog<>();
+                                        dialog.initOwner(mainBorderPane.getScene().getWindow());
+                                        dialog.setTitle("Add Installment");
+                                        FXMLLoader fxmlLoader = new FXMLLoader();
+                                        fxmlLoader.setLocation(getClass().getResource("addInstallmentDialog.fxml"));
+                                        dialogWindow = dialog.getDialogPane().getScene().getWindow();
                                         try {
-                                            root = FXMLLoader.load(getClass().getResource("addInstallment.fxml"));
-                                            Stage stage = new Stage();
-                                            stage.setTitle("Add Installment");
-                                            stage.setScene(new Scene(root, 800, 500));
-                                            stage.showAndWait();
+                                            dialog.getDialogPane().setContent(fxmlLoader.load());
+                                            AddInstallmentDialogController addInstallmentDialogController = fxmlLoader.getController();
+                                            addInstallmentDialogController.initialize(selectedItem);
+                                            dialogWindow.setOnCloseRequest(closeEvent -> dialog.close());
+                                            dialog.showAndWait();
                                         } catch (IOException e) {
-                                            e.printStackTrace();
+                                            try {
+                                                throw new BusinessException(e);
+                                            } catch (BusinessException ex) {
+                                                ex.printStackTrace();
+                                            }
                                         }
                                     });
                                     setGraphic(btnAddInstallment);
@@ -275,14 +281,13 @@ public class MainApplicationController {
                 };
         addInstallment.setCellFactory(cellFactoryAdd);
 
-        calculate.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
-        Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryCalculate = //
+        calculate.setCellValueFactory(new PropertyValueFactory<>("Dummy2"));
+        Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryCalculate =
                 new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
                     @Override
                     public TableCell call(final TableColumn<Items, String> param) {
                         final TableCell<Items, String> cell = new TableCell<Items, String>() {
                             final Button btnCalculate = new Button("Calculate");
-
                             @Override
                             public void updateItem(String item, boolean empty) {
                                 super.updateItem(item, empty);
@@ -330,14 +335,12 @@ public class MainApplicationController {
         dialog.setTitle("Add New Customer");
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("addNewCustomerDialog.fxml"));
-        Window dialogWindow = dialog.getDialogPane().getScene().getWindow();
+        dialogWindow = dialog.getDialogPane().getScene().getWindow();
         try {
             dialog.getDialogPane().setContent(fxmlLoader.load());
             AddNewCustomerDialogController addNewCustomerDialogController = fxmlLoader.getController();
             addNewCustomerDialogController.initialize();
-            dialogWindow.setOnCloseRequest(event -> {
-                dialog.close();
-            });
+            dialogWindow.setOnCloseRequest(event -> dialog.close());
             dialog.showAndWait();
         } catch (IOException e) {
             throw new BusinessException(e);
@@ -354,14 +357,12 @@ public class MainApplicationController {
         dialog.setTitle("Add New Item");
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("addNewItemDialog.fxml"));
-        Window dialogWindow = dialog.getDialogPane().getScene().getWindow();
+        dialogWindow = dialog.getDialogPane().getScene().getWindow();
         try {
             dialog.getDialogPane().setContent(fxmlLoader.load());
             AddNewItemDialogController addNewItemDialogController = fxmlLoader.getController();
             addNewItemDialogController.updateDialogBox(selectionCustomer);
-            dialogWindow.setOnCloseRequest(event -> {
-                dialog.close();
-            });
+            dialogWindow.setOnCloseRequest(event -> dialog.close());
             dialog.showAndWait();
         } catch (IOException e) {
             throw new BusinessException(e);

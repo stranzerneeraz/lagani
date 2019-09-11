@@ -1,9 +1,11 @@
 package modal;
 
+import java.sql.Date;
+
 public class Items {
     private int itemID;
     private String type;
-    private String startDate;
+    private Date startDate;
     private int principal;
     private Double rate;
     private String description;
@@ -34,11 +36,11 @@ public class Items {
         this.type = type;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
@@ -151,7 +153,7 @@ public class Items {
         return "Items{" +
                 "itemID=" + itemID +
                 ", type='" + type + '\'' +
-                ", startDate='" + startDate + '\'' +
+                ", startDate=" + startDate +
                 ", principal=" + principal +
                 ", rate=" + rate +
                 ", description='" + description + '\'' +

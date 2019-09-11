@@ -1,0 +1,16 @@
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<DialogPane fx:id="viewInstallment" id="viewInstallment" fx:controller="sample.ViewInstallmentDialogController" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml" stylesheets="@style.css">
+    <header>
+        <HBox id="hbox-header">
+            <Label text="Installments" id="header-label"/>
+        </HBox>
+    </header>
+    <content>
+        <ListView id="installmentListView" fx:id="installmentView" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="300.0" prefWidth="390.0">
+        </ListView>
+    </content>
+</DialogPane>
