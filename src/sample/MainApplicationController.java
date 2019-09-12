@@ -1,16 +1,20 @@
 package sample;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import exception.BusinessException;
 import implementation.BusinessImplementation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
@@ -21,6 +25,7 @@ import modal.User;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 
 public class MainApplicationController {
     @FXML
@@ -73,6 +78,62 @@ public class MainApplicationController {
     private Button btnAddNewItem;
     @FXML
     private BorderPane mainBorderPane;
+    @FXML
+    private VBox customerAdminPanel;
+    @FXML
+    private VBox itemAdminPanel;
+    @FXML
+    private VBox installmentAdminPanel;
+    @FXML
+    private TextField getCustomerID;
+    @FXML
+    private Button btnViewCustomer;
+    @FXML
+    private TextField getItemID;
+    @FXML
+    private Button btnViewItem;
+    @FXML
+    private TextField getInstallmentID;
+    @FXML
+    private Button btnViewInstallment;
+    @FXML
+    private TextField adminFullName;
+    @FXML
+    private TextField adminAddress;
+    @FXML
+    private TextField adminWard;
+    @FXML
+    private TextField adminFatherName;
+    @FXML
+    private TextField adminSpouseName;
+    @FXML
+    private TextField adminContactNumber;
+    @FXML
+    private TextField adminRemarks;
+    @FXML
+    private Button btnUpdateCustomer;
+    @FXML
+    private TextField adminItemAmount;
+    @FXML
+    private ComboBox adminTypeChooser;
+    @FXML
+    private DatePicker adminStartDate;
+    @FXML
+    private TextField adminRate;
+    @FXML
+    private DatePicker adminDeadline;
+    @FXML
+    private TextArea adminDescription;
+    @FXML
+    private Button btnUpdateItem;
+    @FXML
+    private TextField adminInstallmentAmount;
+    @FXML
+    private TextField adminDepositor;
+    @FXML
+    private DatePicker adminDepositDate;
+    @FXML
+    private Button btnUpdateInstallment;
 
     private ObservableList<Customers> customersObservableList = FXCollections.observableArrayList();
     private ObservableList<Items> itemsObservableList;
@@ -323,7 +384,25 @@ public class MainApplicationController {
         calculate.setCellFactory(cellFactoryCalculate);
 
         itemsTableView.setItems(itemsObservableList);
+        ScrollBar table1HorizontalScrollBar = findScrollBar( itemsTableView, Orientation.HORIZONTAL);
+        ScrollBar table1VerticalScrollBar = findScrollBar( itemsTableView, Orientation.VERTICAL);
+        table1HorizontalScrollBar.setVisible(true);
+        table1VerticalScrollBar.setVisible(false);
+        VirtualFlow flow1 = (VirtualFlow) itemsTableView.lookup(".virtual-flow");
+        flow1.requestLayout();
     }
+
+    private ScrollBar findScrollBar(TableView<?> table, Orientation orientation) {
+        Set<Node> set = table.lookupAll(".scroll-bar");
+        for( Node node: set) {
+            ScrollBar bar = (ScrollBar) node;
+            if( bar.getOrientation() == orientation) {
+                return bar;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Adds new Customer who takes loan
@@ -367,6 +446,28 @@ public class MainApplicationController {
         } catch (IOException e) {
             throw new BusinessException(e);
         }
+    }
+
+    public void adminTab() {
+        customerAdminPanel.setVisible(false);
+        itemAdminPanel.setVisible(false);
+        installmentAdminPanel.setVisible(false);
+        btnViewCustomer.setOnAction(event -> {
+            getCustomerID
+            customerAdminPanel.setVisible(true);
+            itemAdminPanel.setVisible(false);
+            installmentAdminPanel.setVisible(false);
+        });
+        btnViewItem.setOnAction(event -> {
+            customerAdminPanel.setVisible(false);
+            itemAdminPanel.setVisible(true);
+            installmentAdminPanel.setVisible(false);
+        });
+        btnViewInstallment.setOnAction(event -> {
+            customerAdminPanel.setVisible(false);
+            itemAdminPanel.setVisible(false);
+            installmentAdminPanel.setVisible(true);
+        });
     }
 
     /**

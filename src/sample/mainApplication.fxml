@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
@@ -11,120 +8,168 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
-
-<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1260.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MainApplicationController">
+<?import java.lang.String?>
+<BorderPane fx:id="mainBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="sample.MainApplicationController">
     <center>
         <VBox BorderPane.alignment="CENTER">
             <children>
-                <HBox prefHeight="30.0" prefWidth="600.0">
+                <HBox>
                     <children>
-                        <Pane HBox.hgrow="ALWAYS" />
-                        <Label id="header-label" minWidth="-Infinity" prefHeight="35.0" prefWidth="102.0" stylesheets="@style.css" text="Lagani">
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Label id="header-label" minWidth="-Infinity" stylesheets="@style.css" text="Lagani">
                             <font>
-                                <Font size="24.0" />
+                                <Font size="24.0"/>
                             </font>
                             <HBox.margin>
-                                <Insets bottom="2.0" />
+                                <Insets bottom="2.0"/>
                             </HBox.margin>
                         </Label>
-                        <Pane HBox.hgrow="ALWAYS" />
-                        <Button fx:id="btnLogout" alignment="CENTER" contentDisplay="TEXT_ONLY" minWidth="-Infinity" mnemonicParsing="false" onAction="#logout" prefHeight="30.0" prefWidth="107.0" stylesheets="@style.css" text="Logout">
+                        <Pane HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="btnLogout" alignment="CENTER" contentDisplay="TEXT_ONLY" minWidth="-Infinity"
+                                mnemonicParsing="false" onAction="#logout" stylesheets="@style.css" text="Logout">
                             <font>
-                                <Font size="14.0" />
+                                <Font size="14.0"/>
                             </font>
                             <HBox.margin>
-                                <Insets bottom="2.0" left="10.0" right="10.0" top="2.0" />
+                                <Insets bottom="2.0" left="10.0" right="10.0" top="2.0"/>
                             </HBox.margin>
                         </Button>
                     </children>
                     <VBox.margin>
-                        <Insets top="10.0" />
+                        <Insets top="10.0"/>
                     </VBox.margin>
                 </HBox>
 
-                <HBox prefHeight="600.0" prefWidth="1250.0" stylesheets="@style.css">
+                <HBox stylesheets="@style.css">
                     <children>
-                        <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1250.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+                        <TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                                 minWidth="-Infinity" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8"
+                                 xmlns:fx="http://javafx.com/fxml/1">
                             <tabs>
                                 <Tab text="Dashboard">
                                     <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                        <AnchorPane/>
                                     </content>
                                 </Tab>
 
                                 <Tab fx:id="customerTab" onSelectionChanged="#viewCustomers" text="Customers">
                                     <content>
-                                        <AnchorPane maxWidth="-Infinity" minHeight="400.0" minWidth="800.0" prefHeight="600.0" prefWidth="1250.0">
+                                        <AnchorPane>
                                             <children>
-                                                <SplitPane dividerPositions="0.29797979797979796" prefHeight="560.0" prefWidth="1250.0">
+                                                <SplitPane dividerPositions="0.29797979797979796">
                                                     <items>
-                                                        <AnchorPane maxWidth="-Infinity" minHeight="400.0" minWidth="200.0" prefHeight="400.0" prefWidth="250.0">
+                                                        <AnchorPane maxWidth="-Infinity" minWidth="200.0"
+                                                                    prefWidth="250.0">
                                                             <children>
-                                                                <TextField fx:id="searchCustomer" alignment="CENTER" promptText="Search Customer" AnchorPane.bottomAnchor="520.0" AnchorPane.leftAnchor="2" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="1.0" />
-                                                                <Button AnchorPane.bottomAnchor="520.0" AnchorPane.leftAnchor="212" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="1.0">
+                                                                <TextField fx:id="searchCustomer" alignment="CENTER"
+                                                                           promptText="Search Customer"
+                                                                           AnchorPane.leftAnchor="5"
+                                                                           AnchorPane.rightAnchor="60.0"
+                                                                           AnchorPane.topAnchor="2.5"/>
+                                                                <Button maxHeight="-Infinity" maxWidth="-Infinity"
+                                                                        minHeight="-Infinity" minWidth="-Infinity"
+                                                                        AnchorPane.bottomAnchor="532.0"
+                                                                        AnchorPane.leftAnchor="195.0"
+                                                                        AnchorPane.rightAnchor="2.0"
+                                                                        AnchorPane.topAnchor="2.0">
                                                                     <tooltip>
-                                                                        <Tooltip text="Search Customers" />
+                                                                        <Tooltip text="Search Customers"/>
                                                                     </tooltip>
                                                                     <graphic>
                                                                         <ImageView>
-                                                                           <image>
-                                                                               <Image url="@/toolbarButtonGraphics/general/Zoom24.gif" />
-                                                                           </image>
+                                                                            <image>
+                                                                                <Image url="@/toolbarButtonGraphics/general/Zoom24.gif"/>
+                                                                            </image>
                                                                         </ImageView>
                                                                     </graphic>
                                                                 </Button>
-                                                                <ListView fx:id="customerListView" layoutX="-6.0" layoutY="-1.0" maxWidth="-Infinity" prefHeight="3700.0" prefWidth="250.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                                                                <ListView fx:id="customerListView" layoutX="-6.0"
+                                                                          layoutY="-1.0" maxWidth="-Infinity"
+                                                                          AnchorPane.bottomAnchor="2.0"
+                                                                          AnchorPane.leftAnchor="0.0"
+                                                                          AnchorPane.rightAnchor="0.0"
+                                                                          AnchorPane.topAnchor="30.0">
                                                                 </ListView>
-                                                                <Button id="btnAddFXML" fx:id="btnAddNewCustomer" mnemonicParsing="false" onAction="#addNewCustomer" text="Add New Customer" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="520.0" />
+                                                                <Button id="btnAddFXML" fx:id="btnAddNewCustomer"
+                                                                        mnemonicParsing="false"
+                                                                        onAction="#addNewCustomer"
+                                                                        text="Add New Customer"
+                                                                        AnchorPane.bottomAnchor="5.0"
+                                                                        AnchorPane.leftAnchor="5.0"
+                                                                        AnchorPane.rightAnchor="5.0"/>
                                                             </children>
                                                         </AnchorPane>
-                                                        <AnchorPane maxWidth="-Infinity" minHeight="400.0" minWidth="900.0" prefHeight="600.0" prefWidth="1000">
+                                                        <AnchorPane>
                                                             <children>
-                                                                <BorderPane layoutX="-42.0" layoutY="42.0" prefHeight="450.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                <BorderPane layoutX="-42.0" layoutY="42.0"
+                                                                            AnchorPane.bottomAnchor="0.0"
+                                                                            AnchorPane.leftAnchor="0.0"
+                                                                            AnchorPane.rightAnchor="0.0"
+                                                                            AnchorPane.topAnchor="0.0">
                                                                     <top>
-                                                                        <VBox id="customerVBox" prefHeight="78.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
+                                                                        <VBox id="customerVBox"
+                                                                              BorderPane.alignment="CENTER">
                                                                             <children>
-                                                                                <HBox prefHeight="24.0" prefWidth="1000.0" stylesheets="@style.css">
+                                                                                <HBox stylesheets="@style.css">
                                                                                     <children>
                                                                                         <Label fx:id="nameViewLabel">
                                                                                             <HBox.margin>
-                                                                                                <Insets bottom="2.0" left="5.0" top="2.0" />
+                                                                                                <Insets bottom="2.0"
+                                                                                                        left="5.0"
+                                                                                                        top="2.0"/>
                                                                                             </HBox.margin>
                                                                                         </Label>
-                                                                                        <Pane HBox.hgrow="ALWAYS" />
+                                                                                        <Pane HBox.hgrow="ALWAYS"/>
                                                                                         <Label fx:id="fatherViewLabel">
                                                                                             <HBox.margin>
-                                                                                                <Insets bottom="2.0" right="5.0" top="2.0" />
+                                                                                                <Insets bottom="2.0"
+                                                                                                        right="5.0"
+                                                                                                        top="2.0"/>
                                                                                             </HBox.margin>
                                                                                         </Label>
                                                                                     </children>
                                                                                 </HBox>
-                                                                                <HBox prefHeight="24.0" prefWidth="1000.0" stylesheets="@style.css">
+                                                                                <HBox stylesheets="@style.css">
                                                                                     <children>
                                                                                         <Label fx:id="addressViewLabel">
                                                                                             <HBox.margin>
-                                                                                                <Insets bottom="2.0" left="5.0" top="2.0" />
+                                                                                                <Insets bottom="2.0"
+                                                                                                        left="5.0"
+                                                                                                        top="2.0"/>
                                                                                             </HBox.margin>
                                                                                         </Label>
-                                                                                        <Pane HBox.hgrow="ALWAYS" />
+                                                                                        <Pane HBox.hgrow="ALWAYS"/>
                                                                                         <Label fx:id="spouseViewLabel">
                                                                                             <HBox.margin>
-                                                                                                <Insets bottom="2.0" right="5.0" top="2.0" />
+                                                                                                <Insets bottom="2.0"
+                                                                                                        right="5.0"
+                                                                                                        top="2.0"/>
                                                                                             </HBox.margin>
                                                                                         </Label>
                                                                                     </children>
                                                                                 </HBox>
-                                                                                <HBox prefHeight="30.0" prefWidth="1000.0">
+                                                                                <HBox>
                                                                                     <children>
                                                                                         <Label fx:id="contactViewLabel">
                                                                                             <HBox.margin>
-                                                                                                <Insets bottom="2.0" left="5.0" top="2.0" />
+                                                                                                <Insets bottom="2.0"
+                                                                                                        left="5.0"
+                                                                                                        top="2.0"/>
                                                                                             </HBox.margin>
                                                                                         </Label>
-                                                                                        <Pane HBox.hgrow="ALWAYS" />
-                                                                                        <Button id="btnAddFXML" fx:id="btnAddNewItem" mnemonicParsing="false" onAction="#addNewItem" text="Add New Item">
+                                                                                        <Pane HBox.hgrow="ALWAYS"/>
+                                                                                        <Button id="btnAddFXML"
+                                                                                                fx:id="btnAddNewItem"
+                                                                                                mnemonicParsing="false"
+                                                                                                onAction="#addNewItem"
+                                                                                                text="Add New Item">
                                                                                             <HBox.margin>
-                                                                                                <Insets bottom="2.0" left="5.0" right="5.0" top="2.0" />
+                                                                                                <Insets bottom="2.0"
+                                                                                                        left="5.0"
+                                                                                                        right="5.0"
+                                                                                                        top="2.0"/>
                                                                                             </HBox.margin>
                                                                                         </Button>
                                                                                     </children>
@@ -136,27 +181,63 @@
 
                                                                     </center>
                                                                     <center>
-                                                                        <TableView fx:id="itemsTableView" prefHeight="370.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
+                                                                        <TableView fx:id="itemsTableView"
+                                                                                   BorderPane.alignment="CENTER">
                                                                             <columns>
-                                                                                <TableColumn fx:id="itemNo" maxWidth="60" minWidth="60" prefWidth="60" text="S.No." />
-                                                                                <TableColumn fx:id="itemType" maxWidth="70" minWidth="90" prefWidth="70" text="Type" />
-                                                                                <TableColumn fx:id="itemDescription" maxWidth="150" minWidth="15" prefWidth="150" text="Description" />
-                                                                                <TableColumn fx:id="itemAmount" maxWidth="100" minWidth="10" prefWidth="100" text="Amount" />
-                                                                                <TableColumn fx:id="itemStartDate" maxWidth="140" minWidth="15" prefWidth="140" text="StartDate" />
-                                                                                <TableColumn fx:id="itemDeadline" maxWidth="140" minWidth="15" prefWidth="140" text="Deadline" />
-                                                                                <TableColumn fx:id="viewInstallment" maxWidth="100" minWidth="10" prefWidth="100" text="Installment" />
-                                                                                <TableColumn fx:id="addInstallment" maxWidth="100" minWidth="10" prefWidth="100" text="Installment1" />
-                                                                                <TableColumn fx:id="calculate" maxWidth="100" minWidth="10" prefWidth="100" text="Total" />
+                                                                                <TableColumn fx:id="itemNo"
+                                                                                             maxWidth="60" minWidth="60"
+                                                                                             prefWidth="60"
+                                                                                             text="S.No."/>
+                                                                                <TableColumn fx:id="itemType"
+                                                                                             maxWidth="70" minWidth="90"
+                                                                                             prefWidth="70"
+                                                                                             text="Type"/>
+                                                                                <TableColumn fx:id="itemDescription"
+                                                                                             maxWidth="150"
+                                                                                             minWidth="15"
+                                                                                             prefWidth="150"
+                                                                                             text="Description"/>
+                                                                                <TableColumn fx:id="itemAmount"
+                                                                                             maxWidth="90" minWidth="10"
+                                                                                             prefWidth="90"
+                                                                                             text="Amount"/>
+                                                                                <TableColumn fx:id="itemStartDate"
+                                                                                             maxWidth="130"
+                                                                                             minWidth="15"
+                                                                                             prefWidth="130"
+                                                                                             text="StartDate"/>
+                                                                                <TableColumn fx:id="itemDeadline"
+                                                                                             maxWidth="130"
+                                                                                             minWidth="15"
+                                                                                             prefWidth="130"
+                                                                                             text="Deadline"/>
+                                                                                <TableColumn fx:id="viewInstallment"
+                                                                                             maxWidth="100"
+                                                                                             minWidth="10"
+                                                                                             prefWidth="100"
+                                                                                             text="Installment"/>
+                                                                                <TableColumn fx:id="addInstallment"
+                                                                                             maxWidth="100"
+                                                                                             minWidth="10"
+                                                                                             prefWidth="100"
+                                                                                             text="Installment1"/>
+                                                                                <TableColumn fx:id="calculate"
+                                                                                             maxWidth="100"
+                                                                                             minWidth="10"
+                                                                                             prefWidth="100"
+                                                                                             text="Total"/>
                                                                             </columns>
                                                                             <columnResizePolicy>
-                                                                                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+                                                                                <TableView
+                                                                                        fx:constant="UNCONSTRAINED_RESIZE_POLICY"/>
                                                                             </columnResizePolicy>
-                                                         <BorderPane.margin>
-                                                            <Insets />
-                                                         </BorderPane.margin>
-                                                         <padding>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                         </padding>
+                                                                            <BorderPane.margin>
+                                                                                <Insets/>
+                                                                            </BorderPane.margin>
+                                                                            <padding>
+                                                                                <Insets bottom="5.0" left="5.0"
+                                                                                        right="5.0" top="5.0"/>
+                                                                            </padding>
                                                                         </TableView>
                                                                     </center>
                                                                 </BorderPane>
@@ -171,58 +252,299 @@
 
                                 <Tab fx:id="" onSelectionChanged="#profileTab" text="Profile">
                                     <content>
-                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                        <AnchorPane>
                                             <children>
-                                                <GridPane layoutX="-1.0" layoutY="20.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="323.0" prefWidth="600.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0">
-                                                    <columnConstraints>
-                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="210.33331298828125" minWidth="10.0" prefWidth="144.33331298828125" />
-                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="329.0" minWidth="10.0" prefWidth="167.0" />
-                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="254.0" minWidth="10.0" prefWidth="254.0" />
-                                                    </columnConstraints>
-                                                    <rowConstraints>
-                                                        <RowConstraints maxHeight="109.0" minHeight="10.0" prefHeight="40.333343505859375" vgrow="SOMETIMES" />
-                                                        <RowConstraints maxHeight="118.0" minHeight="10.0" prefHeight="43.333343505859375" vgrow="SOMETIMES" />
-                                                        <RowConstraints maxHeight="82.0" minHeight="10.0" prefHeight="40.666656494140625" vgrow="SOMETIMES" />
-                                                        <RowConstraints maxHeight="110.33331298828125" minHeight="10.0" prefHeight="39.33331298828125" vgrow="SOMETIMES" />
-                                                        <RowConstraints maxHeight="93.0" minHeight="6.33331298828125" prefHeight="40.0" vgrow="SOMETIMES" />
-                                                        <RowConstraints maxHeight="112.33331298828125" minHeight="0.0" prefHeight="102.0" vgrow="SOMETIMES" />
-                                                    </rowConstraints>
+                                                <VBox layoutX="64.0" layoutY="67.0" prefHeight="100.0"
+                                                      prefWidth="100.0">
                                                     <children>
-                                                        <Label text="Name" GridPane.columnIndex="1" />
-                                                        <Label text="Firm Name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                        <Label text="Contact Number" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                        <Label text="Address" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                        <TextField fx:id="nameProfile" GridPane.columnIndex="2" />
-                                                        <TextField fx:id="firmnameProfile" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                                                        <TextField fx:id="contactProfile" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                                                        <TextField fx:id="addressProfile" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e8ecef" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" GridPane.rowSpan="2">
-                                                            <GridPane.margin>
-                                                                <Insets left="10.0" top="20.0" />
-                                                            </GridPane.margin>
-                                                        </Rectangle>
-                                                        <HBox id="button-section" prefHeight="100.0" prefWidth="200.0" stylesheets="@style.css" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                                                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e8ecef"
+                                                                   height="100.0" stroke="BLACK" strokeType="INSIDE"
+                                                                   width="100.0"/>
+                                                    </children>
+                                                </VBox>
+                                                <VBox layoutX="205.0" layoutY="56.0" prefHeight="250.0"
+                                                      prefWidth="400.0">
+                                                    <children>
+                                                        <HBox prefHeight="50.0" prefWidth="484.0">
                                                             <children>
-                                                                <Pane HBox.hgrow="ALWAYS" />
-                                                                <Button id="button-section" fx:id="updateProfile" mnemonicParsing="false" onAction="#updateProfile" stylesheets="@style.css" text="Update">
+                                                                <Label text="Name">
                                                                     <HBox.margin>
-                                                                        <Insets bottom="2.0" left="5.0" top="2.0" />
+                                                                        <Insets bottom="15.0" left="10.0" top="15.0"/>
+                                                                    </HBox.margin>
+                                                                </Label>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <TextField fx:id="nameProfile">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                                    </HBox.margin>
+                                                                </TextField>
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox prefHeight="50.0" prefWidth="484.0">
+                                                            <children>
+                                                                <Label text="Firm Name">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="15.0" left="10.0" top="15.0"/>
+                                                                    </HBox.margin>
+                                                                </Label>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <TextField fx:id="firmnameProfile">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                                    </HBox.margin>
+                                                                </TextField>
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox prefHeight="50.0" prefWidth="484.0">
+                                                            <children>
+                                                                <Label text="Contact Number">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="15.0" left="10.0" top="15.0"/>
+                                                                    </HBox.margin>
+                                                                </Label>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <TextField fx:id="contactProfile">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                                    </HBox.margin>
+                                                                </TextField>
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox prefHeight="50.0" prefWidth="484.0">
+                                                            <children>
+                                                                <Label text="Address">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="15.0" left="10.0" top="15.0"/>
+                                                                    </HBox.margin>
+                                                                </Label>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <TextField fx:id="addressProfile">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                                    </HBox.margin>
+                                                                </TextField>
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox prefHeight="50.0" prefWidth="200.0">
+                                                            <children>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Button id="button-section" fx:id="updateProfile"
+                                                                        mnemonicParsing="false"
+                                                                        onAction="#updateProfile"
+                                                                        stylesheets="@style.css" text="Update">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="10.0" right="10.0" top="10.0"/>
                                                                     </HBox.margin>
                                                                 </Button>
                                                             </children>
                                                         </HBox>
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                    </padding>
-                                                </GridPane>
+                                                </VBox>
                                             </children>
+                                        </AnchorPane>
+                                    </content>
+                                </Tab>
+
+                                <Tab text="Admin" onSelectionChanged="#adminTab">
+                                    <content>
+                                        <AnchorPane>
+                                                <HBox>
+                                                    <VBox prefWidth="200" id="admin-VBox">
+
+                                                        <GridPane hgap="20" vgap="20">
+                                                            <VBox GridPane.rowIndex="0" GridPane.columnIndex="0"
+                                                                  style="-fx-spacing: 5;">
+                                                                <HBox>
+                                                                    <Label text="Enter Customer ID"/>
+                                                                </HBox>
+                                                                <HBox>
+                                                                    <TextField fx:id="getCustomerID"/>
+                                                                </HBox>
+                                                                <HBox>
+                                                                    <Pane HBox.hgrow="ALWAYS"/>
+                                                                    <Button fx:id="btnViewCustomer" text="View"/>
+                                                                </HBox>
+                                                            </VBox>
+
+                                                            <VBox GridPane.rowIndex="1" GridPane.columnIndex="0"
+                                                                  style="-fx-spacing: 5;">
+                                                                <HBox>
+                                                                    <Label text="Enter Item ID"/>
+                                                                </HBox>
+                                                                <HBox>
+                                                                    <TextField fx:id="getItemID"/>
+                                                                </HBox>
+                                                                <HBox>
+                                                                    <Pane HBox.hgrow="ALWAYS"/>
+                                                                    <Button fx:id="btnViewItem" text="View"/>
+                                                                </HBox>
+                                                            </VBox>
+                                                            <VBox GridPane.rowIndex="2" GridPane.columnIndex="0"
+                                                                  style="-fx-spacing: 5;">
+                                                                <HBox>
+                                                                    <Label text="Enter Installment ID"/>
+                                                                </HBox>
+                                                                <HBox>
+                                                                    <TextField fx:id="getInstallmentID"/>
+                                                                </HBox>
+                                                                <HBox>
+                                                                    <Pane HBox.hgrow="ALWAYS"/>
+                                                                    <Button fx:id="btnViewInstallment" text="View"/>
+                                                                </HBox>
+                                                            </VBox>
+                                                        </GridPane>
+                                                    </VBox>
+
+                                                    <GridPane style="-fx-padding: 0 0 0 150;">
+                                                        <VBox id="admin-VBox" fx:id="customerAdminPanel" prefWidth="400"
+                                                              GridPane.rowIndex="0" GridPane.columnIndex="0">
+                                                            <HBox>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Label id="header-label" text="Customer"/>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                            </HBox>
+                                                            <GridPane vgap="10" hgap="20">
+                                                                <Label text="Full Name" GridPane.rowIndex="0"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminFullName" GridPane.rowIndex="0"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Address" GridPane.rowIndex="1"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminAddress" GridPane.rowIndex="1"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Ward No." GridPane.rowIndex="2"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminWard" GridPane.rowIndex="2"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Father Name" GridPane.rowIndex="3"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminFatherName" GridPane.rowIndex="3"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Spouse Name" GridPane.rowIndex="4"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminSpouseName" GridPane.rowIndex="4"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Contact Number" GridPane.rowIndex="5"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminContactNumber"
+                                                                           GridPane.rowIndex="5"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Remarks" GridPane.rowIndex="6"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminRemarks" GridPane.rowIndex="6"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <HBox GridPane.rowIndex="7" GridPane.columnIndex="1">
+                                                                    <Pane HBox.hgrow="ALWAYS"/>
+                                                                    <Button text="Update" fx:id="btnUpdateCustomer"/>
+                                                                </HBox>
+                                                            </GridPane>
+                                                        </VBox>
+
+                                                        <VBox id="admin-VBox" fx:id="itemAdminPanel" prefWidth="400"
+                                                              GridPane.rowIndex="0" GridPane.columnIndex="0">
+                                                            <HBox>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Label id="header-label" text="Item"/>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                            </HBox>
+                                                            <GridPane vgap="10" hgap="20">
+                                                                <Label text="Amount" GridPane.rowIndex="0"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminItemAmount" GridPane.rowIndex="0"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Type" GridPane.rowIndex="1"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <ComboBox fx:id="adminTypeChooser" GridPane.rowIndex="1"
+                                                                          GridPane.columnIndex="1">
+                                                                    <items>
+                                                                        <FXCollections fx:factory="observableArrayList">
+                                                                            <String fx:value="Loan"/>
+                                                                            <String fx:value="Land"/>
+                                                                            <String fx:value="Jewelery"/>
+                                                                        </FXCollections>
+                                                                    </items>
+                                                                    <value>
+                                                                        <String fx:value="Loan"/>
+                                                                    </value>
+                                                                </ComboBox>
+
+                                                                <Label text="Start Date" GridPane.rowIndex="2"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <DatePicker fx:id="adminStartDate" GridPane.rowIndex="2"
+                                                                            GridPane.columnIndex="1"/>
+
+                                                                <Label text="Rate" GridPane.rowIndex="3"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminRate" GridPane.rowIndex="3"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Deadline" GridPane.rowIndex="4"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <DatePicker fx:id="adminDeadline" GridPane.rowIndex="4"
+                                                                            GridPane.columnIndex="1"/>
+
+                                                                <Label text="Description" GridPane.rowIndex="5"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextArea fx:id="adminDescription" prefRowCount="4"
+                                                                          prefColumnCount="6" GridPane.rowIndex="5"
+                                                                          GridPane.columnIndex="1"/>
+
+                                                                <HBox GridPane.rowIndex="6" GridPane.columnIndex="1">
+                                                                    <Pane HBox.hgrow="ALWAYS"/>
+                                                                    <Button text="Update" fx:id="btnUpdateItem"/>
+                                                                </HBox>
+                                                            </GridPane>
+                                                        </VBox>
+
+                                                        <VBox id="admin-VBox" fx:id="installmentAdminPanel"
+                                                              prefWidth="400"
+                                                              GridPane.rowIndex="0" GridPane.columnIndex="0">
+                                                            <HBox>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Label id="header-label" text="Installment"/>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                            </HBox>
+                                                            <GridPane hgap="10" vgap="20">
+                                                                <Label text="Amount" GridPane.rowIndex="0"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminInstallmentAmount"
+                                                                           GridPane.rowIndex="0"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Depositor" GridPane.rowIndex="1"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <TextField fx:id="adminDepositor" GridPane.rowIndex="1"
+                                                                           GridPane.columnIndex="1"/>
+
+                                                                <Label text="Deposit Date" GridPane.rowIndex="2"
+                                                                       GridPane.columnIndex="0"/>
+                                                                <DatePicker fx:id="adminDepositDate"
+                                                                            GridPane.rowIndex="2"
+                                                                            GridPane.columnIndex="1"/>
+
+                                                                <HBox GridPane.rowIndex="3" GridPane.columnIndex="1">
+                                                                    <Pane HBox.hgrow="ALWAYS"/>
+                                                                    <Button text="Update" fx:id="btnUpdateInstallment"/>
+                                                                </HBox>
+                                                            </GridPane>
+
+                                                        </VBox>
+                                                    </GridPane>
+                                                </HBox>
                                         </AnchorPane>
                                     </content>
                                 </Tab>
                             </tabs>
                             <HBox.margin>
-                                <Insets left="1.0" />
+                                <Insets left="1.0"/>
                             </HBox.margin>
                         </TabPane>
                     </children>

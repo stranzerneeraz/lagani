@@ -10,7 +10,6 @@ import modal.Customers;
 import modal.Items;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class AddNewItemDialogController {
@@ -86,14 +85,12 @@ public class AddNewItemDialogController {
                     }
                 } catch (BusinessException e) {
                     e.printStackTrace();
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 }
             }
         });
     }
 
-    public void addNewItem() throws BusinessException, SQLException {
+    public void addNewItem() throws BusinessException {
         int customerID = customers.getCustomerID();
         BusinessImplementation businessImplementation = new BusinessImplementation();
         Items items = new Items();
@@ -101,7 +98,7 @@ public class AddNewItemDialogController {
         items.setType(typeChooser.getValue().toString());
         items.setStartDate(Date.valueOf(startDatePicker.getValue()));
         items.setRate(Double.parseDouble(rateField.getText()));
-        items.setDeadline(deadlinePicker.getValue().toString());
+        items.setDeadline(Date.valueOf(deadlinePicker.getValue()));
         items.setDescription(descriptionArea.getText());
         businessImplementation.addNewCustomerItem(items, customerID);
     }

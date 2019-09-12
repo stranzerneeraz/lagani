@@ -2,7 +2,6 @@ package sample;
 
 import exception.BusinessException;
 import implementation.BusinessImplementation;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,7 +14,6 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 public class LoginController {
     @FXML
@@ -26,7 +24,7 @@ public class LoginController {
     private Button loginButton;
     public static int id;
 
-    public int checkUser() throws SQLException, BusinessException {
+    public int checkUser() throws BusinessException {
         BusinessImplementation businessImplementation = new BusinessImplementation();
         id = businessImplementation.authenticateUser(username.getText(), password.getText());
         if (id != 0) {
@@ -35,7 +33,7 @@ public class LoginController {
                 root = FXMLLoader.load(getClass().getResource("mainApplication.fxml"));
                 Stage stage = new Stage();
                 stage.setTitle("Lagani");
-                stage.setScene(new Scene(root, 1260,650));
+                stage.setScene(new Scene(root, 1270,640));
                 stage.show();
 
                 Scene scene = loginButton.getScene();

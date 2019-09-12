@@ -99,7 +99,6 @@ public class CalculationController {
     }
 
     public void updateCalculationSection(Items items) {
-        System.out.println(totalInstallmentAmount);
         int principal = items.getPrincipal();
         int duration = calculateDurationInMonths(items.getStartDate());
         int interest = calculateInterestAmount(duration, rate, principal);

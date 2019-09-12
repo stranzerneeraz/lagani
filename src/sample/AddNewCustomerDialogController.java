@@ -4,11 +4,11 @@ import exception.BusinessException;
 import implementation.BusinessImplementation;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.stage.Window;
 import modal.Customers;
-
-import java.sql.SQLException;
 
 public class AddNewCustomerDialogController {
     @FXML
@@ -77,8 +77,6 @@ public class AddNewCustomerDialogController {
                             window.hide();
                         }
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 } catch (BusinessException e) {
                     e.printStackTrace();
                 }
@@ -86,7 +84,7 @@ public class AddNewCustomerDialogController {
         });
     }
 
-    public void addNewCustomer() throws SQLException, BusinessException {
+    public void addNewCustomer() throws BusinessException {
         BusinessImplementation businessImplementation = new BusinessImplementation();
         Customers customers = new Customers();
         customers.setFullName(fullNameField.getText());

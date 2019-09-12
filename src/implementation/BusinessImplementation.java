@@ -216,7 +216,7 @@ public class BusinessImplementation {
         Items items = null;
         ArrayList<Items> itemList = null;
         try {
-            String sql = "SELECT * FROM items WHERE customers_customerID = ?";
+            String sql = "SELECT * FROM items WHERE customers_customerID = ? ORDER BY startDate DESC";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -236,6 +236,7 @@ public class BusinessImplementation {
                 items.setCloserName(resultSet.getString("closerName"));
                 items.setTotalAmount(resultSet.getInt("totalAmount"));
                 items.setClosingAmount(resultSet.getInt("closingAmount"));
+                items.setDeadline(resultSet.getDate("deadline"));
 
                 itemList.add(items);
             }
@@ -316,60 +317,6 @@ public class BusinessImplementation {
         System.out.println("Customer added successfully");
     }
 
-    public void addNewCustomerItem(Items items, int customerID) throws BusinessException {
-        connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            String sql = "INSERT INTO items (type, startDate, principal, rate, description, image, status, createdAt, updatedAt, closerName, totalAmount, " +
-                    " closingAmount, isActive, deadline, closingDate, customers_customerID) VALUES(?, ?, ?, ?,       ?, ?, ?, ?,      ?, ?, ?, ?,      ?, ?, ?, ?);";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, items.getType());
-            statement.setDate(2, items.getStartDate());
-            statement.setInt(3, items.getPrincipal());
-            statement.setDouble(4, items.getRate());
-            statement.setString(5, items.getDescription());
-            statement.setString(6, null);
-            statement.setString(7, "not paid");
-            statement.setDate(8, Date.valueOf("2019-1-1"));
-            statement.setDate(9, Date.valueOf("2019-12-12"));
-            statement.setString(10, "Bill Gates");
-            statement.setInt(11, 10000);
-            statement.setInt(12, 5000);
-            statement.setInt(13, 1);
-            statement.setDate(14, Date.valueOf(items.getDeadline()));
-            statement.setDate(15, Date.valueOf("2019-12-30"));
-            statement.setInt(16, customerID);
-
-            statement.executeUpdate();
-        } catch (SQLException se) {
-            throw new BusinessException(se);
-        } finally {
-            if (null != resultSet) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (null != statement) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (null != connection) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        System.out.println("Item added successfully");
-    }
-
     public ArrayList<Installment> getInstallmentData(int itemId) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -377,7 +324,7 @@ public class BusinessImplementation {
         Installment installment = null;
         ArrayList<Installment> installmentList = null;
         try {
-            String sql = "select * from installment where items_itemId=?";
+            String sql = "select * from installment where items_itemId=? ORDER BY date ASC";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, itemId);
             resultSet = statement.executeQuery();
@@ -422,6 +369,60 @@ public class BusinessImplementation {
         return installmentList;
     }
 
+    public void addNewCustomerItem(Items items, int customerID) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            String sql = "INSERT INTO items (type, startDate, principal, rate, description, image, status, createdAt, updatedAt, closerName, totalAmount, " +
+                    " closingAmount, isActive, deadline, closingDate, customers_customerID) VALUES(?, ?, ?, ?,       ?, ?, ?, ?,      ?, ?, ?, ?,      ?, ?, ?, ?);";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, items.getType());
+            statement.setDate(2, items.getStartDate());
+            statement.setInt(3, items.getPrincipal());
+            statement.setDouble(4, items.getRate());
+            statement.setString(5, items.getDescription());
+            statement.setString(6, null);
+            statement.setString(7, "not paid");
+            statement.setDate(8, Date.valueOf("2019-1-1"));
+            statement.setDate(9, Date.valueOf("2019-12-12"));
+            statement.setString(10, "Bill Gates");
+            statement.setInt(11, 10000);
+            statement.setInt(12, 5000);
+            statement.setInt(13, 1);
+            statement.setDate(14, items.getDeadline());
+            statement.setDate(15, Date.valueOf("2019-12-30"));
+            statement.setInt(16, customerID);
+
+            statement.executeUpdate();
+        } catch (SQLException se) {
+            throw new BusinessException(se);
+        } finally {
+            if (null != resultSet) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != statement) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != connection) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println("Item added successfully");
+    }
+
     public void addInstallment(Installment installment, int itemID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -461,5 +462,64 @@ public class BusinessImplementation {
             }
         }
         System.out.println("Installment added successfully");
+    }
+
+    public Customers getCustomerByID(int customerID) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Customers customers = null;
+        try {
+            String sql = "SELECT * FROM customers WHERE customerID = ?;";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, customerID);
+            statement.executeQuery();
+            customers = new Customers();
+
+            resultSet.next();
+            customers.setFullName(resultSet.getString("fullName"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
+    public Items getItemByID(int itemID) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Items items = null;
+        try {
+            String sql = "SELECT * FROM customers WHERE customerID = ?;";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, itemID);
+            statement.executeQuery();
+            items = new Items();
+
+            resultSet.next();
+            items.setPrincipal(resultSet.getInt("principal"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return items;
+    }
+
+    public Installment getInstallmentByID(int installmentID) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        Installment installment = null;
+        try {
+            String sql = "SELECT * FROM customers WHERE customerID = ?;";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, installmentID);
+            statement.executeQuery();
+            installment = new Installment();
+
+            resultSet.next();
+            installment.setDepositAmount(resultSet.getInt("depositAmount"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
