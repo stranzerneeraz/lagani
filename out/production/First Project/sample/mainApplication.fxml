@@ -462,7 +462,7 @@
 
                                                                 <Label text="Type" GridPane.rowIndex="1"
                                                                        GridPane.columnIndex="0"/>
-                                                                <ComboBox fx:id="typeChooser" GridPane.rowIndex="1"
+                                                                <ComboBox fx:id="adminTypeChooser" GridPane.rowIndex="1"
                                                                           GridPane.columnIndex="1">
                                                                     <items>
                                                                         <FXCollections fx:factory="observableArrayList">

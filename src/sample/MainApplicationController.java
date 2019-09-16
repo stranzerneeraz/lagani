@@ -19,10 +19,12 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
 import modal.Customers;
+import modal.Installment;
 import modal.Items;
 import modal.User;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
@@ -141,6 +143,8 @@ public class MainApplicationController {
     private String searchString = "";
     private Stage window;
     private Window dialogWindow;
+
+    Alert alert = new Alert(Alert.AlertType.WARNING);
 
     private BusinessImplementation businessImplementation = new BusinessImplementation();
     private Customers selectionCustomer = new Customers();
@@ -452,21 +456,214 @@ public class MainApplicationController {
         customerAdminPanel.setVisible(false);
         itemAdminPanel.setVisible(false);
         installmentAdminPanel.setVisible(false);
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warning Dialog");
         btnViewCustomer.setOnAction(event -> {
-            getCustomerID
-            customerAdminPanel.setVisible(true);
-            itemAdminPanel.setVisible(false);
-            installmentAdminPanel.setVisible(false);
+            int customerID = Integer.parseInt(getCustomerID.getText());
+            int cID = 0;
+            try {
+                Customers customers = businessImplementation.getCustomerByID(customerID);
+                if (customers == null) {
+                    alert.setContentText("Enter valid customer ID");
+                    alert.showAndWait();
+                } else {
+                    adminViewCustomer(customers);
+                }
+            } catch (BusinessException e) {
+                e.printStackTrace();
+            }
         });
         btnViewItem.setOnAction(event -> {
-            customerAdminPanel.setVisible(false);
-            itemAdminPanel.setVisible(true);
-            installmentAdminPanel.setVisible(false);
+            int itemID = Integer.parseInt(getItemID.getText());
+            try {
+                if (null == businessImplementation.getItemByID(itemID)) {
+                    alert.setContentText("Enter valid item ID");
+                    alert.showAndWait();
+                } else {
+                    Items items = businessImplementation.getItemByID(itemID);
+                    adminViewItem(items);
+                }
+            } catch (BusinessException e) {
+                e.printStackTrace();
+            }
         });
         btnViewInstallment.setOnAction(event -> {
-            customerAdminPanel.setVisible(false);
-            itemAdminPanel.setVisible(false);
-            installmentAdminPanel.setVisible(true);
+            int installmentID = Integer.parseInt(getInstallmentID.getText());
+            try {
+                if (null == businessImplementation.getInstallmentByID(installmentID)) {
+                    alert.setContentText("Enter valid installment ID");
+                    alert.showAndWait();
+                } else {
+                    Installment installment = businessImplementation.getInstallmentByID(installmentID);
+                    adminViewInstallment(installment);
+                }
+            } catch (BusinessException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void adminViewCustomer(Customers customers) {
+        customerAdminPanel.setVisible(true);
+        itemAdminPanel.setVisible(false);
+        installmentAdminPanel.setVisible(false);
+        alert.setTitle("Warning Dialog!");
+
+        adminFullName.setText(customers.getFullName());
+        adminAddress.setText(customers.getAddress());
+        adminWard.setText("" + customers.getWard());
+        adminFatherName.setText(customers.getFatherName());
+        adminSpouseName.setText(customers.getSpouseName());
+        adminContactNumber.setText("" + customers.getContactNo());
+        adminRemarks.setText(customers.getRemarks());
+
+        btnUpdateCustomer.setOnAction(event -> {
+            if (adminFullName.getText().length() <= 0) {
+                adminFullName.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Enter full name");
+                alert.showAndWait();
+            } else if (adminAddress.getText().length() <= 0) {
+                adminAddress.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Enter address");
+                alert.showAndWait();
+            } else if (!adminWard.getText().matches("[0-9]*[0-9]+")) {
+                adminWard.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Enter ward number in integer");
+                alert.showAndWait();
+            } else if (adminFatherName.getText().length() <= 0) {
+                adminFatherName.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Enter father's name");
+                alert.showAndWait();
+            } else if (adminSpouseName.getText().length() <= 0) {
+                adminSpouseName.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Enter spouse's name");
+                alert.showAndWait();
+            } else if (!adminContactNumber.getText().matches("^[0-9]{10}$")) {
+                adminContactNumber.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Enter contact number");
+                alert.showAndWait();
+            } else if (adminRemarks.getText().length() <= 0) {
+                adminRemarks.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Enter remarks");
+                alert.showAndWait();
+            } else {
+                adminFullName.setStyle("-fx-text-fill: black;");
+                adminAddress.setStyle("-fx-text-fill: black;");
+                adminWard.setStyle("-fx-text-fill: black;");
+                adminFatherName.setStyle("-fx-text-fill: black;");
+                adminSpouseName.setStyle("-fx-text-fill: black;");
+                adminContactNumber.setStyle("-fx-text-fill: black;");
+                adminRemarks.setStyle("-fx-text-fill: black;");
+
+                customers.setFullName(adminFullName.getText());
+                customers.setAddress(adminAddress.getText());
+                customers.setWard(Integer.parseInt(adminWard.getText()));
+                customers.setFatherName(adminFatherName.getText());
+                customers.setSpouseName(adminSpouseName.getText());
+                customers.setContactNo(Long.parseLong(adminContactNumber.getText()));
+                customers.setRemarks(adminRemarks.getText());
+
+                try {
+                    businessImplementation.updateCustomerData(customers.getFullName(), customers.getAddress(), customers.getWard(),
+                            customers.getFatherName(), customers.getSpouseName(), customers.getContactNo(), customers.getRemarks(),
+                            customers.getCustomerID());
+                } catch (BusinessException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void adminViewItem(Items items) {
+        customerAdminPanel.setVisible(false);
+        itemAdminPanel.setVisible(true);
+        installmentAdminPanel.setVisible(false);
+        alert.setTitle("Warning Dialog!");
+
+        adminItemAmount.setText("" + items.getPrincipal());
+        adminRate.setText("" + items.getRate());
+        adminDescription.setText(items.getDescription());
+
+        btnUpdateItem.setOnAction(event -> {
+            if (!adminItemAmount.getText().matches("^[0-9]+(\\.[0-9]+)?$")) {
+                adminItemAmount.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Input fields not valid");
+                alert.showAndWait();
+            } else if (!(adminStartDate.getValue().compareTo(LocalDate.now()) <= 0)) {
+                adminStartDate.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Date field should be upto today");
+                alert.showAndWait();
+            } else if (!adminRate.getText().matches("^[0-9](\\.[0-9]+)?$")) {
+                adminRate.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Rate should be in decimal");
+                alert.showAndWait();
+            } else if (!(adminDeadline.getValue().compareTo(LocalDate.now()) > 0)) {
+                adminDeadline.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Deadline should be in future");
+                alert.showAndWait();
+            } else if (adminDescription.getText().length() <= 0) {
+                adminDescription.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Enter description");
+                alert.showAndWait();
+            } else {
+                adminItemAmount.setStyle("-fx-text-fill: black;");
+                adminStartDate.setStyle("-fx-text-fill: black;");
+                adminRate.setStyle("-fx-text-fill: black;");
+                adminDeadline.setStyle("-fx-text-fill: black;");
+                adminDescription.setStyle("-fx-text-fill: black;");
+            }
+            items.setPrincipal(Integer.parseInt(adminItemAmount.getText()));
+            items.setStartDate(java.sql.Date.valueOf(adminStartDate.getValue()));
+            items.setRate(Double.parseDouble(adminRate.getText()));
+            items.setDeadline(java.sql.Date.valueOf(adminDeadline.getValue()));
+            items.setDescription(adminDescription.getText());
+
+            try {
+                businessImplementation.updateItemDate(items.getPrincipal(), items.getType(), items.getStartDate(), items.getRate(), items.getDeadline(),
+                        items.getDescription(), items.getItemID());
+            } catch (BusinessException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void adminViewInstallment(Installment installment) {
+        customerAdminPanel.setVisible(false);
+        itemAdminPanel.setVisible(false);
+        installmentAdminPanel.setVisible(true);
+        alert.setTitle("Warning Dialog!");
+
+        adminInstallmentAmount.setText("" + installment.getDepositAmount());
+        adminDepositor.setText(installment.getDepositor());
+
+        btnUpdateInstallment.setOnAction(event -> {
+                    if (!adminInstallmentAmount.getText().matches("^[0-9]+(\\.[0-9]+)?$")) {
+                        adminInstallmentAmount.setStyle("-fx-text-fill: red;");
+                        alert.setContentText("Input fields not valid");
+                        alert.showAndWait();
+                    } else if (adminDepositor.getText().length() <= 0) {
+                        adminDepositor.setStyle("-fx-text-fill: red;");
+                        alert.setContentText("Enter Depositor Name");
+                        alert.showAndWait();
+                    } else if (!(adminDepositDate.getValue().compareTo(LocalDate.now()) <= 0)) {
+                        adminDepositDate.setStyle("-fx-text-fill: red;");
+                        alert.setContentText("Date field should be upto today");
+                        alert.showAndWait();
+                    } else {
+                        adminInstallmentAmount.setStyle("-fx-text-fill: black;");
+                        adminDepositor.setStyle("-fx-text-fill: black;");
+                        adminDepositDate.setStyle("-fx-text-fill: black;");
+                    }
+            installment.setDepositAmount(Integer.parseInt(adminInstallmentAmount.getText()));
+            installment.setDepositor(adminDepositor.getText());
+            installment.setDate(java.sql.Date.valueOf(adminDepositDate.getValue()));
+
+            try {
+                businessImplementation.updateInstallmentData(installment.getDepositAmount(), installment.getDepositor(), installment.getDate(),
+                        installment.getInstallmentID());
+            } catch (BusinessException e) {
+                e.printStackTrace();
+            }
         });
     }
 
