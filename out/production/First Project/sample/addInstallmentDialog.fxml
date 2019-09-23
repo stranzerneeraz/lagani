@@ -1,0 +1,31 @@
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Button?>
+<DialogPane fx:id="addInstallment" fx:controller="sample.AddInstallmentDialogController" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml" stylesheets="@style.css">
+    <header>
+        <HBox id="hbox-header">
+            <Label text="New Installment" id="header-label"/>
+        </HBox>
+    </header>
+    <content>
+        <GridPane vgap="10" hgap="10">
+            <Label text="Amount" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="installmentAmount" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <Label text="Depositor" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="depositorName" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Deposit Date" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <DatePicker fx:id="depositDate" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <HBox GridPane.rowIndex="3" GridPane.columnIndex="1">
+                <Pane HBox.hgrow="ALWAYS" />
+                <Button text="Add" fx:id="btnAddInstallment"/>
+            </HBox>
+        </GridPane>
+    </content>
+</DialogPane>

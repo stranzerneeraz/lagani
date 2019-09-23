@@ -1,0 +1,40 @@
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<DialogPane fx:controller="sample.AddNewCustomerDialogController" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml" stylesheets="@style.css" >
+    <header>
+        <HBox id="hbox-header">
+            <Label text="Add New Customer" fx:id="dialogHeaderLabel" id="header-label"/>
+        </HBox>
+    </header>
+    <content>
+        <GridPane vgap="10" hgap="10">
+            <Label text="Full Name" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="fullNameField" GridPane.rowIndex="0" GridPane.columnIndex="1" prefColumnCount="2"/>
+
+            <Label text="Address" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="addressField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Ward No." GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="wardNoField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Label text="Father Name" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <TextField fx:id="fatherNameField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+            <Label text="Spouse Name" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <TextField fx:id="spouseNameField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+            <Label text="Contact No." GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+            <TextField fx:id="contactNumberField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+            <Label text="Remarks" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+            <TextField fx:id="remarksField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+            <Button id="btnAdd" text="Add New Customer" fx:id="btnUpdateCustomer" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+        </GridPane>
+    </content>
+</DialogPane>
