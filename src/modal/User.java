@@ -5,7 +5,7 @@ public class User {
     private String name;
     private String firmname;
     private String address;
-    private String contact;
+    private long contact;
 
     public int getUserID() {
         return userID;
@@ -39,11 +39,22 @@ public class User {
         this.address = address;
     }
 
-    public String getContact() {
+    public long getContact() {
         return contact;
     }
 
-    public void setContact(String contact) {
+    public void setContact(long contact) {
         this.contact = contact;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userID=" + userID +
+                ", name='" + name + '\'' +
+                ", firmname='" + firmname + '\'' +
+                ", address='" + address + '\'' +
+                ", contact='" + contact + '\'' +
+                '}';
     }
 }

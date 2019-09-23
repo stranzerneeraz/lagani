@@ -28,7 +28,7 @@
             <Label text="Spouse Name" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
             <TextField fx:id="spouseNameField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-            <Label text="Contact Number" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+            <Label text="Contact No." GridPane.rowIndex="5" GridPane.columnIndex="0"/>
             <TextField fx:id="contactNumberField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
             <Label text="Remarks" GridPane.rowIndex="6" GridPane.columnIndex="0"/>

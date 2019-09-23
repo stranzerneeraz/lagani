@@ -100,4 +100,21 @@ public class Customers {
     public void setContactNo(long contactNo) {
         this.contactNo = contactNo;
     }
+
+    @Override
+    public String toString() {
+        return "Customers{" +
+                "customerID=" + customerID +
+                ", fullName='" + fullName + '\'' +
+                ", spouseName='" + spouseName + '\'' +
+                ", fatherName='" + fatherName + '\'' +
+                ", address='" + address + '\'' +
+                ", ward=" + ward +
+                ", createdAt='" + createdAt + '\'' +
+                ", isActive=" + isActive +
+                ", remarks='" + remarks + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", contactNo=" + contactNo +
+                '}';
+    }
 }

@@ -33,7 +33,7 @@ public class LoginController {
                 root = FXMLLoader.load(getClass().getResource("mainApplication.fxml"));
                 Stage stage = new Stage();
                 stage.setTitle("Lagani");
-                stage.setScene(new Scene(root, 1270,640));
+                stage.setScene(new Scene(root, 1220,640));
                 stage.show();
 
                 Scene scene = loginButton.getScene();
@@ -49,9 +49,7 @@ public class LoginController {
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning alert");
-            alert.setHeaderText(null);
             alert.setContentText("Username or Password does not match");
-
             alert.showAndWait();
         }
         return id;

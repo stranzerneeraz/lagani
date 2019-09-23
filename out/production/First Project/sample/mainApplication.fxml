@@ -19,9 +19,6 @@
                     <children>
                         <Pane HBox.hgrow="ALWAYS"/>
                         <Label id="header-label" minWidth="-Infinity" stylesheets="@style.css" text="Lagani">
-                            <font>
-                                <Font size="24.0"/>
-                            </font>
                             <HBox.margin>
                                 <Insets bottom="2.0"/>
                             </HBox.margin>
@@ -48,13 +45,50 @@
                                  minWidth="-Infinity" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8"
                                  xmlns:fx="http://javafx.com/fxml/1">
                             <tabs>
-                                <Tab text="Dashboard">
+                                <Tab onSelectionChanged="#dashboardTab" text="Dashboard">
                                     <content>
-                                        <AnchorPane/>
+                                        <BorderPane>
+                                            <top></top>
+                                            <left></left>
+                                            <center>
+                                            <TableView fx:id="dashboardTableView" id="tableStyle" BorderPane.alignment="CENTER">
+                                                <columns>
+                                                    <TableColumn fx:id="serialNoDashboard" maxWidth="60" minWidth="60"
+                                                                 prefWidth="60" text="S.No."/>
+                                                    <TableColumn fx:id="customerIDDashboard" maxWidth="70" minWidth="90"
+                                                                 prefWidth="70" text="Customer ID"/>
+                                                    <TableColumn fx:id="amountDashboard" maxWidth="120" minWidth="15"
+                                                                 prefWidth="120" text="Amount"/>
+                                                    <TableColumn fx:id="nameDashboard" maxWidth="140" minWidth="10"
+                                                                 prefWidth="140" text="Name"/>
+                                                    <TableColumn fx:id="addressDashboard" maxWidth="140" minWidth="15"
+                                                                 prefWidth="140" text="Address"/>
+                                                    <TableColumn fx:id="durationDashboard" maxWidth="130" minWidth="15"
+                                                                 prefWidth="130" text="Duration"/>
+                                                    <TableColumn fx:id="totalInstallmentDashboard" maxWidth="150"
+                                                                 minWidth="10" prefWidth="150"
+                                                                 text="Total Installment"/>
+                                                </columns>
+                                                <columnResizePolicy>
+                                                    <TableView
+                                                            fx:constant="UNCONSTRAINED_RESIZE_POLICY"/>
+                                                </columnResizePolicy>
+                                                <BorderPane.margin>
+                                                    <Insets/>
+                                                </BorderPane.margin>
+                                                <padding>
+                                                    <Insets bottom="5.0" left="5.0"
+                                                            right="5.0" top="5.0"/>
+                                                </padding>
+                                            </TableView>
+                                            </center>
+                                            <right></right>
+                                            <bottom></bottom>
+                                        </BorderPane>
                                     </content>
                                 </Tab>
 
-                                <Tab fx:id="customerTab" onSelectionChanged="#viewCustomers" text="Customers">
+                                <Tab onSelectionChanged="#viewCustomers" text="Customers">
                                     <content>
                                         <AnchorPane>
                                             <children>
@@ -250,7 +284,7 @@
                                     </content>
                                 </Tab>
 
-                                <Tab fx:id="" onSelectionChanged="#profileTab" text="Profile">
+                                <Tab onSelectionChanged="#profileTab" text="Profile">
                                     <content>
                                         <AnchorPane>
                                             <children>
@@ -345,200 +379,200 @@
                                     </content>
                                 </Tab>
 
-                                <Tab text="Admin" onSelectionChanged="#adminTab">
+                                <Tab onSelectionChanged="#adminTab" text="Admin">
                                     <content>
                                         <AnchorPane>
-                                                <HBox>
-                                                    <VBox prefWidth="200" id="admin-VBox">
+                                            <HBox>
+                                                <VBox prefWidth="200" id="admin-VBox">
 
-                                                        <GridPane hgap="20" vgap="20">
-                                                            <VBox GridPane.rowIndex="0" GridPane.columnIndex="0"
-                                                                  style="-fx-spacing: 5;">
-                                                                <HBox>
-                                                                    <Label text="Enter Customer ID"/>
-                                                                </HBox>
-                                                                <HBox>
-                                                                    <TextField fx:id="getCustomerID"/>
-                                                                </HBox>
-                                                                <HBox>
-                                                                    <Pane HBox.hgrow="ALWAYS"/>
-                                                                    <Button fx:id="btnViewCustomer" text="View"/>
-                                                                </HBox>
-                                                            </VBox>
+                                                    <GridPane hgap="20" vgap="20">
+                                                        <VBox GridPane.rowIndex="0" GridPane.columnIndex="0"
+                                                              style="-fx-spacing: 5;">
+                                                            <HBox>
+                                                                <Label text="Enter Customer ID"/>
+                                                            </HBox>
+                                                            <HBox>
+                                                                <TextField fx:id="getCustomerID"/>
+                                                            </HBox>
+                                                            <HBox>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Button fx:id="btnViewCustomer" text="View"/>
+                                                            </HBox>
+                                                        </VBox>
 
-                                                            <VBox GridPane.rowIndex="1" GridPane.columnIndex="0"
-                                                                  style="-fx-spacing: 5;">
-                                                                <HBox>
-                                                                    <Label text="Enter Item ID"/>
-                                                                </HBox>
-                                                                <HBox>
-                                                                    <TextField fx:id="getItemID"/>
-                                                                </HBox>
-                                                                <HBox>
-                                                                    <Pane HBox.hgrow="ALWAYS"/>
-                                                                    <Button fx:id="btnViewItem" text="View"/>
-                                                                </HBox>
-                                                            </VBox>
-                                                            <VBox GridPane.rowIndex="2" GridPane.columnIndex="0"
-                                                                  style="-fx-spacing: 5;">
-                                                                <HBox>
-                                                                    <Label text="Enter Installment ID"/>
-                                                                </HBox>
-                                                                <HBox>
-                                                                    <TextField fx:id="getInstallmentID"/>
-                                                                </HBox>
-                                                                <HBox>
-                                                                    <Pane HBox.hgrow="ALWAYS"/>
-                                                                    <Button fx:id="btnViewInstallment" text="View"/>
-                                                                </HBox>
-                                                            </VBox>
+                                                        <VBox GridPane.rowIndex="1" GridPane.columnIndex="0"
+                                                              style="-fx-spacing: 5;">
+                                                            <HBox>
+                                                                <Label text="Enter Item ID"/>
+                                                            </HBox>
+                                                            <HBox>
+                                                                <TextField fx:id="getItemID"/>
+                                                            </HBox>
+                                                            <HBox>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Button fx:id="btnViewItem" text="View"/>
+                                                            </HBox>
+                                                        </VBox>
+                                                        <VBox GridPane.rowIndex="2" GridPane.columnIndex="0"
+                                                              style="-fx-spacing: 5;">
+                                                            <HBox>
+                                                                <Label text="Enter Installment ID"/>
+                                                            </HBox>
+                                                            <HBox>
+                                                                <TextField fx:id="getInstallmentID"/>
+                                                            </HBox>
+                                                            <HBox>
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Button fx:id="btnViewInstallment" text="View"/>
+                                                            </HBox>
+                                                        </VBox>
+                                                    </GridPane>
+                                                </VBox>
+
+                                                <GridPane style="-fx-padding: 0 0 0 150;">
+                                                    <VBox id="admin-VBox" fx:id="customerAdminPanel" prefWidth="400"
+                                                          GridPane.rowIndex="0" GridPane.columnIndex="0">
+                                                        <HBox>
+                                                            <Pane HBox.hgrow="ALWAYS"/>
+                                                            <Label id="header-label" text="Customer"/>
+                                                            <Pane HBox.hgrow="ALWAYS"/>
+                                                        </HBox>
+                                                        <GridPane vgap="10" hgap="20">
+                                                            <Label text="Full Name" GridPane.rowIndex="0"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminFullName" GridPane.rowIndex="0"
+                                                                       GridPane.columnIndex="1"/>
+
+                                                            <Label text="Address" GridPane.rowIndex="1"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminAddress" GridPane.rowIndex="1"
+                                                                       GridPane.columnIndex="1"/>
+
+                                                            <Label text="Ward No." GridPane.rowIndex="2"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminWard" GridPane.rowIndex="2"
+                                                                       GridPane.columnIndex="1"/>
+
+                                                            <Label text="Father Name" GridPane.rowIndex="3"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminFatherName" GridPane.rowIndex="3"
+                                                                       GridPane.columnIndex="1"/>
+
+                                                            <Label text="Spouse Name" GridPane.rowIndex="4"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminSpouseName" GridPane.rowIndex="4"
+                                                                       GridPane.columnIndex="1"/>
+
+                                                            <Label text="Contact Number" GridPane.rowIndex="5"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminContactNumber"
+                                                                       GridPane.rowIndex="5"
+                                                                       GridPane.columnIndex="1"/>
+
+                                                            <Label text="Remarks" GridPane.rowIndex="6"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminRemarks" GridPane.rowIndex="6"
+                                                                       GridPane.columnIndex="1"/>
+
+                                                            <HBox GridPane.rowIndex="7" GridPane.columnIndex="1">
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Button text="Update" fx:id="btnUpdateCustomer"/>
+                                                            </HBox>
                                                         </GridPane>
                                                     </VBox>
 
-                                                    <GridPane style="-fx-padding: 0 0 0 150;">
-                                                        <VBox id="admin-VBox" fx:id="customerAdminPanel" prefWidth="400"
-                                                              GridPane.rowIndex="0" GridPane.columnIndex="0">
-                                                            <HBox>
-                                                                <Pane HBox.hgrow="ALWAYS"/>
-                                                                <Label id="header-label" text="Customer"/>
-                                                                <Pane HBox.hgrow="ALWAYS"/>
-                                                            </HBox>
-                                                            <GridPane vgap="10" hgap="20">
-                                                                <Label text="Full Name" GridPane.rowIndex="0"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminFullName" GridPane.rowIndex="0"
-                                                                           GridPane.columnIndex="1"/>
+                                                    <VBox id="admin-VBox" fx:id="itemAdminPanel" prefWidth="400"
+                                                          GridPane.rowIndex="0" GridPane.columnIndex="0">
+                                                        <HBox>
+                                                            <Pane HBox.hgrow="ALWAYS"/>
+                                                            <Label id="header-label" text="Item"/>
+                                                            <Pane HBox.hgrow="ALWAYS"/>
+                                                        </HBox>
+                                                        <GridPane vgap="10" hgap="20">
+                                                            <Label text="Amount" GridPane.rowIndex="0"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminItemAmount" GridPane.rowIndex="0"
+                                                                       GridPane.columnIndex="1"/>
 
-                                                                <Label text="Address" GridPane.rowIndex="1"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminAddress" GridPane.rowIndex="1"
-                                                                           GridPane.columnIndex="1"/>
-
-                                                                <Label text="Ward No." GridPane.rowIndex="2"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminWard" GridPane.rowIndex="2"
-                                                                           GridPane.columnIndex="1"/>
-
-                                                                <Label text="Father Name" GridPane.rowIndex="3"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminFatherName" GridPane.rowIndex="3"
-                                                                           GridPane.columnIndex="1"/>
-
-                                                                <Label text="Spouse Name" GridPane.rowIndex="4"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminSpouseName" GridPane.rowIndex="4"
-                                                                           GridPane.columnIndex="1"/>
-
-                                                                <Label text="Contact Number" GridPane.rowIndex="5"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminContactNumber"
-                                                                           GridPane.rowIndex="5"
-                                                                           GridPane.columnIndex="1"/>
-
-                                                                <Label text="Remarks" GridPane.rowIndex="6"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminRemarks" GridPane.rowIndex="6"
-                                                                           GridPane.columnIndex="1"/>
-
-                                                                <HBox GridPane.rowIndex="7" GridPane.columnIndex="1">
-                                                                    <Pane HBox.hgrow="ALWAYS"/>
-                                                                    <Button text="Update" fx:id="btnUpdateCustomer"/>
-                                                                </HBox>
-                                                            </GridPane>
-                                                        </VBox>
-
-                                                        <VBox id="admin-VBox" fx:id="itemAdminPanel" prefWidth="400"
-                                                              GridPane.rowIndex="0" GridPane.columnIndex="0">
-                                                            <HBox>
-                                                                <Pane HBox.hgrow="ALWAYS"/>
-                                                                <Label id="header-label" text="Item"/>
-                                                                <Pane HBox.hgrow="ALWAYS"/>
-                                                            </HBox>
-                                                            <GridPane vgap="10" hgap="20">
-                                                                <Label text="Amount" GridPane.rowIndex="0"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminItemAmount" GridPane.rowIndex="0"
-                                                                           GridPane.columnIndex="1"/>
-
-                                                                <Label text="Type" GridPane.rowIndex="1"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <ComboBox fx:id="adminTypeChooser" GridPane.rowIndex="1"
-                                                                          GridPane.columnIndex="1">
-                                                                    <items>
-                                                                        <FXCollections fx:factory="observableArrayList">
-                                                                            <String fx:value="Loan"/>
-                                                                            <String fx:value="Land"/>
-                                                                            <String fx:value="Jewelery"/>
-                                                                        </FXCollections>
-                                                                    </items>
-                                                                    <value>
+                                                            <Label text="Type" GridPane.rowIndex="1"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <ComboBox fx:id="adminTypeChooser" GridPane.rowIndex="1"
+                                                                      GridPane.columnIndex="1">
+                                                                <items>
+                                                                    <FXCollections fx:factory="observableArrayList">
                                                                         <String fx:value="Loan"/>
-                                                                    </value>
-                                                                </ComboBox>
+                                                                        <String fx:value="Land"/>
+                                                                        <String fx:value="Jewelery"/>
+                                                                    </FXCollections>
+                                                                </items>
+                                                                <value>
+                                                                    <String fx:value="Loan"/>
+                                                                </value>
+                                                            </ComboBox>
 
-                                                                <Label text="Start Date" GridPane.rowIndex="2"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <DatePicker fx:id="adminStartDate" GridPane.rowIndex="2"
-                                                                            GridPane.columnIndex="1"/>
+                                                            <Label text="Start Date" GridPane.rowIndex="2"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <DatePicker fx:id="adminStartDate" GridPane.rowIndex="2"
+                                                                        GridPane.columnIndex="1"/>
 
-                                                                <Label text="Rate" GridPane.rowIndex="3"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminRate" GridPane.rowIndex="3"
-                                                                           GridPane.columnIndex="1"/>
+                                                            <Label text="Rate" GridPane.rowIndex="3"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminRate" GridPane.rowIndex="3"
+                                                                       GridPane.columnIndex="1"/>
 
-                                                                <Label text="Deadline" GridPane.rowIndex="4"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <DatePicker fx:id="adminDeadline" GridPane.rowIndex="4"
-                                                                            GridPane.columnIndex="1"/>
+                                                            <Label text="Deadline" GridPane.rowIndex="4"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <DatePicker fx:id="adminDeadline" GridPane.rowIndex="4"
+                                                                        GridPane.columnIndex="1"/>
 
-                                                                <Label text="Description" GridPane.rowIndex="5"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextArea fx:id="adminDescription" prefRowCount="4"
-                                                                          prefColumnCount="6" GridPane.rowIndex="5"
-                                                                          GridPane.columnIndex="1"/>
+                                                            <Label text="Description" GridPane.rowIndex="5"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextArea fx:id="adminDescription" prefRowCount="4"
+                                                                      prefColumnCount="6" GridPane.rowIndex="5"
+                                                                      GridPane.columnIndex="1"/>
 
-                                                                <HBox GridPane.rowIndex="6" GridPane.columnIndex="1">
-                                                                    <Pane HBox.hgrow="ALWAYS"/>
-                                                                    <Button text="Update" fx:id="btnUpdateItem"/>
-                                                                </HBox>
-                                                            </GridPane>
-                                                        </VBox>
-
-                                                        <VBox id="admin-VBox" fx:id="installmentAdminPanel"
-                                                              prefWidth="400"
-                                                              GridPane.rowIndex="0" GridPane.columnIndex="0">
-                                                            <HBox>
+                                                            <HBox GridPane.rowIndex="6" GridPane.columnIndex="1">
                                                                 <Pane HBox.hgrow="ALWAYS"/>
-                                                                <Label id="header-label" text="Installment"/>
-                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Button text="Update" fx:id="btnUpdateItem"/>
                                                             </HBox>
-                                                            <GridPane hgap="10" vgap="20">
-                                                                <Label text="Amount" GridPane.rowIndex="0"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminInstallmentAmount"
-                                                                           GridPane.rowIndex="0"
-                                                                           GridPane.columnIndex="1"/>
+                                                        </GridPane>
+                                                    </VBox>
 
-                                                                <Label text="Depositor" GridPane.rowIndex="1"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <TextField fx:id="adminDepositor" GridPane.rowIndex="1"
-                                                                           GridPane.columnIndex="1"/>
+                                                    <VBox id="admin-VBox" fx:id="installmentAdminPanel"
+                                                          prefWidth="400"
+                                                          GridPane.rowIndex="0" GridPane.columnIndex="0">
+                                                        <HBox>
+                                                            <Pane HBox.hgrow="ALWAYS"/>
+                                                            <Label id="header-label" text="Installment"/>
+                                                            <Pane HBox.hgrow="ALWAYS"/>
+                                                        </HBox>
+                                                        <GridPane hgap="10" vgap="20">
+                                                            <Label text="Amount" GridPane.rowIndex="0"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminInstallmentAmount"
+                                                                       GridPane.rowIndex="0"
+                                                                       GridPane.columnIndex="1"/>
 
-                                                                <Label text="Deposit Date" GridPane.rowIndex="2"
-                                                                       GridPane.columnIndex="0"/>
-                                                                <DatePicker fx:id="adminDepositDate"
-                                                                            GridPane.rowIndex="2"
-                                                                            GridPane.columnIndex="1"/>
+                                                            <Label text="Depositor" GridPane.rowIndex="1"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <TextField fx:id="adminDepositor" GridPane.rowIndex="1"
+                                                                       GridPane.columnIndex="1"/>
 
-                                                                <HBox GridPane.rowIndex="3" GridPane.columnIndex="1">
-                                                                    <Pane HBox.hgrow="ALWAYS"/>
-                                                                    <Button text="Update" fx:id="btnUpdateInstallment"/>
-                                                                </HBox>
-                                                            </GridPane>
+                                                            <Label text="Deposit Date" GridPane.rowIndex="2"
+                                                                   GridPane.columnIndex="0"/>
+                                                            <DatePicker fx:id="adminDepositDate"
+                                                                        GridPane.rowIndex="2"
+                                                                        GridPane.columnIndex="1"/>
 
-                                                        </VBox>
-                                                    </GridPane>
-                                                </HBox>
+                                                            <HBox GridPane.rowIndex="3" GridPane.columnIndex="1">
+                                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                                <Button text="Update" fx:id="btnUpdateInstallment"/>
+                                                            </HBox>
+                                                        </GridPane>
+
+                                                    </VBox>
+                                                </GridPane>
+                                            </HBox>
                                         </AnchorPane>
                                     </content>
                                 </Tab>

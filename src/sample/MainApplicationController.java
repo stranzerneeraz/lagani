@@ -3,6 +3,9 @@ package sample;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 import exception.BusinessException;
 import implementation.BusinessImplementation;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,10 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Callback;
-import modal.Customers;
-import modal.Installment;
-import modal.Items;
-import modal.User;
+import modal.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -31,19 +31,37 @@ import java.util.Set;
 
 public class MainApplicationController {
     @FXML
-    private TextField nameProfile;
+    private TableView<DashboardItem> dashboardTableView;
     @FXML
-    private TextField firmnameProfile;
+    private TableColumn serialNoDashboard;
     @FXML
-    private TextField contactProfile;
+    private TableColumn<DashboardItem, Integer> customerIDDashboard;
     @FXML
-    private TextField addressProfile;
+    private TableColumn<DashboardItem, Integer> amountDashboard;
+    @FXML
+    private TableColumn<DashboardItem, String> nameDashboard;
+    @FXML
+    private TableColumn<DashboardItem, String> addressDashboard;
+    @FXML
+    private TableColumn durationDashboard;
+    @FXML
+    private TableColumn totalInstallmentDashboard;
     @FXML
     private Button btnLogout;
     @FXML
     private TextField searchCustomer;
     @FXML
     private ListView<Customers> customerListView;
+    @FXML
+    private Label nameViewLabel;
+    @FXML
+    private Label addressViewLabel;
+    @FXML
+    private Label fatherViewLabel;
+    @FXML
+    private Label contactViewLabel;
+    @FXML
+    private Label spouseViewLabel;
     @FXML
     private TableView<Items> itemsTableView;
     @FXML
@@ -67,19 +85,17 @@ public class MainApplicationController {
     @FXML
     private ContextMenu listContextMenu;
     @FXML
-    private Label nameViewLabel;
-    @FXML
-    private Label addressViewLabel;
-    @FXML
-    private Label fatherViewLabel;
-    @FXML
-    private Label contactViewLabel;
-    @FXML
-    private Label spouseViewLabel;
-    @FXML
     private Button btnAddNewItem;
     @FXML
     private BorderPane mainBorderPane;
+    @FXML
+    private TextField nameProfile;
+    @FXML
+    private TextField firmnameProfile;
+    @FXML
+    private TextField contactProfile;
+    @FXML
+    private TextField addressProfile;
     @FXML
     private VBox customerAdminPanel;
     @FXML
@@ -137,33 +153,94 @@ public class MainApplicationController {
     @FXML
     private Button btnUpdateInstallment;
 
+    private Pagination pagination;
     private ObservableList<Customers> customersObservableList = FXCollections.observableArrayList();
     private ObservableList<Items> itemsObservableList;
+    private ObservableList<DashboardItem> dashboardItemObservableList;
     private int id = LoginController.id();
     private String searchString = "";
     private Stage window;
     private Window dialogWindow;
 
     Alert alert = new Alert(Alert.AlertType.WARNING);
-
     private BusinessImplementation businessImplementation = new BusinessImplementation();
     private Customers selectionCustomer = new Customers();
+
+    @FXML
+    public void dashboardTab() throws BusinessException {
+        ArrayList<DashboardItem> dashboardItem = businessImplementation.getDashboardItem();
+        dashboardItemObservableList = FXCollections.observableArrayList(dashboardItem);
+        serialNoDashboard.setCellFactory(col -> {
+            TableCell<Items, Integer> indexCell = new TableCell<>();
+            ReadOnlyObjectProperty<TableRow> rowProperty = indexCell.tableRowProperty();
+
+            ObjectBinding<String> rowBinding = Bindings.createObjectBinding(() -> {
+                TableRow<Items> row = rowProperty.get();
+                if (row != null) {
+                    int rowIndex = row.getIndex();
+                    if (rowIndex < row.getTableView().getItems().size()) {
+                        return Integer.toString(rowIndex + 1);
+                    }
+                }
+                return null;
+            }, rowProperty);
+            indexCell.textProperty().bind(rowBinding);
+            return indexCell;
+        });
+        customerIDDashboard.setCellValueFactory(new PropertyValueFactory<>("customerID"));
+        amountDashboard.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        nameDashboard.setCellValueFactory(new PropertyValueFactory<>("name"));
+        addressDashboard.setCellValueFactory(new PropertyValueFactory<>("address"));
+        durationDashboard.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        totalInstallmentDashboard.setCellValueFactory(new PropertyValueFactory<>("totalInstallment"));
+        dashboardTableView.setItems(dashboardItemObservableList);
+    }
 
     /**
      * Update Profile of the User
      */
     public void updateProfile() throws BusinessException {
-        businessImplementation.updateUserProfile(nameProfile.getText(), firmnameProfile.getText(), contactProfile.getText(), addressProfile.getText(), id);
+        alert.setTitle("Warning Dialog!");
+        User user = null;
+        if (nameProfile.getText().length() <= 0) {
+            nameProfile.setStyle("-fx-text-fill: red;");
+            alert.setContentText("Enter name");
+            alert.showAndWait();
+        } else if (firmnameProfile.getText().length() <= 0) {
+            firmnameProfile.setStyle("-fx-text-fill: red;");
+            alert.setContentText("Enter firm name");
+            alert.showAndWait();
+        } else if (!contactProfile.getText().matches("^[0-9]{10}$")) {
+            contactProfile.setStyle("-fx-text-fill: red;");
+            alert.setContentText("Enter contact number");
+            alert.showAndWait();
+        } else if (addressProfile.getText().length() <= 0) {
+            addressProfile.setStyle("-fx-text-fill: red;");
+            alert.setContentText("Enter address");
+            alert.showAndWait();
+        } else {
+            nameProfile.setStyle("-fx-text-fill: black;");
+            firmnameProfile.setStyle("-fx-text-fill: black;");
+            contactProfile.setStyle("-fx-text-fill: black;");
+            addressProfile.setStyle("-fx-text-fill: black;");
+
+            user.setName(nameProfile.getText());
+            user.setFirmname(firmnameProfile.getText());
+            user.setContact(Long.parseLong(contactProfile.getText()));
+            user.setAddress(addressProfile.getText());
+            businessImplementation.updateUserProfile(user, id);
+        }
     }
 
     /**
      * View Profile of the User
      */
+    @FXML
     public void profileTab() throws BusinessException {
         User user = businessImplementation.getUser(id);
         nameProfile.setText(user.getName());
         firmnameProfile.setText(user.getFirmname());
-        contactProfile.setText(user.getContact());
+        contactProfile.setText("" + user.getContact());
         addressProfile.setText(user.getAddress());
     }
 
@@ -171,6 +248,7 @@ public class MainApplicationController {
      * View Customers who takes loan
      * Searching of the customer
      */
+    @FXML
     public <customers> void viewCustomers() throws BusinessException {
         getCustomersForView(searchString);
         searchCustomer.textProperty().addListener(((observable, oldValue, newValue) -> {
@@ -217,13 +295,17 @@ public class MainApplicationController {
             @Override
             public ListCell<Customers> call(ListView<Customers> param) {
                 ListCell<Customers> cell = new ListCell<Customers>() {
+                    final Tooltip tooltip = new Tooltip();
                     @Override
                     protected void updateItem(Customers customers, boolean empty) {
                         super.updateItem(customers, empty);
                         if (empty || customers == null) {
                             setText("");
+                            setTooltip(null);
                         } else {
                             setText(customers.getFullName() + ", " + customers.getAddress());
+                            tooltip.setText("" + customers.getCustomerID());
+                            setTooltip(tooltip);
                         }
                     }
                 };
@@ -249,7 +331,27 @@ public class MainApplicationController {
         ArrayList<Items> itemList = businessImplementation.getItems(id);
         itemsObservableList = FXCollections.observableArrayList(itemList);
 
-        itemNo.setCellValueFactory(new PropertyValueFactory<>("itemID"));
+        itemNo.setCellFactory(col -> {
+            final Tooltip tooltip = new Tooltip();
+            TableCell<Items, Integer> indexCell = new TableCell<>();
+            ReadOnlyObjectProperty<TableRow> rowProperty = indexCell.tableRowProperty();
+
+            ObjectBinding<String> rowBinding = Bindings.createObjectBinding(() -> {
+                TableRow<Items> row = rowProperty.get();
+                if (row != null) {
+                    int rowIndex = row.getIndex();
+
+                    if (rowIndex < row.getTableView().getItems().size()) {
+                        tooltip.setText(String.valueOf(new PropertyValueFactory<Items, Integer>("itemID")));
+                        row.setTooltip(tooltip);
+                        return Integer.toString(rowIndex + 1);
+                    }
+                }
+                return null;
+            }, rowProperty);
+            indexCell.textProperty().bind(rowBinding);
+            return indexCell;
+        });
         itemType.setCellValueFactory(new PropertyValueFactory<>("type"));
         itemDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         itemAmount.setCellValueFactory(new PropertyValueFactory<>("principal"));
@@ -258,92 +360,92 @@ public class MainApplicationController {
 
         viewInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
         Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryView = new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
+            @Override
+            public TableCell call(final TableColumn<Items, String> param) {
+                final TableCell<Items, String> cell = new TableCell<Items, String>() {
+                    final Button btnViewInstallment = new Button("View");
                     @Override
-                    public TableCell call(final TableColumn<Items, String> param) {
-                        final TableCell<Items, String> cell = new TableCell<Items, String>() {
-                            final Button btnViewInstallment = new Button("View");
-                            @Override
-                            public void updateItem(String item, boolean empty) {
-                                super.updateItem(item, empty);
-                                if (empty) {
-                                    setGraphic(null);
-                                    setText(null);
-                                } else {
-                                    btnViewInstallment.setOnAction(event -> {
-                                        Items selectionItem = getTableView().getItems().get(getIndex());
-                                        Dialog<ButtonType> dialog = new Dialog<>();
-                                        dialog.initOwner(mainBorderPane.getScene().getWindow());
-                                        dialog.setTitle("Installments");
-                                        FXMLLoader fxmlLoader = new FXMLLoader();
-                                        fxmlLoader.setLocation(getClass().getResource("viewInstallmentDialog.fxml"));
-                                        dialogWindow = dialog.getDialogPane().getScene().getWindow();
-                                        try {
-                                            dialog.getDialogPane().setContent(fxmlLoader.load());
-                                            ViewInstallmentDialogController viewInstallmentDialogController = fxmlLoader.getController();
-                                            viewInstallmentDialogController.initialize(selectionItem);
-                                            dialogWindow.setOnCloseRequest(closeEvent -> dialog.close());
-                                            dialog.showAndWait();
-                                        } catch (IOException | BusinessException e) {
-                                            try {
-                                                throw new BusinessException(e);
-                                            } catch (BusinessException ex) {
-                                                ex.printStackTrace();
-                                            }
-                                        }
-                                    });
-                                    setGraphic(btnViewInstallment);
-                                    setText(null);
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            btnViewInstallment.setOnAction(event -> {
+                                Items selectionItem = getTableView().getItems().get(getIndex());
+                                Dialog<ButtonType> dialog = new Dialog<>();
+                                dialog.initOwner(mainBorderPane.getScene().getWindow());
+                                dialog.setTitle("Installments");
+                                FXMLLoader fxmlLoader = new FXMLLoader();
+                                fxmlLoader.setLocation(getClass().getResource("viewInstallmentDialog.fxml"));
+                                dialogWindow = dialog.getDialogPane().getScene().getWindow();
+                                try {
+                                    dialog.getDialogPane().setContent(fxmlLoader.load());
+                                    ViewInstallmentDialogController viewInstallmentDialogController = fxmlLoader.getController();
+                                    viewInstallmentDialogController.initialize(selectionItem);
+                                    dialogWindow.setOnCloseRequest(closeEvent -> dialog.close());
+                                    dialog.showAndWait();
+                                } catch (IOException | BusinessException e) {
+                                    try {
+                                        throw new BusinessException(e);
+                                    } catch (BusinessException ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
-                            }
-                        };
-                        return cell;
+                            });
+                            setGraphic(btnViewInstallment);
+                            setText(null);
+                        }
                     }
                 };
+                return cell;
+            }
+        };
         viewInstallment.setCellFactory(cellFactoryView);
 
         addInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy1"));
         Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryAdd = new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
+            @Override
+            public TableCell call(final TableColumn<Items, String> param) {
+                final TableCell<Items, String> cell = new TableCell<Items, String>() {
+                    final Button btnAddInstallment = new Button("Add");
                     @Override
-                    public TableCell call(final TableColumn<Items, String> param) {
-                        final TableCell<Items, String> cell = new TableCell<Items, String>() {
-                            final Button btnAddInstallment = new Button("Add");
-                            @Override
-                            public void updateItem(String item, boolean empty) {
-                                super.updateItem(item, empty);
-                                if (empty) {
-                                    setGraphic(null);
-                                    setText(null);
-                                } else {
-                                    btnAddInstallment.setOnAction(event -> {
-                                        Items selectedItem = getTableView().getItems().get(getIndex());
-                                        Dialog<ButtonType> dialog = new Dialog<>();
-                                        dialog.initOwner(mainBorderPane.getScene().getWindow());
-                                        dialog.setTitle("Add Installment");
-                                        FXMLLoader fxmlLoader = new FXMLLoader();
-                                        fxmlLoader.setLocation(getClass().getResource("addInstallmentDialog.fxml"));
-                                        dialogWindow = dialog.getDialogPane().getScene().getWindow();
-                                        try {
-                                            dialog.getDialogPane().setContent(fxmlLoader.load());
-                                            AddInstallmentDialogController addInstallmentDialogController = fxmlLoader.getController();
-                                            addInstallmentDialogController.initialize(selectedItem);
-                                            dialogWindow.setOnCloseRequest(closeEvent -> dialog.close());
-                                            dialog.showAndWait();
-                                        } catch (IOException e) {
-                                            try {
-                                                throw new BusinessException(e);
-                                            } catch (BusinessException ex) {
-                                                ex.printStackTrace();
-                                            }
-                                        }
-                                    });
-                                    setGraphic(btnAddInstallment);
-                                    setText(null);
+                    public void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            btnAddInstallment.setOnAction(event -> {
+                                Items selectedItem = getTableView().getItems().get(getIndex());
+                                Dialog<ButtonType> dialog = new Dialog<>();
+                                dialog.initOwner(mainBorderPane.getScene().getWindow());
+                                dialog.setTitle("Add Installment");
+                                FXMLLoader fxmlLoader = new FXMLLoader();
+                                fxmlLoader.setLocation(getClass().getResource("addInstallmentDialog.fxml"));
+                                dialogWindow = dialog.getDialogPane().getScene().getWindow();
+                                try {
+                                    dialog.getDialogPane().setContent(fxmlLoader.load());
+                                    AddInstallmentDialogController addInstallmentDialogController = fxmlLoader.getController();
+                                    addInstallmentDialogController.initialize(selectedItem);
+                                    dialogWindow.setOnCloseRequest(closeEvent -> dialog.close());
+                                    dialog.showAndWait();
+                                } catch (IOException e) {
+                                    try {
+                                        throw new BusinessException(e);
+                                    } catch (BusinessException ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
-                            }
-                        };
-                        return cell;
+                            });
+                            setGraphic(btnAddInstallment);
+                            setText(null);
+                        }
                     }
                 };
+                return cell;
+            }
+        };
         addInstallment.setCellFactory(cellFactoryAdd);
 
         calculate.setCellValueFactory(new PropertyValueFactory<>("Dummy2"));
@@ -388,8 +490,8 @@ public class MainApplicationController {
         calculate.setCellFactory(cellFactoryCalculate);
 
         itemsTableView.setItems(itemsObservableList);
-        ScrollBar table1HorizontalScrollBar = findScrollBar( itemsTableView, Orientation.HORIZONTAL);
-        ScrollBar table1VerticalScrollBar = findScrollBar( itemsTableView, Orientation.VERTICAL);
+        ScrollBar table1HorizontalScrollBar = findScrollBar(itemsTableView, Orientation.HORIZONTAL);
+        ScrollBar table1VerticalScrollBar = findScrollBar(itemsTableView, Orientation.VERTICAL);
         table1HorizontalScrollBar.setVisible(true);
         table1VerticalScrollBar.setVisible(false);
         VirtualFlow flow1 = (VirtualFlow) itemsTableView.lookup(".virtual-flow");
@@ -398,15 +500,14 @@ public class MainApplicationController {
 
     private ScrollBar findScrollBar(TableView<?> table, Orientation orientation) {
         Set<Node> set = table.lookupAll(".scroll-bar");
-        for( Node node: set) {
+        for (Node node : set) {
             ScrollBar bar = (ScrollBar) node;
-            if( bar.getOrientation() == orientation) {
+            if (bar.getOrientation() == orientation) {
                 return bar;
             }
         }
         return null;
     }
-
 
     /**
      * Adds new Customer who takes loan
@@ -452,6 +553,7 @@ public class MainApplicationController {
         }
     }
 
+    @FXML
     public void adminTab() {
         customerAdminPanel.setVisible(false);
         itemAdminPanel.setVisible(false);
@@ -460,7 +562,6 @@ public class MainApplicationController {
         alert.setTitle("Warning Dialog");
         btnViewCustomer.setOnAction(event -> {
             int customerID = Integer.parseInt(getCustomerID.getText());
-            int cID = 0;
             try {
                 Customers customers = businessImplementation.getCustomerByID(customerID);
                 if (customers == null) {
@@ -476,11 +577,11 @@ public class MainApplicationController {
         btnViewItem.setOnAction(event -> {
             int itemID = Integer.parseInt(getItemID.getText());
             try {
+                Items items = businessImplementation.getItemByID(itemID);
                 if (null == businessImplementation.getItemByID(itemID)) {
                     alert.setContentText("Enter valid item ID");
                     alert.showAndWait();
                 } else {
-                    Items items = businessImplementation.getItemByID(itemID);
                     adminViewItem(items);
                 }
             } catch (BusinessException e) {
@@ -490,11 +591,11 @@ public class MainApplicationController {
         btnViewInstallment.setOnAction(event -> {
             int installmentID = Integer.parseInt(getInstallmentID.getText());
             try {
+                Installment installment = businessImplementation.getInstallmentByID(installmentID);
                 if (null == businessImplementation.getInstallmentByID(installmentID)) {
                     alert.setContentText("Enter valid installment ID");
                     alert.showAndWait();
                 } else {
-                    Installment installment = businessImplementation.getInstallmentByID(installmentID);
                     adminViewInstallment(installment);
                 }
             } catch (BusinessException e) {
@@ -564,9 +665,7 @@ public class MainApplicationController {
                 customers.setRemarks(adminRemarks.getText());
 
                 try {
-                    businessImplementation.updateCustomerData(customers.getFullName(), customers.getAddress(), customers.getWard(),
-                            customers.getFatherName(), customers.getSpouseName(), customers.getContactNo(), customers.getRemarks(),
-                            customers.getCustomerID());
+                    businessImplementation.updateCustomerData(customers);
                 } catch (BusinessException e) {
                     e.printStackTrace();
                 }
@@ -579,6 +678,7 @@ public class MainApplicationController {
         itemAdminPanel.setVisible(true);
         installmentAdminPanel.setVisible(false);
         alert.setTitle("Warning Dialog!");
+        alert.showAndWait();
 
         adminItemAmount.setText("" + items.getPrincipal());
         adminRate.setText("" + items.getRate());
@@ -619,8 +719,7 @@ public class MainApplicationController {
             items.setDescription(adminDescription.getText());
 
             try {
-                businessImplementation.updateItemDate(items.getPrincipal(), items.getType(), items.getStartDate(), items.getRate(), items.getDeadline(),
-                        items.getDescription(), items.getItemID());
+                businessImplementation.updateItemData(items);
             } catch (BusinessException e) {
                 e.printStackTrace();
             }
@@ -637,30 +736,29 @@ public class MainApplicationController {
         adminDepositor.setText(installment.getDepositor());
 
         btnUpdateInstallment.setOnAction(event -> {
-                    if (!adminInstallmentAmount.getText().matches("^[0-9]+(\\.[0-9]+)?$")) {
-                        adminInstallmentAmount.setStyle("-fx-text-fill: red;");
-                        alert.setContentText("Input fields not valid");
-                        alert.showAndWait();
-                    } else if (adminDepositor.getText().length() <= 0) {
-                        adminDepositor.setStyle("-fx-text-fill: red;");
-                        alert.setContentText("Enter Depositor Name");
-                        alert.showAndWait();
-                    } else if (!(adminDepositDate.getValue().compareTo(LocalDate.now()) <= 0)) {
-                        adminDepositDate.setStyle("-fx-text-fill: red;");
-                        alert.setContentText("Date field should be upto today");
-                        alert.showAndWait();
-                    } else {
-                        adminInstallmentAmount.setStyle("-fx-text-fill: black;");
-                        adminDepositor.setStyle("-fx-text-fill: black;");
-                        adminDepositDate.setStyle("-fx-text-fill: black;");
-                    }
+            if (!adminInstallmentAmount.getText().matches("^[0-9]+(\\.[0-9]+)?$")) {
+                adminInstallmentAmount.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Input fields not valid");
+                alert.showAndWait();
+            } else if (adminDepositor.getText().length() <= 0) {
+                adminDepositor.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Enter Depositor Name");
+                alert.showAndWait();
+            } else if (!(adminDepositDate.getValue().compareTo(LocalDate.now()) <= 0)) {
+                adminDepositDate.setStyle("-fx-text-fill: red;");
+                alert.setContentText("Date field should be upto today");
+                alert.showAndWait();
+            } else {
+                adminInstallmentAmount.setStyle("-fx-text-fill: black;");
+                adminDepositor.setStyle("-fx-text-fill: black;");
+                adminDepositDate.setStyle("-fx-text-fill: black;");
+            }
             installment.setDepositAmount(Integer.parseInt(adminInstallmentAmount.getText()));
             installment.setDepositor(adminDepositor.getText());
             installment.setDate(java.sql.Date.valueOf(adminDepositDate.getValue()));
 
             try {
-                businessImplementation.updateInstallmentData(installment.getDepositAmount(), installment.getDepositor(), installment.getDate(),
-                        installment.getInstallmentID());
+                businessImplementation.updateInstallmentData(installment);
             } catch (BusinessException e) {
                 e.printStackTrace();
             }
