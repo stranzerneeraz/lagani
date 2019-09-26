@@ -115,100 +115,12 @@ public class BusinessImplementation {
         return itemArrayList;
     }
 
-    public User getUser(int id) throws BusinessException {
-        connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        User user = null;
-        try {
-            String sql = "SELECT * FROM userdata WHERE userID = ?";
-            statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
-            resultSet = statement.executeQuery();
-            user = new User();
-
-            resultSet.next();
-            user.setName(resultSet.getString("Name"));
-            user.setFirmname(resultSet.getString("firmName"));
-            user.setAddress(resultSet.getString("Address"));
-            user.setContact(resultSet.getLong("contact"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (null != resultSet) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (null != statement) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (null != connection) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        System.out.println(user);
-        return user;
-    }
-
-    public void updateUserProfile(User user, int id) throws BusinessException {
-        connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            String sql = "UPDATE userdata SET Name = ?, firmName = ?, contact = ?, Address = ? WHERE userID = ?";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, user.getName());
-            statement.setString(2, user.getFirmname());
-            statement.setLong(3, user.getContact());
-            statement.setString(4, user.getAddress());
-            statement.setInt(5, id);
-
-            statement.executeUpdate();
-        } catch (SQLException se) {
-            throw new BusinessException(se);
-        } finally {
-            if (null != resultSet) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (null != statement) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (null != connection) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     public ArrayList<Customers> getCustomers(String searchString) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         Customers customers = null;
         ArrayList<Customers> customerList = null;
-        System.out.println("Entry of search " + searchString);
         try {
             String sql = "SELECT * FROM customers WHERE customerID like ? or fullName like ? or address like ? or fatherName like ? or spouseName like ? " +
                     "ORDER BY fullName ASC;";
@@ -261,7 +173,6 @@ public class BusinessImplementation {
                 }
             }
         }
-        System.out.println(customerList);
         return customerList;
     }
 
@@ -280,19 +191,19 @@ public class BusinessImplementation {
 
             while (resultSet.next()) {
                 items = new Items();
-                items.setItemID(resultSet.getInt("itemID"));
+                items.setItemID(resultSet.getString("itemID"));
                 items.setType(resultSet.getString("type"));
-                items.setStartDate(resultSet.getDate("startDate"));
-                items.setPrincipal(resultSet.getInt("principal"));
-                items.setRate(resultSet.getDouble("rate"));
+                items.setStartDate(resultSet.getString("startDate"));
+                items.setPrincipal(resultSet.getString("principal"));
+                items.setRate(resultSet.getString("rate"));
                 items.setDescription(resultSet.getString("description"));
                 items.setStatus(resultSet.getString("status"));
                 items.setCreatedAt(resultSet.getString("createdAt"));
                 items.setUpdatedAt(resultSet.getString("updatedAt"));
                 items.setCloserName(resultSet.getString("closerName"));
-                items.setTotalAmount(resultSet.getInt("totalAmount"));
-                items.setClosingAmount(resultSet.getInt("closingAmount"));
-                items.setDeadline(resultSet.getDate("deadline"));
+                items.setTotalAmount(resultSet.getString("totalAmount"));
+                items.setClosingAmount(resultSet.getString("closingAmount"));
+                items.setDeadline(resultSet.getString("deadline"));
 
                 itemList.add(items);
             }
@@ -321,56 +232,7 @@ public class BusinessImplementation {
                 }
             }
         }
-        System.out.println(itemList);
         return itemList;
-    }
-
-    public void addNewCustomer(Customers customers) throws BusinessException {
-        connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            String sql = "INSERT INTO customers (fullName, spouseName, fatherName, address, ward, createdAt, isActive, remarks, " +
-                    "updatedAt, contactNo) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, customers.getFullName());
-            statement.setString(2, customers.getSpouseName());
-            statement.setString(3, customers.getFatherName());
-            statement.setString(4, customers.getAddress());
-            statement.setInt(5, customers.getWard());
-            statement.setDate(6, Date.valueOf(LocalDate.now()));
-            statement.setInt(7, 1);
-            statement.setString(8, customers.getRemarks());
-            statement.setDate(9, Date.valueOf(LocalDate.now()));
-            statement.setLong(10, customers.getContactNo());
-
-            statement.executeUpdate();
-        } catch (SQLException se) {
-            throw new BusinessException(se);
-        } finally {
-            if (null != resultSet) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (null != statement) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (null != connection) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        System.out.println("Customer added successfully");
     }
 
     public ArrayList<Installment> getInstallmentData(int itemId) throws BusinessException {
@@ -421,8 +283,55 @@ public class BusinessImplementation {
                 }
             }
         }
-        System.out.println(installmentList);
         return installmentList;
+    }
+
+    public void addNewCustomer(Customers customers) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            String sql = "INSERT INTO customers (fullName, spouseName, fatherName, address, ward, createdAt, isActive, remarks, " +
+                    "updatedAt, contactNo) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, customers.getFullName());
+            statement.setString(2, customers.getSpouseName());
+            statement.setString(3, customers.getFatherName());
+            statement.setString(4, customers.getAddress());
+            statement.setInt(5, customers.getWard());
+            statement.setDate(6, Date.valueOf(LocalDate.now()));
+            statement.setInt(7, 1);
+            statement.setString(8, customers.getRemarks());
+            statement.setDate(9, Date.valueOf(LocalDate.now()));
+            statement.setLong(10, customers.getContactNo());
+
+            statement.executeUpdate();
+        } catch (SQLException se) {
+            throw new BusinessException(se);
+        } finally {
+            if (null != resultSet) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != statement) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != connection) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println("Customer added successfully");
     }
 
     public void addNewCustomerItem(Items items, int customerID) throws BusinessException {
@@ -434,9 +343,9 @@ public class BusinessImplementation {
                     " closingAmount, isActive, deadline, closingDate, customers_customerID) VALUES(?, ?, ?, ?,       ?, ?, ?, ?,      ?, ?, ?, ?,      ?, ?, ?, ?);";
             statement = connection.prepareStatement(sql);
             statement.setString(1, items.getType());
-            statement.setDate(2, items.getStartDate());
-            statement.setInt(3, items.getPrincipal());
-            statement.setDouble(4, items.getRate());
+            statement.setDate(2, Date.valueOf(items.getStartDate()));
+            statement.setInt(3, Integer.valueOf(items.getPrincipal()));
+            statement.setDouble(4, Double.valueOf(items.getRate()));
             statement.setString(5, items.getDescription());
             statement.setString(6, null);
             statement.setString(7, "not paid");
@@ -446,7 +355,7 @@ public class BusinessImplementation {
             statement.setInt(11, 10000);
             statement.setInt(12, 5000);
             statement.setInt(13, 1);
-            statement.setDate(14, items.getDeadline());
+            statement.setDate(14, Date.valueOf(items.getDeadline()));
             statement.setDate(15, Date.valueOf("2019-12-30"));
             statement.setInt(16, customerID);
 
@@ -520,6 +429,92 @@ public class BusinessImplementation {
         System.out.println("Installment added successfully");
     }
 
+    public User getUser(int id) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        User user = null;
+        try {
+            String sql = "SELECT * FROM userdata WHERE userID = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+            user = new User();
+
+            resultSet.next();
+            user.setName(resultSet.getString("Name"));
+            user.setFirmname(resultSet.getString("firmName"));
+            user.setAddress(resultSet.getString("Address"));
+            user.setContact(resultSet.getLong("contact"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != resultSet) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != statement) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != connection) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return user;
+    }
+
+    public void updateUserProfile(User user, int id) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            String sql = "UPDATE userdata SET Name = ?, firmName = ?, contact = ?, Address = ? WHERE userID = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getFirmname());
+            statement.setLong(3, user.getContact());
+            statement.setString(4, user.getAddress());
+            statement.setInt(5, id);
+
+            statement.executeUpdate();
+        } catch (SQLException se) {
+            throw new BusinessException(se);
+        } finally {
+            if (null != resultSet) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != statement) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != connection) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public Customers getCustomerByID(int customerID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -549,7 +544,6 @@ public class BusinessImplementation {
     }
 
     public void updateCustomerData(Customers customer) throws BusinessException {
-        System.out.println(customer.toString());
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -607,12 +601,12 @@ public class BusinessImplementation {
             items = new Items();
 
             resultSet.next();
-            items.setItemID(resultSet.getInt("itemID"));
-            items.setPrincipal(resultSet.getInt("principal"));
+            items.setItemID(resultSet.getString("itemID"));
+            items.setPrincipal(resultSet.getString("principal"));
             items.setType(resultSet.getString("type"));
-            items.setStartDate(resultSet.getDate("createdAt"));
-            items.setRate(resultSet.getDouble("rate"));
-            items.setDeadline(resultSet.getDate("deadline"));
+            items.setStartDate(resultSet.getString("createdAt"));
+            items.setRate(resultSet.getString("rate"));
+            items.setDeadline(resultSet.getString("deadline"));
             items.setDescription(resultSet.getString("description"));
         } catch (SQLException e) {
             e.printStackTrace();
@@ -628,13 +622,13 @@ public class BusinessImplementation {
             String sql = "UPDATE items SET principal = ?, type = ? startDate = ?, rate = ?, deadline = ?, description = ? WHERE " +
                     "userID = ?";
             statement = connection.prepareStatement(sql);
-            statement.setInt(1, item.getPrincipal());
+            statement.setInt(1, Integer.valueOf(item.getPrincipal()));
             statement.setString(2, item.getType());
-            statement.setDate(3, item.getStartDate());
-            statement.setDouble(4, item.getRate());
-            statement.setDate(5, item.getDeadline());
+            statement.setDate(3, Date.valueOf(item.getStartDate()));
+            statement.setDouble(4, Double.valueOf(item.getRate()));
+            statement.setDate(5, Date.valueOf(item.getDeadline()));
             statement.setString(6, item.getDescription());
-            statement.setInt(7, item.getItemID());
+            statement.setInt(7, Integer.valueOf(item.getItemID()));
 
             statement.executeUpdate();
         } catch (SQLException se) {
@@ -693,7 +687,7 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "UPDATE userdata SET depositAmount = ?, depositor = ?, date = ? WHERE installmentID = ?";
+            String sql = "UPDATE installment SET depositAmount = ?, depositor = ?, date = ? WHERE installmentID = ?";
             statement = connection.prepareStatement(sql);
             statement.setInt(1, installment.getDepositAmount());
             statement.setString(2, installment.getDepositor());

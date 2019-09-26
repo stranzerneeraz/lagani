@@ -22,7 +22,7 @@ public class ViewInstallmentDialogController {
     BusinessImplementation businessImplementation = new BusinessImplementation();
 
     public void initialize(Items selectedItem) throws BusinessException {
-        installmentList = businessImplementation.getInstallmentData(selectedItem.getItemID());
+        installmentList = businessImplementation.getInstallmentData(Integer.valueOf(selectedItem.getItemID()));
         for (Installment installment : installmentList) {
             observableInstallmentList.add(installment);
         }

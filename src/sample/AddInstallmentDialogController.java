@@ -69,7 +69,7 @@ public class AddInstallmentDialogController {
     }
 
     public void addInstallment() throws BusinessException {
-        int itemID = items.getItemID();
+        int itemID = Integer.valueOf(items.getItemID());
         BusinessImplementation businessImplementation = new BusinessImplementation();
         Installment installment = new Installment();
         installment.setDepositAmount(Integer.parseInt(installmentAmount.getText()));

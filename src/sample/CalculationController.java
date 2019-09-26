@@ -49,7 +49,7 @@ public class CalculationController {
     BusinessImplementation businessImplementation=new BusinessImplementation();
 
     public void initialize(Items items) throws BusinessException {
-        rate = items.getRate();
+        rate = Double.valueOf(items.getRate());
         rateFieldI.setText("@" + rate);
         rateFieldC.setText("@" + rate);
         updateInstallmentListView(items);
@@ -57,7 +57,7 @@ public class CalculationController {
     }
 
     public void updateInstallmentListView(Items items) throws BusinessException {
-        loadInstallmentData(items.getItemID());;
+        loadInstallmentData(Integer.valueOf(items.getItemID()));;
         for (Installment installment: installmentList) {
             observableInstallmentList.add(installment);
         }
@@ -99,8 +99,8 @@ public class CalculationController {
     }
 
     public void updateCalculationSection(Items items) {
-        int principal = items.getPrincipal();
-        int duration = calculateDurationInMonths(items.getStartDate());
+        int principal = Integer.valueOf(items.getPrincipal());
+        int duration = calculateDurationInMonths(Date.valueOf(items.getStartDate()));
         int interest = calculateInterestAmount(duration, rate, principal);
         int totalAmount = principal + interest;
         int grandTotal = totalAmount - totalInstallmentAmount;
