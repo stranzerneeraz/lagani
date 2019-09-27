@@ -193,7 +193,7 @@ public class BusinessImplementation {
                 items = new Items();
                 items.setItemID(resultSet.getString("itemID"));
                 items.setType(resultSet.getString("type"));
-                items.setStartDate(resultSet.getString("startDate"));
+                items.setStartDate(resultSet.getDate("startDate"));
                 items.setPrincipal(resultSet.getString("principal"));
                 items.setRate(resultSet.getString("rate"));
                 items.setDescription(resultSet.getString("description"));
@@ -203,7 +203,7 @@ public class BusinessImplementation {
                 items.setCloserName(resultSet.getString("closerName"));
                 items.setTotalAmount(resultSet.getString("totalAmount"));
                 items.setClosingAmount(resultSet.getString("closingAmount"));
-                items.setDeadline(resultSet.getString("deadline"));
+                items.setDeadline(resultSet.getDate("deadline"));
 
                 itemList.add(items);
             }
@@ -343,7 +343,7 @@ public class BusinessImplementation {
                     " closingAmount, isActive, deadline, closingDate, customers_customerID) VALUES(?, ?, ?, ?,       ?, ?, ?, ?,      ?, ?, ?, ?,      ?, ?, ?, ?);";
             statement = connection.prepareStatement(sql);
             statement.setString(1, items.getType());
-            statement.setDate(2, Date.valueOf(items.getStartDate()));
+            statement.setDate(2, items.getStartDate());
             statement.setInt(3, Integer.valueOf(items.getPrincipal()));
             statement.setDouble(4, Double.valueOf(items.getRate()));
             statement.setString(5, items.getDescription());
@@ -355,7 +355,7 @@ public class BusinessImplementation {
             statement.setInt(11, 10000);
             statement.setInt(12, 5000);
             statement.setInt(13, 1);
-            statement.setDate(14, Date.valueOf(items.getDeadline()));
+            statement.setDate(14, items.getDeadline());
             statement.setDate(15, Date.valueOf("2019-12-30"));
             statement.setInt(16, customerID);
 
@@ -479,13 +479,14 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "UPDATE userdata SET Name = ?, firmName = ?, contact = ?, Address = ? WHERE userID = ?";
+            String sql = "UPDATE userdata SET Name = ?, firmName = ?, contact = ?, email = ?, Address = ? WHERE userID = ?";
             statement = connection.prepareStatement(sql);
             statement.setString(1, user.getName());
             statement.setString(2, user.getFirmname());
             statement.setLong(3, user.getContact());
-            statement.setString(4, user.getAddress());
-            statement.setInt(5, id);
+            statement.setString(4, user.getEmail());
+            statement.setString(5, user.getAddress());
+            statement.setInt(6, id);
 
             statement.executeUpdate();
         } catch (SQLException se) {
@@ -604,9 +605,9 @@ public class BusinessImplementation {
             items.setItemID(resultSet.getString("itemID"));
             items.setPrincipal(resultSet.getString("principal"));
             items.setType(resultSet.getString("type"));
-            items.setStartDate(resultSet.getString("createdAt"));
+            items.setStartDate(resultSet.getDate("createdAt"));
             items.setRate(resultSet.getString("rate"));
-            items.setDeadline(resultSet.getString("deadline"));
+            items.setDeadline(resultSet.getDate("deadline"));
             items.setDescription(resultSet.getString("description"));
         } catch (SQLException e) {
             e.printStackTrace();
@@ -624,9 +625,9 @@ public class BusinessImplementation {
             statement = connection.prepareStatement(sql);
             statement.setInt(1, Integer.valueOf(item.getPrincipal()));
             statement.setString(2, item.getType());
-            statement.setDate(3, Date.valueOf(item.getStartDate()));
+            statement.setDate(3, item.getStartDate());
             statement.setDouble(4, Double.valueOf(item.getRate()));
-            statement.setDate(5, Date.valueOf(item.getDeadline()));
+            statement.setDate(5, item.getDeadline());
             statement.setString(6, item.getDescription());
             statement.setInt(7, Integer.valueOf(item.getItemID()));
 

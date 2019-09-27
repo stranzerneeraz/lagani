@@ -1,9 +1,11 @@
 package sample;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import constants.ApplicationConstants;
 import exception.BusinessException;
 import implementation.BusinessImplementation;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -26,6 +28,7 @@ import modal.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,23 +37,21 @@ import java.util.Set;
 
 public class MainApplicationController {
     @FXML
+    private TabPane tabPane;
+    @FXML
+    private Tab dashboardTab;
+    @FXML
+    private Tab viewCustomersTab;
+    @FXML
+    private Tab profileTab;
+    @FXML
+    private Tab adminTab;
+    @FXML
     private TableView<DashboardItem> dashboardTableView;
     @FXML
     private TableColumn<DashboardItem, Integer> serialNoDashboard;
     @FXML
-    private TableColumn<DashboardItem, Integer> customerIDDashboard;
-    @FXML
-    private TableColumn<DashboardItem, Integer> amountDashboard;
-    @FXML
-    private TableColumn<DashboardItem, String> nameDashboard;
-    @FXML
-    private TableColumn<DashboardItem, String> addressDashboard;
-    @FXML
     private Pagination dashboardTableViewPagination;
-    @FXML
-    private TableColumn durationDashboard;
-    @FXML
-    private TableColumn totalInstallmentDashboard;
     @FXML
     private Button btnLogout;
     @FXML
@@ -68,7 +69,7 @@ public class MainApplicationController {
     @FXML
     private Label spouseViewLabel;
     @FXML
-    public TableView<Items> itemsTableView;
+    private TableView<Items> itemsTableView;
     @FXML
     private TableColumn<Items, Integer> itemNo;
     @FXML
@@ -89,6 +90,8 @@ public class MainApplicationController {
     private TextField firmnameProfile;
     @FXML
     private TextField contactProfile;
+    @FXML
+    private TextField emailProfile;
     @FXML
     private TextField addressProfile;
     @FXML
@@ -158,24 +161,84 @@ public class MainApplicationController {
     @FXML
     private Button btnBackup;
 
+    private ObservableList<DashboardItem> dashboardItemObservableList;
     private ObservableList<Customers> customersObservableList = FXCollections.observableArrayList();
     private ObservableList<Items> itemsObservableList;
-    private ObservableList<DashboardItem> dashboardItemObservableList;
     private int id = LoginController.id();
     private String searchString = "";
     private Stage window;
     private Window dialogWindow;
-    int rowsPerPage = 5;
-    public static int test;
+    private int rowsPerPage = 5;
+    private int test;
 
     public MainApplicationController() {
         itemsObservableList = FXCollections.observableArrayList();
     }
 
-    Alert alertWarning = new Alert(Alert.AlertType.WARNING);
-    Alert alertSuccess = new Alert(AlertType.INFORMATION);
+    private Alert alertWarning = new Alert(Alert.AlertType.WARNING);
+    private Alert alertSuccess = new Alert(AlertType.INFORMATION);
     private BusinessImplementation businessImplementation = new BusinessImplementation();
     private Customers selectionCustomer = new Customers();
+
+    public void initialize() throws BusinessException {
+        dashboardTab();
+//        dashboardTab.selectedProperty().addListener(tabListener("dashboardTab"));
+//        viewCustomersTab.selectedProperty().addListener(tabListener("viewCustomersTab"));
+//        profileTab.selectedProperty().addListener(tabListener("profileTab"));
+//        adminTab.selectedProperty().addListener(tabListener("adminTab"));
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+            if (newTab == dashboardTab) {
+                try {
+                    dashboardTab();
+                } catch (BusinessException e) {
+                    e.printStackTrace();
+                }
+            } else if (newTab == viewCustomersTab) {
+                try {
+                    viewCustomers();
+                } catch (BusinessException e) {
+                    e.printStackTrace();
+                }
+            } else if (newTab == profileTab) {
+                try {
+                    profileTab();
+                } catch (BusinessException e) {
+                    e.printStackTrace();
+                }
+            } else if (newTab == adminTab) {
+                adminTab();
+            }
+        });
+    }
+
+    private ChangeListener<Boolean> tabListener(String tabName) {
+        return (obs, wasSelected, isNowSelected) -> {
+            if (isNowSelected) {
+                if (tabName.equals("dashboardTab")) {
+                    try {
+                        dashboardTab();
+                    } catch (BusinessException e) {
+                        e.printStackTrace();
+                    }
+                } else if (tabName.equals("viewCustomersTab")) {
+                    try {
+                        viewCustomers();
+                    } catch (BusinessException e) {
+                        e.printStackTrace();
+                    }
+                } else if (tabName.equals("profileTab")) {
+                    try {
+                        profileTab();
+                    } catch (BusinessException e) {
+                        e.printStackTrace();
+                    }
+                } else if (tabName.equals("adminTab")) {
+                    adminTab();
+                }
+            }
+        };
+    }
 
     @FXML
     public void dashboardTab() throws BusinessException {
@@ -186,12 +249,6 @@ public class MainApplicationController {
         dashboardTableViewPagination.setPageCount(pageCount);
         serialNoDashboard.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
                 dashboardTableView.getItems().indexOf(cellData.getValue()) + 1));
-        customerIDDashboard.setCellValueFactory(new PropertyValueFactory<>("customerID"));
-        amountDashboard.setCellValueFactory(new PropertyValueFactory<>("amount"));
-        nameDashboard.setCellValueFactory(new PropertyValueFactory<>("name"));
-        addressDashboard.setCellValueFactory(new PropertyValueFactory<>("address"));
-        durationDashboard.setCellValueFactory(new PropertyValueFactory<>("duration"));
-        totalInstallmentDashboard.setCellValueFactory(new PropertyValueFactory<>("totalInstallment"));
         dashboardTableView.setItems(dashboardItemObservableList);
     }
 
@@ -207,7 +264,7 @@ public class MainApplicationController {
      */
     public void updateProfile() throws BusinessException {
         alertWarning.setTitle("Warning Dialog!");
-        User user = null;
+        User user = new User();
         if (nameProfile.getText().length() <= 0) {
             nameProfile.setStyle("-fx-text-fill: red;");
             alertWarning.setContentText("Enter name");
@@ -220,23 +277,28 @@ public class MainApplicationController {
             contactProfile.setStyle("-fx-text-fill: red;");
             alertWarning.setContentText("Enter contact number");
             alertWarning.showAndWait();
+        } else if (!emailProfile.getText().matches("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])")) {
+            emailProfile.setStyle("-fx-text-fill: red;");
+            alertWarning.setContentText("Enter email address");
+            alertWarning.showAndWait();
         } else if (addressProfile.getText().length() <= 0) {
             addressProfile.setStyle("-fx-text-fill: red;");
             alertWarning.setContentText("Enter address");
             alertWarning.showAndWait();
-    } else {
-        nameProfile.setStyle("-fx-text-fill: black;");
-        firmnameProfile.setStyle("-fx-text-fill: black;");
-        contactProfile.setStyle("-fx-text-fill: black;");
-        addressProfile.setStyle("-fx-text-fill: black;");
+        } else {
+            nameProfile.setStyle("-fx-text-fill: black;");
+            firmnameProfile.setStyle("-fx-text-fill: black;");
+            contactProfile.setStyle("-fx-text-fill: black;");
+            addressProfile.setStyle("-fx-text-fill: black;");
 
-        user.setName(nameProfile.getText());
-        user.setFirmname(firmnameProfile.getText());
-        user.setContact(Long.parseLong(contactProfile.getText()));
-        user.setAddress(addressProfile.getText());
-        businessImplementation.updateUserProfile(user, id);
+            user.setName(nameProfile.getText());
+            user.setFirmname(firmnameProfile.getText());
+            user.setContact(Long.parseLong(contactProfile.getText()));
+            user.setEmail(emailProfile.getText());
+            user.setAddress(addressProfile.getText());
+            businessImplementation.updateUserProfile(user, id);
+        }
     }
-}
 
     /**
      * View Profile of the User
@@ -337,12 +399,8 @@ public class MainApplicationController {
         ArrayList<Items> itemList = businessImplementation.getItems(id);
         itemsObservableList = FXCollections.observableArrayList(itemList);
 
+        Tooltip tooltip = new Tooltip();
         itemNo.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(itemsTableView.getItems().indexOf(cellData.getValue()) + 1));
-//        itemType.setCellValueFactory(new PropertyValueFactory<>("type"));
-//        itemDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-//        itemAmount.setCellValueFactory(new PropertyValueFactory<>("principal"));
-//        itemStartDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
-//        itemDeadline.setCellValueFactory(new PropertyValueFactory<>("deadline"));
 
         viewInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
         Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryView = new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
@@ -358,6 +416,8 @@ public class MainApplicationController {
                             setGraphic(null);
                             setText(null);
                         } else {
+                            tooltip.setText("" + itemsObservableList.size());
+                            setTooltip(tooltip);
                             btnViewInstallment.setOnAction(event -> {
                                 Items selectionItem = getTableView().getItems().get(getIndex());
                                 Dialog<ButtonType> dialog = new Dialog<>();
@@ -403,6 +463,7 @@ public class MainApplicationController {
                         if (empty) {
                             setGraphic(null);
                             setText(null);
+
                         } else {
                             btnAddInstallment.setOnAction(event -> {
                                 Items selectedItem = getTableView().getItems().get(getIndex());
@@ -478,12 +539,12 @@ public class MainApplicationController {
         calculate.setCellFactory(cellFactoryCalculate);
 
         itemsTableView.setItems(itemsObservableList);
-//        ScrollBar table1HorizontalScrollBar = findScrollBar(itemsTableView, Orientation.HORIZONTAL);
-//        ScrollBar table1VerticalScrollBar = findScrollBar(itemsTableView, Orientation.VERTICAL);
-//        table1HorizontalScrollBar.setVisible(true);
-//        table1VerticalScrollBar.setVisible(false);
-//        VirtualFlow flow1 = (VirtualFlow) itemsTableView.lookup(".virtual-flow");
-//        flow1.requestLayout();
+        ScrollBar table1HorizontalScrollBar = findScrollBar(itemsTableView, Orientation.HORIZONTAL);
+        ScrollBar table1VerticalScrollBar = findScrollBar(itemsTableView, Orientation.VERTICAL);
+        table1HorizontalScrollBar.setVisible(true);
+        table1VerticalScrollBar.setVisible(false);
+        VirtualFlow flow1 = (VirtualFlow) itemsTableView.lookup(".virtual-flow");
+        flow1.requestLayout();
     }
 
     private ScrollBar findScrollBar(TableView<?> table, Orientation orientation) {
@@ -511,7 +572,10 @@ public class MainApplicationController {
         try {
             dialog.getDialogPane().setContent(fxmlLoader.load());
             AddNewCustomerDialogController addNewCustomerDialogController = fxmlLoader.getController();
-            addNewCustomerDialogController.initialize();
+            test = addNewCustomerDialogController.initialize();
+            if (test != 0) {
+                viewCustomers();
+            }
             dialogWindow.setOnCloseRequest(event -> dialog.close());
             dialog.showAndWait();
         } catch (IOException e) {
@@ -523,7 +587,7 @@ public class MainApplicationController {
      * Adds new Item for the customer
      */
     @FXML
-    public void addNewItem() throws BusinessException, IOException {
+    public void addNewItem() throws IOException {
         Stage stage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("addNewItemDialog.fxml"));
@@ -534,15 +598,12 @@ public class MainApplicationController {
         AddNewItemDialogController addNewItemDialogController = fxmlLoader.getController();
         addNewItemDialogController.updateDialogBox(selectionCustomer);
         try {
-            System.out.println(test);
             fetchCustomerItem(selectionCustomer.getCustomerID());
         } catch (BusinessException e) {
             e.printStackTrace();
         }
-
         stage.showAndWait();
         stage.setOnCloseRequest(event -> {
-            System.out.println("closing");
             stage.close();
         });
 //        Dialog<ButtonType> dialog = new Dialog<>();
@@ -558,7 +619,6 @@ public class MainApplicationController {
 //            Scene scene = dialog.getDialogPane().getScene();
 //
 //            dialogWindow.setOnCloseRequest((WindowEvent event) -> {
-//                System.out.println("closing window");
 //                dialog.close();
 //            });
 //
@@ -581,45 +641,66 @@ public class MainApplicationController {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning Dialog");
         btnViewCustomer.setOnAction(event -> {
-            int customerID = Integer.parseInt(getCustomerID.getText());
-            try {
-                Customers customers = businessImplementation.getCustomerByID(customerID);
-                if (customers == null) {
-                    alert.setContentText("Enter valid customer ID");
-                    alert.showAndWait();
-                } else {
-                    adminViewCustomer(customers);
+            String customerID = getCustomerID.getText();
+            if (!customerID.matches("[0-9]*[0-9]+")) {
+                getCustomerID.setStyle("-fx-text-fill: red;");
+                alertWarning.setContentText("Enter Customer ID");
+                alertWarning.showAndWait();
+            } else {
+                getCustomerID.setStyle("-fx-text-fill: black;");
+                try {
+                    Customers customers = businessImplementation.getCustomerByID(Integer.parseInt(customerID));
+                    if (customers == null) {
+                        alert.setContentText("Enter valid customer ID");
+                        alert.showAndWait();
+                    } else {
+                        adminViewCustomer(customers);
+                    }
+                } catch (BusinessException e) {
+                    e.printStackTrace();
                 }
-            } catch (BusinessException e) {
-                e.printStackTrace();
             }
         });
         btnViewItem.setOnAction(event -> {
-            int itemID = Integer.parseInt(getItemID.getText());
-            try {
-                Items items = businessImplementation.getItemByID(itemID);
-                if (null == items) {
-                    alert.setContentText("Enter valid item ID");
-                    alert.showAndWait();
-                } else {
-                    adminViewItem(items);
+            String itemID = getItemID.getText();
+            if (!itemID.matches("[0-9]*[0-9]+")) {
+                getItemID.setStyle("-fx-text-fill: red;");
+                alertWarning.setContentText("Enter Item ID");
+                alertWarning.showAndWait();
+            } else {
+                getItemID.setStyle("-fx-text-fill: black;");
+                try {
+                    Items items = businessImplementation.getItemByID(Integer.parseInt(itemID));
+                    if (null == items) {
+                        alert.setContentText("Enter valid item ID");
+                        alert.showAndWait();
+                    } else {
+                        adminViewItem(items);
+                    }
+                } catch (BusinessException e) {
+                    e.printStackTrace();
                 }
-            } catch (BusinessException e) {
-                e.printStackTrace();
             }
         });
         btnViewInstallment.setOnAction(event -> {
-            int installmentID = Integer.parseInt(getInstallmentID.getText());
-            try {
-                Installment installment = businessImplementation.getInstallmentByID(installmentID);
-                if (null == installment) {
-                    alert.setContentText("Enter valid installment ID");
-                    alert.showAndWait();
-                } else {
-                    adminViewInstallment(installment);
+            String installmentID = getInstallmentID.getText();
+            if (!installmentID.matches("[0-9]*[0-9]+")) {
+                getInstallmentID.setStyle("-fx-text-fill: red;");
+                alertWarning.setContentText("Enter Installment ID");
+                alertWarning.showAndWait();
+            } else {
+                getInstallmentID.setStyle("-fx-text-fill: black;");
+                try {
+                    Installment installment = businessImplementation.getInstallmentByID(Integer.parseInt(installmentID));
+                    if (null == installment) {
+                        alert.setContentText("Enter valid installment ID");
+                        alert.showAndWait();
+                    } else {
+                        adminViewInstallment(installment);
+                    }
+                } catch (BusinessException e) {
+                    e.printStackTrace();
                 }
-            } catch (BusinessException e) {
-                e.printStackTrace();
             }
         });
         btnViewBackup.setOnAction(event -> {
@@ -635,6 +716,7 @@ public class MainApplicationController {
         customerAdminPanel.setVisible(true);
         itemAdminPanel.setVisible(false);
         installmentAdminPanel.setVisible(false);
+        backupAdminPanel.setVisible(false);
         alertWarning.setTitle("Warning Dialog!");
 
         adminFullName.setText(customers.getFullName());
@@ -703,12 +785,14 @@ public class MainApplicationController {
         customerAdminPanel.setVisible(false);
         itemAdminPanel.setVisible(true);
         installmentAdminPanel.setVisible(false);
+        backupAdminPanel.setVisible(false);
         alertWarning.setTitle("Warning Dialog!");
 
         adminItemAmount.setText(items.getPrincipal());
         adminTypeChooser.setValue(items.getType());
-//        adminStartDate.setValue(LocalDate.);
+        adminStartDate.setValue(items.getStartDate().toLocalDate());
         adminRate.setText(items.getRate());
+        adminDeadline.setValue(items.getDeadline().toLocalDate());
         adminDescription.setText(items.getDescription());
 
         btnUpdateItem.setOnAction(event -> {
@@ -740,9 +824,9 @@ public class MainApplicationController {
                 adminDescription.setStyle("-fx-text-fill: black;");
 
                 items.setPrincipal(adminItemAmount.getText());
-                items.setStartDate(String.valueOf(adminStartDate.getValue()));
+                items.setStartDate(Date.valueOf(adminStartDate.getValue()));
                 items.setRate(adminRate.getText());
-                items.setDeadline(String.valueOf(adminDeadline.getValue()));
+                items.setDeadline(Date.valueOf(adminDeadline.getValue()));
                 items.setDescription(adminDescription.getText());
                 try {
                     businessImplementation.updateItemData(items);
@@ -757,10 +841,12 @@ public class MainApplicationController {
         customerAdminPanel.setVisible(false);
         itemAdminPanel.setVisible(false);
         installmentAdminPanel.setVisible(true);
+        backupAdminPanel.setVisible(false);
         alertWarning.setTitle("Warning Dialog!");
 
         adminInstallmentAmount.setText("" + installment.getDepositAmount());
         adminDepositor.setText(installment.getDepositor());
+        adminDepositDate.setValue(installment.getDate().toLocalDate());
 
         btnUpdateInstallment.setOnAction(event -> {
             if (!adminInstallmentAmount.getText().matches("^[0-9]+(\\.[0-9]+)?$")) {
@@ -819,25 +905,34 @@ public class MainApplicationController {
 
     public void backup() {
         btnBackup.setVisible(false);
+        String osName = System.getProperty("os.name").toLowerCase();
+        boolean isMacOs = osName.startsWith("mac");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+        LocalDateTime now = LocalDateTime.now();
+        String formatDateTime = now.format(formatter);
         btnBrowse.setOnAction(event -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             File selectedDirectory = directoryChooser.showDialog(mainBorderPane.getScene().getWindow());
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-            String formatDateTime = now.format(formatter);
-            File file = new File(selectedDirectory+"/Lagani-dump-"+ formatDateTime +".sql");
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (null != selectedDirectory) {
+                if (isMacOs) {
+                    System.out.println("get an windows pc");
+                } else {
+                    File file = new File(selectedDirectory + "/Lagani-dump-" + formatDateTime + ".sql");
+                    try {
+                        file.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    adminPathViewer.setText(String.valueOf(file));
+                    btnBackup.setVisible(true);
+                    btnBackup.setOnAction(event1 -> backupWindowsDB(ApplicationConstants.DB_USERNAME, ApplicationConstants.DB_PASSWORD, ApplicationConstants.DB_NAME, file));
+                }
             }
-            adminPathViewer.setText(String.valueOf(file));
-            btnBackup.setVisible(true);
-            btnBackup.setOnAction(event1 -> backupDB(ApplicationConstants.DB_USERNAME, ApplicationConstants.DB_PASSWORD, ApplicationConstants.DB_NAME, file));
         });
+
     }
 
-    public boolean backupDB(String dbUsername, String dbPassword, String dbName, File path) {
+    public boolean backupWindowsDB(String dbUsername, String dbPassword, String dbName, File path) {
         String executeCmd = "C:/Program Files/MySQL/MySQL Server 8.0/bin/mysqldump.exe -u" + dbUsername + " -p" + dbPassword + " --add-drop-database -B " + dbName + " -r" + path;
         Process runtimeProcess;
         try {
@@ -845,15 +940,13 @@ public class MainApplicationController {
             int processComplete = runtimeProcess.waitFor();
             if (processComplete == 0) {
                 alertSuccess.setTitle("Success Dialog");
-                alertSuccess.setContentText("Backup created successfully at ");
+                alertSuccess.setContentText("Backup created successfully at " + path);
                 alertSuccess.showAndWait();
-                System.out.println("Backup created successfully");
                 return true;
             } else {
                 alertWarning.setTitle("Warning Dialog");
                 alertWarning.setContentText("Could not create the backup");
                 alertWarning.showAndWait();
-                System.out.println("Could not create the backup");
             }
         } catch (Exception ex) {
             ex.printStackTrace();

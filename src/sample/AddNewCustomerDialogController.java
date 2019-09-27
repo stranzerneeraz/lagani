@@ -28,8 +28,10 @@ public class AddNewCustomerDialogController {
     @FXML
     private Button btnUpdateCustomer;
 
-    public void initialize() {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+    private Alert alert = new Alert(Alert.AlertType.WARNING);
+    public int customerCheck;
+
+    public int initialize() {
         alert.setTitle("Warning Dialog");
         btnUpdateCustomer.setOnAction(event -> {
             if (fullNameField.getText().length() <= 0) {
@@ -74,6 +76,7 @@ public class AddNewCustomerDialogController {
                     if (scene != null) {
                         Window window = scene.getWindow();
                         if (window != null) {
+                            customerCheck = 1;
                             window.hide();
                         }
                     }
@@ -82,9 +85,10 @@ public class AddNewCustomerDialogController {
                 }
             }
         });
+        return customerCheck;
     }
 
-    public void addNewCustomer() throws BusinessException {
+    public int addNewCustomer() throws BusinessException {
         BusinessImplementation businessImplementation = new BusinessImplementation();
         Customers customers = new Customers();
         customers.setFullName(fullNameField.getText());
@@ -94,6 +98,8 @@ public class AddNewCustomerDialogController {
         customers.setSpouseName(spouseNameField.getText());
         customers.setContactNo(Long.parseLong(contactNumberField.getText()));
         customers.setRemarks(remarksField.getText());
+        customerCheck = 1;
         businessImplementation.addNewCustomer(customers);
+        return customerCheck;
     }
 }

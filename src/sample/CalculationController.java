@@ -100,7 +100,7 @@ public class CalculationController {
 
     public void updateCalculationSection(Items items) {
         int principal = Integer.valueOf(items.getPrincipal());
-        int duration = calculateDurationInMonths(Date.valueOf(items.getStartDate()));
+        int duration = calculateDurationInMonths(items.getStartDate());
         int interest = calculateInterestAmount(duration, rate, principal);
         int totalAmount = principal + interest;
         int grandTotal = totalAmount - totalInstallmentAmount;

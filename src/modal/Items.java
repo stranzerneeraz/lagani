@@ -7,7 +7,7 @@ import java.sql.Date;
 public class Items {
     private SimpleStringProperty itemID = new SimpleStringProperty("");
     private SimpleStringProperty type = new SimpleStringProperty("");
-    private SimpleStringProperty startDate = new SimpleStringProperty("");
+    private Date startDate;
     private SimpleStringProperty principal = new SimpleStringProperty("");
     private SimpleStringProperty rate = new SimpleStringProperty("");
     private SimpleStringProperty description = new SimpleStringProperty("");
@@ -17,20 +17,20 @@ public class Items {
     private SimpleStringProperty closerName = new SimpleStringProperty("");
     private SimpleStringProperty totalAmount = new SimpleStringProperty("");
     private SimpleStringProperty closingAmount = new SimpleStringProperty("");
-    private SimpleStringProperty deadline = new SimpleStringProperty("");
+    private Date deadline;
     private SimpleStringProperty closingDate = new SimpleStringProperty("");
 
     public Items() {
     }
 
-    public Items(String type, Date startDate, int principal, Double rate, Date deadline, String description) {
-        this.type.set(type);
-        this.startDate.set(String.valueOf(startDate));
-        this.principal.set(String.valueOf(principal));
-        this.rate.set(String.valueOf(rate));
-        this.deadline.set(String.valueOf(deadline));
-        this.description.set(description);
-    }
+//    public Items(String type, Date startDate, int principal, Double rate, Date deadline, String description) {
+//        this.type.set(type);
+//        this.startDate.set(String.valueOf(startDate));
+//        this.principal.set(String.valueOf(principal));
+//        this.rate.set(String.valueOf(rate));
+//        this.deadline.set(String.valueOf(deadline));
+//        this.description.set(description);
+//    }
 
     public String getItemID() {
         return itemID.get();
@@ -56,16 +56,12 @@ public class Items {
         this.type.set(type);
     }
 
-    public String getStartDate() {
-        return startDate.get();
-    }
-
-    public SimpleStringProperty startDateProperty() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
-        this.startDate.set(startDate);
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public String getPrincipal() {
@@ -176,16 +172,12 @@ public class Items {
         this.closingAmount.set(closingAmount);
     }
 
-    public String getDeadline() {
-        return deadline.get();
-    }
-
-    public SimpleStringProperty deadlineProperty() {
+    public Date getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(String deadline) {
-        this.deadline.set(deadline);
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
     }
 
     public String getClosingDate() {
@@ -218,6 +210,7 @@ public class Items {
                 ", closingDate=" + closingDate +
                 '}';
     }
+
 
     //    private int itemID;
 //    private String type;

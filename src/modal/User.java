@@ -4,6 +4,7 @@ public class User {
     private int userID;
     private String name;
     private String firmname;
+    private String email;
     private String address;
     private long contact;
 
@@ -31,6 +32,14 @@ public class User {
         this.firmname = firmname;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getAddress() {
         return address;
     }
@@ -53,8 +62,9 @@ public class User {
                 "userID=" + userID +
                 ", name='" + name + '\'' +
                 ", firmname='" + firmname + '\'' +
+                ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
-                ", contact='" + contact + '\'' +
+                ", contact=" + contact +
                 '}';
     }
 }

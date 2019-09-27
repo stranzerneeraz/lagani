@@ -49,6 +49,22 @@
     -fx-padding:0;
 }
 
+.table-view .column-header .label{
+   -fx-font-weight: bold;
+   -fx-alignment: CENTER_LEFT;
+}
+
+.table-view .cell{
+   -fx-cell-size: 30;
+  -fx-alignment: center;
+  -fx-alignment: CENTER_LEFT;
+}
+
+.table-row-cell:selected {
+   -fx-background-color: whitesmoke;
+   -fx-text-background-color:  #6622CC;
+}
+
 #hbox-header {
     -fx-alignment: center;
     -fx-padding: 5;
@@ -62,7 +78,7 @@
 }
 
 #tableStyle {
-    -fx-spacing: 1 5 1 5;
+    -fx-spacing: 5;
 }
 #btnAddFXML {
     -fx-background-color: rgba(0,0,0,0.08),
@@ -122,7 +138,24 @@
     -fx-pref-width: 400px;
 }
 
+#profileHbox {
+    -fx-padding: 50 0;
+}
+
 #admin-VBox {
     -fx-padding: 30 0 0 40;
     -fx-spacing: 5;
+}
+
+#btnBackupView {
+    -fx-background-color: rgba(0,0,0,0.08),
+                              linear-gradient(#9a9a9a, #909090),
+                              linear-gradient(white 0%, #f3f3f3 50%, #ececec 51%, #f2f2f2 100%);
+    -fx-background-insets: 0 0 -1 0,0,1;
+    -fx-background-radius: 5,5,4;
+    -fx-padding: 3 10 3 10;
+    -fx-text-fill: #242d35;
+    -fx-font-size: 14px;
+    -fx-pref-height: 26px;
+    -fx-pref-width: 180px;
 }

@@ -10,6 +10,7 @@ import javafx.stage.Window;
 import modal.Customers;
 import modal.Items;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 public class AddNewItemDialogController {
@@ -99,9 +100,9 @@ public class AddNewItemDialogController {
         Items items = new Items();
         items.setPrincipal(amountField.getText());
         items.setType(typeChooser.getValue().toString());
-        items.setStartDate(String.valueOf(startDatePicker.getValue()));
+        items.setStartDate(Date.valueOf(startDatePicker.getValue()));
         items.setRate(rateField.getText());
-        items.setDeadline(String.valueOf(deadlinePicker.getValue()));
+        items.setDeadline(Date.valueOf(deadlinePicker.getValue()));
         items.setDescription(descriptionArea.getText());
         businessImplementation.addNewCustomerItem(items, customerID);
        return true;
