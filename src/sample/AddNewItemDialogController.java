@@ -40,20 +40,20 @@ public class AddNewItemDialogController {
         deadlinePicker.setValue(LocalDate.now().plusYears(1));
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warning Dialog");
-        final int[] test = {0};
 
         btnUpdateNewItem.setOnAction(event -> {
             String amountString = amountField.getText();
-            String itemType = typeChooser.getValue().toString();
             LocalDate startDate = startDatePicker.getValue();
             String rateString = rateField.getText();
             LocalDate deadline = deadlinePicker.getValue();
             String description = descriptionArea.getText();
 
             if (!amountString.matches("^[0-9]+(\\.[0-9]+)?$")) {
-                amountField.setStyle("-fx-text-fill: red;");
-                alert.setContentText("Input fields not valid");
-                alert.showAndWait();
+                if (Integer.parseInt(amountString) > 2_147_483_647) {
+                    amountField.setStyle("-fx-text-fill: red;");
+                    alert.setContentText("Input fields not valid");
+                    alert.showAndWait();
+                }
             } else if (!(startDate.compareTo(LocalDate.now()) <= 0)) {
                 startDatePicker.setStyle("-fx-text-fill: red;");
                 alert.setContentText("Date field should be upto today");

@@ -1,12 +1,12 @@
+
+
 .label {
     -fx-font-size: 14px;
-    -fx-font-family: Times New Roman;
+    -fx-font-family: Arial;
 }
 
 .button {
-    -fx-background-color: rgba(0,0,0,0.08),
-                          linear-gradient(#9a9a9a, #909090),
-                          linear-gradient(white 0%, #f3f3f3 50%, #ececec 51%, #f2f2f2 100%);
+    -fx-background-color: rgba(0,0,0,0.08),linear-gradient(#9a9a9a, #909090), linear-gradient(white 0%, #f3f3f3 50%, #ececec 51%, #f2f2f2 100%);
     -fx-background-insets: 0 0 -1 0,0,1;
     -fx-background-radius: 5,5,4;
     -fx-padding: 3 10 3 10;
@@ -17,9 +17,13 @@
 }
 
 .tab-pane {
-    -fx-tab-min-width:90px;
+    -fx-tab-min-width:100px;
     -fx-open-tab-animation: grow;
     -fx-close-tab-animation: grow;
+}
+
+.split-pane {
+    -fx-padding: 0 5 0 5;
 }
 
 .tab .tab-label {
@@ -49,6 +53,17 @@
     -fx-padding:0;
 }
 
+.table-view .column-header .label{
+   -fx-font-weight: bold;
+   -fx-alignment: CENTER_LEFT;
+}
+
+.table-view .cell{
+   -fx-cell-size: 30;
+  -fx-alignment: center;
+  -fx-alignment: CENTER_LEFT;
+}
+
 #hbox-header {
     -fx-alignment: center;
     -fx-padding: 5;
@@ -62,7 +77,11 @@
 }
 
 #tableStyle {
-    -fx-spacing: 1 5 1 5;
+    -fx-spacing: 5;
+}
+
+#itemsTableView {
+    -fx-padding: 2;
 }
 #btnAddFXML {
     -fx-background-color: rgba(0,0,0,0.08),
@@ -77,8 +96,22 @@
     -fx-pref-width: 200px;
 }
 
-#pagination {
+.pagination {
+    -fx-padding: 0 5 0 5;
     -fx-page-information-visible: false;
+}
+
+.pagination > .pagination-control > .control-box > .number-button:hover,
+.pagination > .pagination-control > .control-box > .bullet-button:hover,
+.pagination > .pagination-control > .control-box > .left-arrow-button:hover,
+.pagination > .pagination-control > .control-box > .right-arrow-button:hover {
+    -fx-background-insets: 0;
+    -fx-background-color: lightgray;
+}
+
+.pagination > .pagination-control > .control-box > .number-button:selected,
+.pagination > .pagination-control > .control-box > .bullet-button:selected{
+    -fx-background-insets: 0;
 }
 
 #btnAdd{
@@ -100,6 +133,7 @@
 
 #customerVBox {
     -fx-padding: 3 10 3 10;
+    -fx-spacing: 4;
 }
 
 #calculationWindow {
@@ -123,6 +157,19 @@
 }
 
 #admin-VBox {
-    -fx-padding: 30 0 0 40;
+    -fx-padding: 30 0 0 30;
     -fx-spacing: 5;
+}
+
+#btnBackupView {
+    -fx-background-color: rgba(0,0,0,0.08),
+                              linear-gradient(#9a9a9a, #909090),
+                              linear-gradient(white 0%, #f3f3f3 50%, #ececec 51%, #f2f2f2 100%);
+    -fx-background-insets: 0 0 -1 0,0,1;
+    -fx-background-radius: 5,5,4;
+    -fx-padding: 3 10 3 10;
+    -fx-text-fill: #242d35;
+    -fx-font-size: 14px;
+    -fx-pref-height: 26px;
+    -fx-pref-width: 180px;
 }

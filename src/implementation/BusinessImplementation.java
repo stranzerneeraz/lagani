@@ -1,5 +1,6 @@
 package implementation;
 
+import constants.ApplicationConstants;
 import database.DatabaseConnection;
 import exception.BusinessException;
 import modal.*;
@@ -10,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class BusinessImplementation {
-    Connection connection = null;
+    private Connection connection = null;
 
     public int authenticateUser(String username, String password) throws BusinessException {
         connection = DatabaseConnection.getConnection();
@@ -18,7 +19,7 @@ public class BusinessImplementation {
         ResultSet resultSet = null;
         int id = 0;
         try {
-            String sql = "SELECT * FROM userdata WHERE username = ? AND password = ?";
+            String sql = ApplicationConstants.USER_AUTHENTICATION_SQL;
             statement = connection.prepareStatement(sql);
             statement.setString(1, username);
             statement.setString(2, password);
@@ -26,8 +27,6 @@ public class BusinessImplementation {
 
             if (resultSet.next()) {
                 id = resultSet.getInt("userID");
-            } else {
-                id = 0;
             }
         } catch (SQLException se) {
             throw new BusinessException(se);
@@ -58,20 +57,59 @@ public class BusinessImplementation {
         return id;
     }
 
-    public ArrayList<DashboardItem> getDashboardItem() throws BusinessException {
+    public int countDashboardItem() throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-        DashboardItem dashboardItem = null;
-        ArrayList<DashboardItem> itemArrayList = null;
+        int count = 0;
         try {
-            String sql = "SELECT * FROM customers INNER JOIN items ON customers.customerID = items.customers_customerID " +
-                    "LEFT OUTER JOIN (SELECT items_itemID, sum(depositAmount) AS installmentAmount FROM installment " +
-                    "GROUP BY items_itemID) AS installments ON items.itemID = installments.items_itemID ORDER BY customerID;";
+            String sql = ApplicationConstants.COUNT_DASHBOARD_ITEM_SQL;
             statement = connection.prepareStatement(sql);
             resultSet = statement.executeQuery();
-            itemArrayList = new ArrayList<>();
 
+            resultSet.next();
+            count = resultSet.getInt(1);
+        } catch (
+                SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != resultSet) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != statement) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != connection) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return count;
+    }
+
+    public ArrayList<DashboardItem> getDashboardItem(int offset) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        DashboardItem dashboardItem;
+        ArrayList<DashboardItem> itemArrayList = null;
+        try {
+            String sql = ApplicationConstants.GET_DASHBOARD_ITEM_SQL;
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, offset);
+            resultSet = statement.executeQuery();
+            itemArrayList = new ArrayList<>();
 
             while (resultSet.next()) {
                 dashboardItem = new DashboardItem();
@@ -119,11 +157,10 @@ public class BusinessImplementation {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-        Customers customers = null;
-        ArrayList<Customers> customerList = null;
+        Customers customers;
+        ArrayList<Customers> customerList;
         try {
-            String sql = "SELECT * FROM customers WHERE customerID like ? or fullName like ? or address like ? or fatherName like ? or spouseName like ? " +
-                    "ORDER BY fullName ASC;";
+            String sql = ApplicationConstants.GET_CUSTOMERS_SQL;
             statement = connection.prepareStatement(sql);
             statement.setString(1, "%" + searchString + "%");
             statement.setString(2, "%" + searchString + "%");
@@ -180,10 +217,10 @@ public class BusinessImplementation {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-        Items items = null;
-        ArrayList<Items> itemList = null;
+        Items items;
+        ArrayList<Items> itemList;
         try {
-            String sql = "SELECT * FROM items WHERE customers_customerID = ? ORDER BY startDate DESC";
+            String sql = ApplicationConstants.GET_ITEMS_SQL;
             statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -239,10 +276,10 @@ public class BusinessImplementation {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-        Installment installment = null;
-        ArrayList<Installment> installmentList = null;
+        Installment installment;
+        ArrayList<Installment> installmentList;
         try {
-            String sql = "select * from installment where items_itemId=? ORDER BY date ASC";
+            String sql = ApplicationConstants.GET_INSTALLMENT_DATA_SQL;
             statement = connection.prepareStatement(sql);
             statement.setInt(1, itemId);
             resultSet = statement.executeQuery();
@@ -291,8 +328,7 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "INSERT INTO customers (fullName, spouseName, fatherName, address, ward, createdAt, isActive, remarks, " +
-                    "updatedAt, contactNo) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = ApplicationConstants.ADD_NEW_CUSTOMER_SQL;
             statement = connection.prepareStatement(sql);
             statement.setString(1, customers.getFullName());
             statement.setString(2, customers.getSpouseName());
@@ -339,24 +375,23 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "INSERT INTO items (type, startDate, principal, rate, description, image, status, createdAt, updatedAt, closerName, totalAmount, " +
-                    " closingAmount, isActive, deadline, closingDate, customers_customerID) VALUES(?, ?, ?, ?,       ?, ?, ?, ?,      ?, ?, ?, ?,      ?, ?, ?, ?);";
+            String sql = ApplicationConstants.ADD_NEW_ITEM_SQL;
             statement = connection.prepareStatement(sql);
             statement.setString(1, items.getType());
             statement.setDate(2, items.getStartDate());
-            statement.setInt(3, Integer.valueOf(items.getPrincipal()));
-            statement.setDouble(4, Double.valueOf(items.getRate()));
+            statement.setInt(3, Integer.parseInt(items.getPrincipal()));
+            statement.setDouble(4, Double.parseDouble(items.getRate()));
             statement.setString(5, items.getDescription());
             statement.setString(6, null);
             statement.setString(7, "not paid");
-            statement.setDate(8, Date.valueOf("2019-1-1"));
-            statement.setDate(9, Date.valueOf("2019-12-12"));
+            statement.setDate(8, Date.valueOf(LocalDate.now().plusDays(-1)));
+            statement.setDate(9, Date.valueOf(LocalDate.now()));
             statement.setString(10, "Bill Gates");
             statement.setInt(11, 10000);
             statement.setInt(12, 5000);
             statement.setInt(13, 1);
             statement.setDate(14, items.getDeadline());
-            statement.setDate(15, Date.valueOf("2019-12-30"));
+            statement.setDate(15, Date.valueOf(LocalDate.now().plusYears(1)));
             statement.setInt(16, customerID);
 
             statement.executeUpdate();
@@ -393,7 +428,7 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "INSERT INTO installment (depositor, depositAmount, date, items_itemID) VALUES(?, ?, ?, ?);";
+            String sql = ApplicationConstants.ADD_NEW_INSTALLMENT_SQL;
             statement = connection.prepareStatement(sql);
             statement.setString(1, installment.getDepositor());
             statement.setInt(2, installment.getDepositAmount());
@@ -435,7 +470,7 @@ public class BusinessImplementation {
         ResultSet resultSet = null;
         User user = null;
         try {
-            String sql = "SELECT * FROM userdata WHERE userID = ?";
+            String sql = ApplicationConstants.GET_USER_DATA_SQL;
             statement = connection.prepareStatement(sql);
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
@@ -445,6 +480,7 @@ public class BusinessImplementation {
             user.setName(resultSet.getString("Name"));
             user.setFirmname(resultSet.getString("firmName"));
             user.setAddress(resultSet.getString("Address"));
+            user.setEmail(resultSet.getString("email"));
             user.setContact(resultSet.getLong("contact"));
         } catch (SQLException e) {
             e.printStackTrace();
@@ -479,7 +515,7 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "UPDATE userdata SET Name = ?, firmName = ?, contact = ?, email = ?, Address = ? WHERE userID = ?";
+            String sql = ApplicationConstants.UPDATE_USER_PROFILE_SQL;
             statement = connection.prepareStatement(sql);
             statement.setString(1, user.getName());
             statement.setString(2, user.getFirmname());
@@ -518,12 +554,12 @@ public class BusinessImplementation {
 
     public Customers getCustomerByID(int customerID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        PreparedStatement statement;
+        ResultSet resultSet;
         Customers customers = null;
 
         try {
-            String sql = "SELECT * FROM customers WHERE customerID = ?;";
+            String sql = ApplicationConstants.GET_CUSTOMER_BY_ID_SQL;
             statement = connection.prepareStatement(sql);
             statement.setInt(1, customerID);
             resultSet = statement.executeQuery();
@@ -549,7 +585,7 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "UPDATE customers SET fullName = ?, address = ?, ward = ?, fatherName = ?, spouseName = ?, contactNo = ?, remarks = ? WHERE customerID = ?";
+            String sql = ApplicationConstants.UPDATE_CUSTOMER_DATA_SQL;
             statement = connection.prepareStatement(sql);
             statement.setString(1, customer.getFullName());
             statement.setString(2, customer.getAddress());
@@ -591,11 +627,11 @@ public class BusinessImplementation {
 
     public Items getItemByID(int itemID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        PreparedStatement statement;
+        ResultSet resultSet;
         Items items = null;
         try {
-            String sql = "SELECT * FROM items WHERE itemID = ?;";
+            String sql = ApplicationConstants.GET_ITEM_BY_ID_SQL;
             statement = connection.prepareStatement(sql);
             statement.setInt(1, itemID);
             resultSet = statement.executeQuery();
@@ -620,16 +656,15 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "UPDATE items SET principal = ?, type = ? startDate = ?, rate = ?, deadline = ?, description = ? WHERE " +
-                    "userID = ?";
+            String sql = ApplicationConstants.UPDATE_ITEM_DATA_SQL;
             statement = connection.prepareStatement(sql);
-            statement.setInt(1, Integer.valueOf(item.getPrincipal()));
+            statement.setInt(1, Integer.parseInt(item.getPrincipal()));
             statement.setString(2, item.getType());
             statement.setDate(3, item.getStartDate());
-            statement.setDouble(4, Double.valueOf(item.getRate()));
+            statement.setDouble(4, Double.parseDouble(item.getRate()));
             statement.setDate(5, item.getDeadline());
             statement.setString(6, item.getDescription());
-            statement.setInt(7, Integer.valueOf(item.getItemID()));
+            statement.setInt(7, Integer.parseInt(item.getItemID()));
 
             statement.executeUpdate();
         } catch (SQLException se) {
@@ -662,11 +697,11 @@ public class BusinessImplementation {
 
     public Installment getInstallmentByID(int installmentID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        PreparedStatement statement;
+        ResultSet resultSet;
         Installment installment = null;
         try {
-            String sql = "SELECT * FROM installment WHERE installmentID = ?;";
+            String sql = ApplicationConstants.GET_INSTALLMENT_BY_ID_SQL;
             statement = connection.prepareStatement(sql);
             statement.setInt(1, installmentID);
             resultSet = statement.executeQuery();
@@ -688,7 +723,7 @@ public class BusinessImplementation {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "UPDATE installment SET depositAmount = ?, depositor = ?, date = ? WHERE installmentID = ?";
+            String sql = ApplicationConstants.UPDATE_INSTALLMENT_DATA_SQL;
             statement = connection.prepareStatement(sql);
             statement.setInt(1, installment.getDepositAmount());
             statement.setString(2, installment.getDepositor());
