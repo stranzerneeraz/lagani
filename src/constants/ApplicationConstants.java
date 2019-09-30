@@ -26,7 +26,19 @@ public class ApplicationConstants {
     public static final String UPDATE_CUSTOMER_DATA_SQL = "UPDATE customers SET fullName = ?, address = ?, ward = ?, fatherName = ?, spouseName = ?, contactNo = ?, remarks = ? WHERE customerID = ?";
     public static final String UPDATE_ITEM_DATA_SQL = "UPDATE items SET principal = ?, type = ? startDate = ?, rate = ?, deadline = ?, description = ? WHERE userID = ?";
     public static final String UPDATE_INSTALLMENT_DATA_SQL = "UPDATE installment SET depositAmount = ?, depositor = ?, date = ? WHERE installmentID = ?";
+    public static final String GET_MYSQL_DUMP_PATH_SQL = "SELECT * FROM mysqlpath;";
+    public static final String UPDATE_MYSQL_DUMP_PATH_SQL = "UPDATE mysqlpath SET mySQLDump = ? WHERE id = 1;";
 
-    public static final String MAC_MYSQL_DUMP = "/Applications/AMPPS/mysql/bin/mysqldump";
-    public static final String WINDOWS_MYSQL_DUMP = "C:/Program Files/MySQL/MySQL Server 8.0/bin/mysqldump.exe";
+    public static final String ERROR_ENTRY = "-fx-text-fill: red;";
+    public static final String CORRECT_ENTRY = "-fx-text-fill: black;";
+
+    public static final String WARNING_DIALOG = "Warning Dialog";
+    public static final String SUCCESS_DIALOG = "Success Dialog";
+
+    public static final String NUMBER_VALIDATION_REGEX = "^[0-9]+(\\.[0-9]+)?$";
+    public static final String WARD_ID_VALIDATION_REGEX = "[0-9]*[0-9]+";
+    public static final String CONTACT_NUMBER_VALIDATION_REGEX = "^[0-9]{10}$";
+    public static final String EMAIL_VALIDATION_REGEX = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
+
+    public static final String BACKUP_DATE_FORMAT = "yyyy-MM-dd-HH-mm-ss";
 }

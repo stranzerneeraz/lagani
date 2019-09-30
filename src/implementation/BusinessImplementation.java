@@ -758,6 +758,60 @@ public class BusinessImplementation {
         }
     }
 
+    public String getMySQLDumpPath() throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement;
+        ResultSet resultSet;
+        String mySQLDumpPath = null;
+        try {
+            String sql = ApplicationConstants.GET_MYSQL_DUMP_PATH_SQL;
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            resultSet.next();
+            mySQLDumpPath= resultSet.getString("mySQLDump");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return mySQLDumpPath;
+    }
+
+    public void updateMySQLDumpPath(String selectedFile) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            String sql = ApplicationConstants.UPDATE_MYSQL_DUMP_PATH_SQL;
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, selectedFile);
+
+            statement.executeUpdate();
+        } catch (SQLException se) {
+            throw new BusinessException(se);
+        } finally {
+            if (null != resultSet) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != statement) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != connection) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public int calculateDurationInMonths(Date fromDate){
         long monthsBetween = ChronoUnit.MONTHS.between(
                 LocalDate.parse(fromDate.toString()).withDayOfMonth(1),

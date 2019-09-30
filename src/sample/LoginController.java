@@ -1,5 +1,6 @@
 package sample;
 
+import constants.ApplicationConstants;
 import exception.BusinessException;
 import implementation.BusinessImplementation;
 import javafx.fxml.FXML;
@@ -52,7 +53,7 @@ public class LoginController {
             stage.show();
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warning alert");
+            alert.setTitle(ApplicationConstants.WARNING_DIALOG);
             alert.setContentText("Username or Password does not match");
             alert.showAndWait();
         }

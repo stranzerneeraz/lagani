@@ -1,5 +1,6 @@
 package sample;
 
+import constants.ApplicationConstants;
 import exception.BusinessException;
 import implementation.BusinessImplementation;
 import javafx.fxml.FXML;
@@ -31,44 +32,44 @@ public class AddNewCustomerDialogController {
     private Alert alert = new Alert(Alert.AlertType.WARNING);
 
     public void initialize() {
-        alert.setTitle("Warning Dialog");
+        alert.setTitle(ApplicationConstants.WARNING_DIALOG);
         btnUpdateCustomer.setOnAction(event -> {
             if (fullNameField.getText().length() <= 0) {
-                fullNameField.setStyle("-fx-text-fill: red;");
+                fullNameField.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Enter full name");
                 alert.showAndWait();
             } else if (addressField.getText().length() <= 0) {
-                addressField.setStyle("-fx-text-fill: red;");
+                addressField.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Enter address");
                 alert.showAndWait();
-            } else if (!wardNoField.getText().matches("[0-9]*[0-9]+")) {
-                wardNoField.setStyle("-fx-text-fill: red;");
-                alert.setContentText("Enter ward number in integer");
+            } else if (!wardNoField.getText().matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
+                wardNoField.setStyle(ApplicationConstants.ERROR_ENTRY);
+                alert.setContentText("Enter ward number");
                 alert.showAndWait();
             } else if (fatherNameField.getText().length() <= 0) {
-                fatherNameField.setStyle("-fx-text-fill: red;");
+                fatherNameField.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Enter father's name");
                 alert.showAndWait();
             } else if (spouseNameField.getText().length() <= 0) {
-                spouseNameField.setStyle("-fx-text-fill: red;");
+                spouseNameField.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Enter spouse's name");
                 alert.showAndWait();
-            } else if (!contactNumberField.getText().matches("^[0-9]{10}$")) {
-                contactNumberField.setStyle("-fx-text-fill: red;");
+            } else if (!contactNumberField.getText().matches(ApplicationConstants.CONTACT_NUMBER_VALIDATION_REGEX)) {
+                contactNumberField.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Enter contact number");
                 alert.showAndWait();
             } else if (remarksField.getText().length() <= 0) {
-                remarksField.setStyle("-fx-text-fill: red;");
+                remarksField.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Enter remarks");
                 alert.showAndWait();
             } else {
-                fullNameField.setStyle("-fx-text-fill: black;");
-                addressField.setStyle("-fx-text-fill: black;");
-                wardNoField.setStyle("-fx-text-fill: black;");
-                fatherNameField.setStyle("-fx-text-fill: black;");
-                spouseNameField.setStyle("-fx-text-fill: black;");
-                contactNumberField.setStyle("-fx-text-fill: black;");
-                remarksField.setStyle("-fx-text-fill: black;");
+                fullNameField.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                addressField.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                wardNoField.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                fatherNameField.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                spouseNameField.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                contactNumberField.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                remarksField.setStyle(ApplicationConstants.CORRECT_ENTRY);
 
                 try {
                     addNewCustomer();

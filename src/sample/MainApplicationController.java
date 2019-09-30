@@ -18,11 +18,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 import javafx.util.Callback;
 import modal.*;
 
@@ -68,8 +64,6 @@ public class MainApplicationController {
     private TableColumn<Items, String> addInstallment;
     @FXML
     private TableColumn<Items, String> calculate;
-    @FXML
-    private ContextMenu listContextMenu;
     @FXML
     private Button btnAddNewItem;
     @FXML
@@ -145,9 +139,13 @@ public class MainApplicationController {
     @FXML
     private VBox backupAdminPanel;
     @FXML
+    private Button btnSelectMySQL;
+    @FXML
+    private Label mySQLPathViewer;
+    @FXML
     private Button btnBrowse;
     @FXML
-    private Text adminPathViewer;
+    private Label adminPathViewer;
     @FXML
     private Button btnBackup;
 
@@ -167,16 +165,27 @@ public class MainApplicationController {
     private Alert alertSuccess = new Alert(AlertType.INFORMATION);
     private BusinessImplementation businessImplementation = new BusinessImplementation();
     private Customers selectionCustomer = new Customers();
+    private String errorEntry = ApplicationConstants.ERROR_ENTRY;
+    private String correctEntry = ApplicationConstants.CORRECT_ENTRY;
 
     public void initialize() {
     }
 
+    /**
+     * Creates Pagination for TableView in Dashboard Tab
+     */
     @FXML
     public void dashboardTab() {
         pagination.setPageFactory(this::createPage);
     }
 
-    public Node createPage(int pageIndex) {
+    /**
+     * Display items according to Pagination
+     *
+     * @param pageIndex
+     * @return
+     */
+    private Node createPage(int pageIndex) {
         int lastIndex;
         int count = 0;
         ArrayList<DashboardItem> dashboardItem = new ArrayList<>();
@@ -212,8 +221,10 @@ public class MainApplicationController {
     }
 
     /**
-     * View Customers who takes loan
-     * Searching of the customer
+     * Searching of Customers
+     * Gets selected Customer for showing items
+     *
+     * @throws BusinessException
      */
     @FXML
     public void viewCustomers() throws BusinessException {
@@ -248,8 +259,13 @@ public class MainApplicationController {
         });
     }
 
-    public void getCustomersForView(String searchString) throws BusinessException {
-        listContextMenu = new ContextMenu();
+    /**
+     * Get Customers to be displayed in ListView
+     *
+     * @param searchString
+     * @throws BusinessException
+     */
+    private void getCustomersForView(String searchString) throws BusinessException {
         ArrayList<Customers> customerList = businessImplementation.getCustomers(searchString);
         customersObservableList.removeAll(customersObservableList);
         for (Customers customers : customerList) {
@@ -266,40 +282,31 @@ public class MainApplicationController {
                     @Override
                     protected void updateItem(Customers customers, boolean empty) {
                         super.updateItem(customers, empty);
+                        int index = this.getIndex();
                         if (empty || customers == null) {
                             setText("");
                             setTooltip(null);
                         } else {
-                            setText(customers.getFullName() + ", " + customers.getAddress());
+                            setText((index + 1) + ". " + customers.getFullName() + ", " + customers.getAddress());
                             tooltip.setText("" + customers.getCustomerID());
                             setTooltip(tooltip);
                         }
                     }
                 };
-                cell.emptyProperty().addListener(
-                        (obs, wasEmpty, isNowEmpty) -> {
-                            if (isNowEmpty) {
-                                cell.setContextMenu(null);
-                            } else {
-                                cell.setContextMenu(listContextMenu);
-                            }
-                        }
-                );
                 return cell;
             }
         });
     }
 
     /**
+     * Fetches Items of Customer and displays in TableView
      *
      * @param id
      * @throws BusinessException
      */
-    public void fetchCustomerItem(int id) throws BusinessException {
+    private void fetchCustomerItem(int id) throws BusinessException {
         ArrayList<Items> itemList = businessImplementation.getItems(id);
         itemsObservableList = FXCollections.observableArrayList(itemList);
-
-        Tooltip tooltip = new Tooltip();
         itemNo.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(itemsTableView.getItems().indexOf(cellData.getValue()) + 1));
 
         viewInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
@@ -316,8 +323,6 @@ public class MainApplicationController {
                             setGraphic(null);
                             setText(null);
                         } else {
-                            tooltip.setText("" + itemsObservableList.size());
-                            setTooltip(tooltip);
                             btnViewInstallment.setOnAction(event -> {
                                 Items selectionItem = getTableView().getItems().get(getIndex());
                                 Dialog<ButtonType> dialog = new Dialog<>();
@@ -363,7 +368,6 @@ public class MainApplicationController {
                         if (empty) {
                             setGraphic(null);
                             setText(null);
-
                         } else {
                             btnAddInstallment.setOnAction(event -> {
                                 Items selectedItem = getTableView().getItems().get(getIndex());
@@ -441,12 +445,21 @@ public class MainApplicationController {
         itemsTableView.setItems(itemsObservableList);
         ScrollBar table1HorizontalScrollBar = findScrollBar(itemsTableView, Orientation.HORIZONTAL);
         ScrollBar table1VerticalScrollBar = findScrollBar(itemsTableView, Orientation.VERTICAL);
+        assert table1HorizontalScrollBar != null;
         table1HorizontalScrollBar.setVisible(true);
+        assert table1VerticalScrollBar != null;
         table1VerticalScrollBar.setVisible(false);
         VirtualFlow flow1 = (VirtualFlow) itemsTableView.lookup(".virtual-flow");
         flow1.requestLayout();
     }
 
+    /**
+     * Property for Scrollbar
+     *
+     * @param table
+     * @param orientation
+     * @return
+     */
     private ScrollBar findScrollBar(TableView<?> table, Orientation orientation) {
         Set<Node> set = table.lookupAll(".scroll-bar");
         for (Node node : set) {
@@ -459,7 +472,9 @@ public class MainApplicationController {
     }
 
     /**
-     * Adds new Customer who takes loan
+     * Adds new Customer
+     *
+     * @throws BusinessException
      */
     @FXML
     public void addNewCustomer() throws BusinessException {
@@ -481,7 +496,9 @@ public class MainApplicationController {
     }
 
     /**
-     * Adds new Item for the customer
+     * Adds new Item for selected Customer
+     *
+     * @throws BusinessException
      */
     @FXML
     public void addNewItem() throws BusinessException {
@@ -495,64 +512,19 @@ public class MainApplicationController {
             dialog.getDialogPane().setContent(fxmlLoader.load());
             AddNewItemDialogController addNewItemDialogController = fxmlLoader.getController();
             addNewItemDialogController.updateDialogBox(selectionCustomer);
-
-            dialogWindow.setOnCloseRequest((WindowEvent event) -> {
-                dialog.close();
-            });
-
+            dialogWindow.setOnCloseRequest((WindowEvent event) -> dialog.close());
             dialog.onCloseRequestProperty();
             fetchCustomerItem(selectionCustomer.getCustomerID());
-
             dialog.showAndWait();
-
         } catch (IOException | BusinessException e) {
             throw new BusinessException(e);
         }
     }
 
     /**
-     * Update Profile of the User
-     */
-    public void updateProfile() throws BusinessException {
-        alertWarning.setTitle("Warning Dialog!");
-        User user = new User();
-        if (nameProfile.getText().length() <= 0) {
-            nameProfile.setStyle("-fx-text-fill: red;");
-            alertWarning.setContentText("Enter name");
-            alertWarning.showAndWait();
-        } else if (firmNameProfile.getText().length() <= 0) {
-            firmNameProfile.setStyle("-fx-text-fill: red;");
-            alertWarning.setContentText("Enter firm name");
-            alertWarning.showAndWait();
-        } else if (!contactProfile.getText().matches("^[0-9]{10}$")) {
-            contactProfile.setStyle("-fx-text-fill: red;");
-            alertWarning.setContentText("Enter contact number");
-            alertWarning.showAndWait();
-        } else if (!emailProfile.getText().matches("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])")) {
-            emailProfile.setStyle("-fx-text-fill: red;");
-            alertWarning.setContentText("Enter email address");
-            alertWarning.showAndWait();
-        } else if (addressProfile.getText().length() <= 0) {
-            addressProfile.setStyle("-fx-text-fill: red;");
-            alertWarning.setContentText("Enter address");
-            alertWarning.showAndWait();
-        } else {
-            nameProfile.setStyle("-fx-text-fill: black;");
-            firmNameProfile.setStyle("-fx-text-fill: black;");
-            contactProfile.setStyle("-fx-text-fill: black;");
-            addressProfile.setStyle("-fx-text-fill: black;");
-
-            user.setName(nameProfile.getText());
-            user.setFirmname(firmNameProfile.getText());
-            user.setContact(Long.parseLong(contactProfile.getText()));
-            user.setEmail(emailProfile.getText());
-            user.setAddress(addressProfile.getText());
-            businessImplementation.updateUserProfile(user, id);
-        }
-    }
-
-    /**
-     * View Profile of the User
+     * View User data in Profile Tab
+     *
+     * @throws BusinessException
      */
     @FXML
     public void profileTab() throws BusinessException {
@@ -564,6 +536,54 @@ public class MainApplicationController {
         addressProfile.setText(user.getAddress());
     }
 
+    /**
+     * Updates User Profile
+     *
+     * @throws BusinessException
+     */
+    @FXML
+    public void updateProfile() throws BusinessException {
+        alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
+        User user = new User();
+        if (nameProfile.getText().length() <= 0) {
+            nameProfile.setStyle(errorEntry);
+            alertWarning.setContentText("Enter name");
+            alertWarning.showAndWait();
+        } else if (firmNameProfile.getText().length() <= 0) {
+            firmNameProfile.setStyle(errorEntry);
+            alertWarning.setContentText("Enter firm name");
+            alertWarning.showAndWait();
+        } else if (!contactProfile.getText().matches(ApplicationConstants.CONTACT_NUMBER_VALIDATION_REGEX)) {
+            contactProfile.setStyle(errorEntry);
+            alertWarning.setContentText("Enter contact number");
+            alertWarning.showAndWait();
+        } else if (!emailProfile.getText().matches(ApplicationConstants.EMAIL_VALIDATION_REGEX)) {
+            emailProfile.setStyle(errorEntry);
+            alertWarning.setContentText("Enter email address");
+            alertWarning.showAndWait();
+        } else if (addressProfile.getText().length() <= 0) {
+            addressProfile.setStyle(errorEntry);
+            alertWarning.setContentText("Enter address");
+            alertWarning.showAndWait();
+        } else {
+            nameProfile.setStyle(correctEntry);
+            firmNameProfile.setStyle(correctEntry);
+            contactProfile.setStyle(correctEntry);
+            addressProfile.setStyle(correctEntry);
+
+            user.setName(nameProfile.getText());
+            user.setFirmname(firmNameProfile.getText());
+            user.setContact(Long.parseLong(contactProfile.getText()));
+            user.setEmail(emailProfile.getText());
+            user.setAddress(addressProfile.getText());
+            businessImplementation.updateUserProfile(user, id);
+        }
+    }
+
+    /**
+     * Accepts Id of data that needs to be modified
+     * Backup button included
+     */
     @FXML
     public void adminTab() {
         customerAdminPanel.setVisible(false);
@@ -571,15 +591,15 @@ public class MainApplicationController {
         installmentAdminPanel.setVisible(false);
         backupAdminPanel.setVisible(false);
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Warning Dialog");
+        alert.setTitle(ApplicationConstants.WARNING_DIALOG);
         btnViewCustomer.setOnAction(event -> {
             String customerID = getCustomerID.getText();
-            if (!customerID.matches("[0-9]*[0-9]+")) {
-                getCustomerID.setStyle("-fx-text-fill: red;");
+            if (!customerID.matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
+                getCustomerID.setStyle(errorEntry);
                 alertWarning.setContentText("Enter Customer ID");
                 alertWarning.showAndWait();
             } else {
-                getCustomerID.setStyle("-fx-text-fill: black;");
+                getCustomerID.setStyle(correctEntry);
                 try {
                     Customers customers = businessImplementation.getCustomerByID(Integer.parseInt(customerID));
                     if (customers == null) {
@@ -595,12 +615,12 @@ public class MainApplicationController {
         });
         btnViewItem.setOnAction(event -> {
             String itemID = getItemID.getText();
-            if (!itemID.matches("[0-9]*[0-9]+")) {
-                getItemID.setStyle("-fx-text-fill: red;");
+            if (!itemID.matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
+                getItemID.setStyle(errorEntry);
                 alertWarning.setContentText("Enter Item ID");
                 alertWarning.showAndWait();
             } else {
-                getItemID.setStyle("-fx-text-fill: black;");
+                getItemID.setStyle(correctEntry);
                 try {
                     Items items = businessImplementation.getItemByID(Integer.parseInt(itemID));
                     if (null == items) {
@@ -616,12 +636,12 @@ public class MainApplicationController {
         });
         btnViewInstallment.setOnAction(event -> {
             String installmentID = getInstallmentID.getText();
-            if (!installmentID.matches("[0-9]*[0-9]+")) {
-                getInstallmentID.setStyle("-fx-text-fill: red;");
+            if (!installmentID.matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
+                getInstallmentID.setStyle(errorEntry);
                 alertWarning.setContentText("Enter Installment ID");
                 alertWarning.showAndWait();
             } else {
-                getInstallmentID.setStyle("-fx-text-fill: black;");
+                getInstallmentID.setStyle(correctEntry);
                 try {
                     Installment installment = businessImplementation.getInstallmentByID(Integer.parseInt(installmentID));
                     if (null == installment) {
@@ -640,16 +660,25 @@ public class MainApplicationController {
             itemAdminPanel.setVisible(false);
             installmentAdminPanel.setVisible(false);
             backupAdminPanel.setVisible(true);
-            backup();
+            try {
+                backup();
+            } catch (BusinessException e) {
+                e.printStackTrace();
+            }
         });
     }
 
-    public void adminViewCustomer(Customers customers) {
+    /**
+     * View Customer data that needs to be updated
+     *
+     * @param customers
+     */
+    private void adminViewCustomer(Customers customers) {
         customerAdminPanel.setVisible(true);
         itemAdminPanel.setVisible(false);
         installmentAdminPanel.setVisible(false);
         backupAdminPanel.setVisible(false);
-        alertWarning.setTitle("Warning Dialog!");
+        alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
 
         adminFullName.setText(customers.getFullName());
         adminAddress.setText(customers.getAddress());
@@ -661,41 +690,41 @@ public class MainApplicationController {
 
         btnUpdateCustomer.setOnAction(event -> {
             if (adminFullName.getText().length() <= 0) {
-                adminFullName.setStyle("-fx-text-fill: red;");
+                adminFullName.setStyle(errorEntry);
                 alertWarning.setContentText("Enter full name");
                 alertWarning.showAndWait();
             } else if (adminAddress.getText().length() <= 0) {
-                adminAddress.setStyle("-fx-text-fill: red;");
+                adminAddress.setStyle(errorEntry);
                 alertWarning.setContentText("Enter address");
                 alertWarning.showAndWait();
-            } else if (!adminWard.getText().matches("[0-9]*[0-9]+")) {
-                adminWard.setStyle("-fx-text-fill: red;");
+            } else if (!adminWard.getText().matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
+                adminWard.setStyle(errorEntry);
                 alertWarning.setContentText("Enter ward number in integer");
                 alertWarning.showAndWait();
             } else if (adminFatherName.getText().length() <= 0) {
-                adminFatherName.setStyle("-fx-text-fill: red;");
+                adminFatherName.setStyle(errorEntry);
                 alertWarning.setContentText("Enter father's name");
                 alertWarning.showAndWait();
             } else if (adminSpouseName.getText().length() <= 0) {
-                adminSpouseName.setStyle("-fx-text-fill: red;");
+                adminSpouseName.setStyle(errorEntry);
                 alertWarning.setContentText("Enter spouse's name");
                 alertWarning.showAndWait();
-            } else if (!adminContactNumber.getText().matches("^[0-9]{10}$")) {
-                adminContactNumber.setStyle("-fx-text-fill: red;");
+            } else if (!adminContactNumber.getText().matches(ApplicationConstants.CONTACT_NUMBER_VALIDATION_REGEX)) {
+                adminContactNumber.setStyle(errorEntry);
                 alertWarning.setContentText("Enter contact number");
                 alertWarning.showAndWait();
             } else if (adminRemarks.getText().length() <= 0) {
-                adminRemarks.setStyle("-fx-text-fill: red;");
+                adminRemarks.setStyle(errorEntry);
                 alertWarning.setContentText("Enter remarks");
                 alertWarning.showAndWait();
             } else {
-                adminFullName.setStyle("-fx-text-fill: black;");
-                adminAddress.setStyle("-fx-text-fill: black;");
-                adminWard.setStyle("-fx-text-fill: black;");
-                adminFatherName.setStyle("-fx-text-fill: black;");
-                adminSpouseName.setStyle("-fx-text-fill: black;");
-                adminContactNumber.setStyle("-fx-text-fill: black;");
-                adminRemarks.setStyle("-fx-text-fill: black;");
+                adminFullName.setStyle(correctEntry);
+                adminAddress.setStyle(correctEntry);
+                adminWard.setStyle(correctEntry);
+                adminFatherName.setStyle(correctEntry);
+                adminSpouseName.setStyle(correctEntry);
+                adminContactNumber.setStyle(correctEntry);
+                adminRemarks.setStyle(correctEntry);
 
                 customers.setFullName(adminFullName.getText());
                 customers.setAddress(adminAddress.getText());
@@ -713,12 +742,17 @@ public class MainApplicationController {
         });
     }
 
-    public void adminViewItem(Items items) {
+    /**
+     * View Item data that needs to be updated
+     *
+     * @param items
+     */
+    private void adminViewItem(Items items) {
         customerAdminPanel.setVisible(false);
         itemAdminPanel.setVisible(true);
         installmentAdminPanel.setVisible(false);
         backupAdminPanel.setVisible(false);
-        alertWarning.setTitle("Warning Dialog!");
+        alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
 
         adminItemAmount.setText(items.getPrincipal());
         adminTypeChooser.setValue(items.getType());
@@ -728,32 +762,32 @@ public class MainApplicationController {
         adminDescription.setText(items.getDescription());
 
         btnUpdateItem.setOnAction(event -> {
-            if (!adminItemAmount.getText().matches("^[0-9]+(\\.[0-9]+)?$")) {
-                adminItemAmount.setStyle("-fx-text-fill: red;");
+            if (!adminItemAmount.getText().matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
+                adminItemAmount.setStyle(errorEntry);
                 alertWarning.setContentText("Input fields not valid");
                 alertWarning.showAndWait();
             } else if (!(adminStartDate.getValue().compareTo(LocalDate.now()) <= 0)) {
-                adminStartDate.setStyle("-fx-text-fill: red;");
+                adminStartDate.setStyle(errorEntry);
                 alertWarning.setContentText("Date field should be upto today");
                 alertWarning.showAndWait();
-            } else if (!adminRate.getText().matches("^[0-9](\\.[0-9]+)?$")) {
-                adminRate.setStyle("-fx-text-fill: red;");
+            } else if (!adminRate.getText().matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
+                adminRate.setStyle(errorEntry);
                 alertWarning.setContentText("Rate should be in decimal");
                 alertWarning.showAndWait();
             } else if (!(adminDeadline.getValue().compareTo(LocalDate.now()) > 0)) {
-                adminDeadline.setStyle("-fx-text-fill: red;");
+                adminDeadline.setStyle(errorEntry);
                 alertWarning.setContentText("Deadline should be in future");
                 alertWarning.showAndWait();
             } else if (adminDescription.getText().length() <= 0) {
-                adminDescription.setStyle("-fx-text-fill: red;");
+                adminDescription.setStyle(errorEntry);
                 alertWarning.setContentText("Enter description");
                 alertWarning.showAndWait();
             } else {
-                adminItemAmount.setStyle("-fx-text-fill: black;");
-                adminStartDate.setStyle("-fx-text-fill: black;");
-                adminRate.setStyle("-fx-text-fill: black;");
-                adminDeadline.setStyle("-fx-text-fill: black;");
-                adminDescription.setStyle("-fx-text-fill: black;");
+                adminItemAmount.setStyle(correctEntry);
+                adminStartDate.setStyle(correctEntry);
+                adminRate.setStyle(correctEntry);
+                adminDeadline.setStyle(correctEntry);
+                adminDescription.setStyle(correctEntry);
 
                 items.setPrincipal(adminItemAmount.getText());
                 items.setStartDate(Date.valueOf(adminStartDate.getValue()));
@@ -769,34 +803,39 @@ public class MainApplicationController {
         });
     }
 
-    public void adminViewInstallment(Installment installment) {
+    /**
+     * View Installment data that needs to be updated
+     *
+     * @param installment
+     */
+    private void adminViewInstallment(Installment installment) {
         customerAdminPanel.setVisible(false);
         itemAdminPanel.setVisible(false);
         installmentAdminPanel.setVisible(true);
         backupAdminPanel.setVisible(false);
-        alertWarning.setTitle("Warning Dialog!");
+        alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
 
         adminInstallmentAmount.setText("" + installment.getDepositAmount());
         adminDepositor.setText(installment.getDepositor());
         adminDepositDate.setValue(installment.getDate().toLocalDate());
 
         btnUpdateInstallment.setOnAction(event -> {
-            if (!adminInstallmentAmount.getText().matches("^[0-9]+(\\.[0-9]+)?$")) {
-                adminInstallmentAmount.setStyle("-fx-text-fill: red;");
+            if (!adminInstallmentAmount.getText().matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
+                adminInstallmentAmount.setStyle(errorEntry);
                 alertWarning.setContentText("Input fields not valid");
                 alertWarning.showAndWait();
             } else if (adminDepositor.getText().length() <= 0) {
-                adminDepositor.setStyle("-fx-text-fill: red;");
+                adminDepositor.setStyle(errorEntry);
                 alertWarning.setContentText("Enter Depositor Name");
                 alertWarning.showAndWait();
             } else if (!(adminDepositDate.getValue().compareTo(LocalDate.now()) <= 0)) {
-                adminDepositDate.setStyle("-fx-text-fill: red;");
+                adminDepositDate.setStyle(errorEntry);
                 alertWarning.setContentText("Date field should be upto today");
                 alertWarning.showAndWait();
             } else {
-                adminInstallmentAmount.setStyle("-fx-text-fill: black;");
-                adminDepositor.setStyle("-fx-text-fill: black;");
-                adminDepositDate.setStyle("-fx-text-fill: black;");
+                adminInstallmentAmount.setStyle(correctEntry);
+                adminDepositor.setStyle(correctEntry);
+                adminDepositDate.setStyle(correctEntry);
 
                 installment.setDepositAmount(Integer.parseInt(adminInstallmentAmount.getText()));
                 installment.setDepositor(adminDepositor.getText());
@@ -822,7 +861,6 @@ public class MainApplicationController {
             stage.setTitle("Lagani");
             stage.setScene(new Scene(root, 720, 480));
             stage.show();
-
             Scene scene = btnLogout.getScene();
             if (scene != null) {
                 Window window = scene.getWindow();
@@ -835,75 +873,76 @@ public class MainApplicationController {
         }
     }
 
-    public void backup() {
+    /**
+     * Backup User Data
+     */
+    private void backup() throws BusinessException {
         btnBackup.setVisible(false);
-        String osName = System.getProperty("os.name").toLowerCase();
-        boolean isMacOs = osName.startsWith("mac");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ApplicationConstants.BACKUP_DATE_FORMAT);
         LocalDateTime now = LocalDateTime.now();
         String formatDateTime = now.format(formatter);
+        String mySQLDumpPath = businessImplementation.getMySQLDumpPath();
+        mySQLPathViewer.setText(mySQLDumpPath);
+
         btnBrowse.setOnAction(event -> {
+
             DirectoryChooser directoryChooser = new DirectoryChooser();
             File selectedDirectory = directoryChooser.showDialog(mainBorderPane.getScene().getWindow());
             if (null != selectedDirectory) {
                 File file = new File(selectedDirectory + "/Lagani-dump-" + formatDateTime + ".sql");
+                adminPathViewer.setText(String.valueOf(file));
+                btnBackup.setVisible(true);
+                btnBackup.setOnAction(event1 -> {
+                    String finalMySQLDumpPath = null;
+                    try {
+                        finalMySQLDumpPath = businessImplementation.getMySQLDumpPath();
+                        file.createNewFile();
+                        backupDatabase(ApplicationConstants.DB_USERNAME, ApplicationConstants.DB_PASSWORD, ApplicationConstants.DB_NAME, file, finalMySQLDumpPath);
+                    } catch (IOException | BusinessException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+            }
+        });
+        btnSelectMySQL.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            File selectedFile = fileChooser.showOpenDialog(mainBorderPane.getScene().getWindow());
+            if (null != selectedFile) {
+                mySQLPathViewer.setText(String.valueOf(selectedFile));
                 try {
-                    file.createNewFile();
-                } catch (IOException e) {
+                    businessImplementation.updateMySQLDumpPath(String.valueOf(selectedFile));
+                } catch (BusinessException e) {
                     e.printStackTrace();
-                    adminPathViewer.setText(String.valueOf(file));
-                    btnBackup.setVisible(true);
-                }
-                if (isMacOs) {
-                    btnBackup.setOnAction(event1 -> backupMacDB(ApplicationConstants.DB_USERNAME, ApplicationConstants.DB_PASSWORD, ApplicationConstants.DB_NAME, file));
-                } else {
-                    btnBackup.setOnAction(event1 -> backupWindowsDB(ApplicationConstants.DB_USERNAME, ApplicationConstants.DB_PASSWORD, ApplicationConstants.DB_NAME, file));
                 }
             }
         });
     }
 
-    public boolean backupMacDB(String dbUsername, String dbPassword, String dbName, File path) {
-        String executeCmd = ApplicationConstants.MAC_MYSQL_DUMP + " -u" + dbUsername + " -p" + dbPassword + " --add-drop-database -B " + dbName + " -r" + path;
+    /**
+     * Backup data
+     * @param dbUsername
+     * @param dbPassword
+     * @param dbName
+     * @param path
+     */
+    private void backupDatabase(String dbUsername, String dbPassword, String dbName, File path, String mySQLDumpPath) {
+        String executeCmd = mySQLDumpPath + " -u" + dbUsername + " -p" + dbPassword + " --add-drop-database -B " + dbName + " -r" + path;
         Process runtimeProcess;
         try {
             runtimeProcess = Runtime.getRuntime().exec(executeCmd);
             int processComplete = runtimeProcess.waitFor();
             if (processComplete == 0) {
-                alertSuccess.setTitle("Success Dialog");
+                alertSuccess.setTitle(ApplicationConstants.SUCCESS_DIALOG);
                 alertSuccess.setContentText("Backup created successfully at " + path);
                 alertSuccess.showAndWait();
-                return true;
             } else {
-                alertWarning.setTitle("Warning Dialog");
+                alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
                 alertWarning.setContentText("Could not create the backup");
                 alertWarning.showAndWait();
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return false;
-    }
-
-    public boolean backupWindowsDB(String dbUsername, String dbPassword, String dbName, File path) {
-        String executeCmd = ApplicationConstants.WINDOWS_MYSQL_DUMP + " -u" + dbUsername + " -p" + dbPassword + " --add-drop-database -B " + dbName + " -r" + path;
-        Process runtimeProcess;
-        try {
-            runtimeProcess = Runtime.getRuntime().exec(executeCmd);
-            int processComplete = runtimeProcess.waitFor();
-            if (processComplete == 0) {
-                alertSuccess.setTitle("Success Dialog");
-                alertSuccess.setContentText("Backup created successfully at " + path);
-                alertSuccess.showAndWait();
-                return true;
-            } else {
-                alertWarning.setTitle("Warning Dialog");
-                alertWarning.setContentText("Could not create the backup");
-                alertWarning.showAndWait();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return false;
     }
 }

@@ -1,6 +1,4 @@
-
-
-.label {
+.border-pane {
     -fx-font-size: 14px;
     -fx-font-family: Arial;
 }
@@ -72,7 +70,6 @@
 
 #header-label {
      -fx-font-size: 24px;
-    -fx-font-family: Times New Roman;
     -fx-font-weight: bold;
 }
 
@@ -82,18 +79,6 @@
 
 #itemsTableView {
     -fx-padding: 2;
-}
-#btnAddFXML {
-    -fx-background-color: rgba(0,0,0,0.08),
-                              linear-gradient(#9a9a9a, #909090),
-                              linear-gradient(white 0%, #f3f3f3 50%, #ececec 51%, #f2f2f2 100%);
-    -fx-background-insets: 0 0 -1 0,0,1;
-    -fx-background-radius: 5,5,4;
-    -fx-padding: 3 10 3 10;
-    -fx-text-fill: #242d35;
-    -fx-font-size: 14px;
-    -fx-pref-height: 26px;
-    -fx-pref-width: 200px;
 }
 
 .pagination {
@@ -156,10 +141,17 @@
     -fx-pref-width: 400px;
 }
 
-#admin-VBox {
-    -fx-padding: 30 0 0 30;
-    -fx-spacing: 5;
-}
+#adminVBox {
+     -fx-padding: 30 0 0 50;
+     -fx-spacing: 5;
+     -fx-pref-width: 200;
+ }
+
+ #admin-VBox {
+     -fx-padding: 30 0 0 0;
+     -fx-spacing: 5;
+     -fx-pref-width: 550;
+ }
 
 #btnBackupView {
     -fx-background-color: rgba(0,0,0,0.08),
@@ -171,5 +163,5 @@
     -fx-text-fill: #242d35;
     -fx-font-size: 14px;
     -fx-pref-height: 26px;
-    -fx-pref-width: 180px;
+    -fx-pref-width: 150px;
 }

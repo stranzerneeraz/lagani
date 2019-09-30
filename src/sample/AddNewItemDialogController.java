@@ -1,5 +1,6 @@
 package sample;
 
+import constants.ApplicationConstants;
 import exception.BusinessException;
 import implementation.BusinessImplementation;
 import javafx.fxml.FXML;
@@ -32,14 +33,14 @@ public class AddNewItemDialogController {
     private Button btnUpdateNewItem;
     private Customers customers;
 
-    public boolean updateDialogBox(Customers selectionCustomer) {
+    public void updateDialogBox(Customers selectionCustomer) {
         customers = selectionCustomer;
         dialogHeaderLabel.setText("Add New Item for " + selectionCustomer.getFullName());
         startDatePicker.setValue(LocalDate.now());
         rateField.setText("2.5");
         deadlinePicker.setValue(LocalDate.now().plusYears(1));
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Warning Dialog");
+        alert.setTitle(ApplicationConstants.WARNING_DIALOG);
 
         btnUpdateNewItem.setOnAction(event -> {
             String amountString = amountField.getText();
@@ -48,34 +49,34 @@ public class AddNewItemDialogController {
             LocalDate deadline = deadlinePicker.getValue();
             String description = descriptionArea.getText();
 
-            if (!amountString.matches("^[0-9]+(\\.[0-9]+)?$")) {
-                if (Integer.parseInt(amountString) > 2_147_483_647) {
-                    amountField.setStyle("-fx-text-fill: red;");
+            if (!amountString.matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
+                if (Integer.parseInt(amountString) > 2_000_000_000) {
+                    amountField.setStyle(ApplicationConstants.ERROR_ENTRY);
                     alert.setContentText("Input fields not valid");
                     alert.showAndWait();
                 }
             } else if (!(startDate.compareTo(LocalDate.now()) <= 0)) {
-                startDatePicker.setStyle("-fx-text-fill: red;");
+                startDatePicker.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Date field should be upto today");
                 alert.showAndWait();
-            } else if (!rateString.matches("^[0-9](\\.[0-9]+)?$")) {
-                rateField.setStyle("-fx-text-fill: red;");
+            } else if (!rateString.matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
+                rateField.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Rate should be in decimal");
                 alert.showAndWait();
             } else if (!(deadline.compareTo(LocalDate.now()) > 0)) {
-                deadlinePicker.setStyle("-fx-text-fill: red;");
+                deadlinePicker.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Deadline should be in future");
                 alert.showAndWait();
             } else if (description.length() <= 0) {
-                descriptionArea.setStyle("-fx-text-fill: red;");
+                descriptionArea.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Enter description");
                 alert.showAndWait();
             } else {
-                amountField.setStyle("-fx-text-fill: black;");
-                startDatePicker.setStyle("-fx-text-fill: black;");
-                rateField.setStyle("-fx-text-fill: black;");
-                deadlinePicker.setStyle("-fx-text-fill: black;");
-                descriptionArea.setStyle("-fx-text-fill: black;");
+                amountField.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                startDatePicker.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                rateField.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                deadlinePicker.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                descriptionArea.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 try {
                     addNewItem();
                         Scene scene = btnUpdateNewItem.getScene();
@@ -91,10 +92,9 @@ public class AddNewItemDialogController {
                 }
             }
         });
-        return false;
     }
 
-    public boolean addNewItem() throws BusinessException {
+    private void addNewItem() throws BusinessException {
         int customerID = customers.getCustomerID();
         BusinessImplementation businessImplementation = new BusinessImplementation();
         Items items = new Items();
@@ -105,6 +105,5 @@ public class AddNewItemDialogController {
         items.setDeadline(Date.valueOf(deadlinePicker.getValue()));
         items.setDescription(descriptionArea.getText());
         businessImplementation.addNewCustomerItem(items, customerID);
-       return true;
     }
 }
