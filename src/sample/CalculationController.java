@@ -5,9 +5,7 @@ import implementation.BusinessImplementation;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.util.Callback;
 import modal.Installment;
 import modal.Items;
@@ -16,6 +14,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class CalculationController {
     @FXML
@@ -40,24 +39,26 @@ public class CalculationController {
     private Label calculationInstallment;
     @FXML
     private Label calculationGrandTotal;
+    @FXML
+    private Button btnCompletePayment;
 
     private ObservableList<Installment> observableInstallmentList = FXCollections.observableArrayList();
     private ArrayList<Installment> installmentList;
     private double rate;
     private int totalInstallmentAmount = 0;
 
-    BusinessImplementation businessImplementation=new BusinessImplementation();
+    private BusinessImplementation businessImplementation=new BusinessImplementation();
 
     public void initialize(Items items) throws BusinessException {
-        rate = Double.valueOf(items.getRate());
+        rate = Double.parseDouble(items.getRate());
         rateFieldI.setText("@" + rate);
         rateFieldC.setText("@" + rate);
         updateInstallmentListView(items);
         updateCalculationSection(items);
     }
 
-    public void updateInstallmentListView(Items items) throws BusinessException {
-        loadInstallmentData(Integer.valueOf(items.getItemID()));;
+    private void updateInstallmentListView(Items items) throws BusinessException {
+        loadInstallmentData(Integer.parseInt(items.getItemID()));;
         for (Installment installment: installmentList) {
             observableInstallmentList.add(installment);
         }
@@ -87,41 +88,66 @@ public class CalculationController {
         });
     }
 
-    public void loadInstallmentData(int itemId) throws BusinessException {
+    private void loadInstallmentData(int itemId) throws BusinessException {
         installmentList = businessImplementation.getInstallmentData(itemId);
         for(Installment installment: installmentList){
             installment.setEndDate(LocalDate.now().toString());
-            installment.setDuration(calculateDurationInMonths(installment.getDate()));
+            installment.setDuration(calculateDurationInMonths(installment.getDate(), Date.valueOf(LocalDate.now())));
             installment.setTotalInterest(calculateInterestAmount(installment.getDuration(), rate, installment.getDepositAmount()));
             installment.setTotalAmount(installment.getTotalInterest() + installment.getDepositAmount());
             totalInstallmentAmount += installment.getTotalAmount();
         }
     }
 
-    public void updateCalculationSection(Items items) {
-        int principal = Integer.valueOf(items.getPrincipal());
-        int duration = calculateDurationInMonths(items.getStartDate());
+    private void updateCalculationSection(Items items) {
+        int principal = Integer.parseInt(items.getPrincipal());
+        int duration;
+        calculationPrincipal.setText("" + principal);
+        calculationStartDate.setText("" + items.getStartDate());
+        if (items.getIsActive() == 0) {
+            calculationEndDate.setText(items.getClosingDate());
+            duration = calculateDurationInMonths(items.getStartDate(), Date.valueOf(String.valueOf(calculationEndDate.getText())));
+        } else {
+            calculationEndDate.setText(LocalDate.now().toString());
+            duration = calculateDurationInMonths(items.getStartDate(), Date.valueOf(String.valueOf(calculationEndDate.getText())));
+        }
         int interest = calculateInterestAmount(duration, rate, principal);
         int totalAmount = principal + interest;
         int grandTotal = totalAmount - totalInstallmentAmount;
-        calculationPrincipal.setText("" + principal);
-        calculationStartDate.setText("" + items.getStartDate());
-        calculationEndDate.setText(LocalDate.now().toString());
         calculationDuration.setText("" + duration);
         calculationInterest.setText("" + interest);
         calculationTotalAmount.setText("" + totalAmount);
         calculationInstallment.setText("" + totalInstallmentAmount);
         calculationGrandTotal.setText("" + grandTotal);
+
+        if (items.getIsActive() == 1) {
+            btnCompletePayment.setOnAction(event -> {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Complete Payment");
+                dialog.setHeaderText("Closer Name");
+                dialog.setContentText("Please enter closer name:");
+                Optional<String> result = dialog.showAndWait();
+                result.ifPresent(name -> {
+                    try {
+                        businessImplementation.closeCustomerItem(name, grandTotal, Integer.parseInt(items.getItemID()));
+                    } catch (BusinessException e) {
+                        e.printStackTrace();
+                    }
+                });
+            });
+        } else {
+            btnCompletePayment.setDisable(true);
+        }
     }
 
-    public int calculateDurationInMonths(Date fromDate){
+    private int calculateDurationInMonths(Date fromDate, Date endDate){
         long monthsBetween = ChronoUnit.MONTHS.between(
                 LocalDate.parse(fromDate.toString()).withDayOfMonth(1),
-                LocalDate.parse(new Date(System.currentTimeMillis()).toString()).withDayOfMonth(1));
+                LocalDate.parse(endDate.toString()).withDayOfMonth(1));
         return (int) monthsBetween;
     }
 
-    public int calculateInterestAmount(int noOfMonths, double rate, int amount){
+    private int calculateInterestAmount(int noOfMonths, double rate, int amount){
         int months = noOfMonths;
         int totalAmount = amount;
         while(months>12){

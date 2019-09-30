@@ -216,40 +216,76 @@ public class BusinessImplementation {
     public ArrayList<Items> getItems(int id) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
-        ResultSet resultSet = null;
+        ResultSet resultSet1 = null;
+        ResultSet resultSet2 = null;
         Items items;
         ArrayList<Items> itemList;
         try {
-            String sql = ApplicationConstants.GET_ITEMS_SQL;
-            statement = connection.prepareStatement(sql);
+            String sqlActive = ApplicationConstants.GET_ACTIVE_ITEMS_SQL;
+            statement = connection.prepareStatement(sqlActive);
             statement.setInt(1, id);
-            resultSet = statement.executeQuery();
+            resultSet1 = statement.executeQuery();
+
+            String sqlNotActive = ApplicationConstants.GET_NOT_ACTIVE_ITEMS_SQL;
+            statement = connection.prepareStatement(sqlNotActive);
+            statement.setInt(1, id);
+            resultSet2 = statement.executeQuery();
+
             itemList = new ArrayList<>();
 
-            while (resultSet.next()) {
+            while (resultSet1.next()) {
                 items = new Items();
-                items.setItemID(resultSet.getString("itemID"));
-                items.setType(resultSet.getString("type"));
-                items.setStartDate(resultSet.getDate("startDate"));
-                items.setPrincipal(resultSet.getString("principal"));
-                items.setRate(resultSet.getString("rate"));
-                items.setDescription(resultSet.getString("description"));
-                items.setStatus(resultSet.getString("status"));
-                items.setCreatedAt(resultSet.getString("createdAt"));
-                items.setUpdatedAt(resultSet.getString("updatedAt"));
-                items.setCloserName(resultSet.getString("closerName"));
-                items.setTotalAmount(resultSet.getString("totalAmount"));
-                items.setClosingAmount(resultSet.getString("closingAmount"));
-                items.setDeadline(resultSet.getDate("deadline"));
+                items.setItemID(resultSet1.getString("itemID"));
+                items.setType(resultSet1.getString("type"));
+                items.setStartDate(resultSet1.getDate("startDate"));
+                items.setPrincipal(resultSet1.getString("principal"));
+                items.setRate(resultSet1.getString("rate"));
+                items.setDescription(resultSet1.getString("description"));
+                items.setStatus(resultSet1.getString("status"));
+                items.setCreatedAt(resultSet1.getString("createdAt"));
+                items.setUpdatedAt(resultSet1.getString("updatedAt"));
+                items.setCloserName(resultSet1.getString("closerName"));
+                items.setTotalAmount(resultSet1.getString("totalAmount"));
+                items.setClosingAmount(resultSet1.getString("closingAmount"));
+                items.setIsActive(resultSet1.getInt("isActive"));
+                items.setClosingDate(resultSet1.getString("closingDate"));
+                items.setDeadline(resultSet1.getDate("deadline"));
+
+                itemList.add(items);
+            }
+            while (resultSet2.next()) {
+                items = new Items();
+                items.setItemID(resultSet2.getString("itemID"));
+                items.setType(resultSet2.getString("type"));
+                items.setStartDate(resultSet2.getDate("startDate"));
+                items.setPrincipal(resultSet2.getString("principal"));
+                items.setRate(resultSet2.getString("rate"));
+                items.setDescription(resultSet2.getString("description"));
+                items.setStatus(resultSet2.getString("status"));
+                items.setCreatedAt(resultSet2.getString("createdAt"));
+                items.setUpdatedAt(resultSet2.getString("updatedAt"));
+                items.setCloserName(resultSet2.getString("closerName"));
+                items.setTotalAmount(resultSet2.getString("totalAmount"));
+                items.setClosingAmount(resultSet2.getString("closingAmount"));
+                items.setIsActive(resultSet2.getInt("isActive"));
+                items.setClosingDate(resultSet2.getString("closingDate"));
+                items.setDeadline(resultSet2.getDate("deadline"));
 
                 itemList.add(items);
             }
         } catch (SQLException se) {
             throw new BusinessException(se);
         } finally {
-            if (null != resultSet) {
+            if (null != resultSet1) {
                 try {
-                    resultSet.close();
+                    resultSet1.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != resultSet2) {
+                try {
+                    resultSet2.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -384,7 +420,7 @@ public class BusinessImplementation {
             statement.setString(5, items.getDescription());
             statement.setString(6, null);
             statement.setString(7, "not paid");
-            statement.setDate(8, Date.valueOf(LocalDate.now().plusDays(-1)));
+            statement.setDate(8, Date.valueOf(LocalDate.now()));
             statement.setDate(9, Date.valueOf(LocalDate.now()));
             statement.setString(10, "Bill Gates");
             statement.setInt(11, 10000);
@@ -462,6 +498,47 @@ public class BusinessImplementation {
             }
         }
         System.out.println("Installment added successfully");
+    }
+
+    public void closeCustomerItem(String closerName, int closingAmount, int id) throws BusinessException {
+        connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            String sql = ApplicationConstants.CLOSE_CUSTOMER_ITEM;
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, closerName);
+            statement.setInt(2, closingAmount);
+            statement.setInt(3, 0);
+            statement.setDate(4, Date.valueOf(LocalDate.now()));
+            statement.setInt(5, id);
+
+            statement.executeUpdate();
+        } catch (SQLException se) {
+            throw new BusinessException(se);
+        } finally {
+            if (null != resultSet) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != statement) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != connection) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public User getUser(int id) throws BusinessException {

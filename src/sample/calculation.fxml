@@ -144,6 +144,10 @@
                                                     </children>
                                                 </HBox>
                                             </children>
+                                            <HBox style="-fx-padding: 10 0 0 0">
+                                                <Pane HBox.hgrow="ALWAYS"/>
+                                                <Button text="Complete Payment" fx:id="btnCompletePayment" id="btnAdd"/>
+                                            </HBox>
                                         </VBox>
                                     </children>
                                 </HBox>

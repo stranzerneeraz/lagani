@@ -17,20 +17,9 @@ public class Items {
     private SimpleStringProperty closerName = new SimpleStringProperty("");
     private SimpleStringProperty totalAmount = new SimpleStringProperty("");
     private SimpleStringProperty closingAmount = new SimpleStringProperty("");
+    private int isActive;
     private Date deadline;
     private SimpleStringProperty closingDate = new SimpleStringProperty("");
-
-    public Items() {
-    }
-
-//    public Items(String type, Date startDate, int principal, Double rate, Date deadline, String description) {
-//        this.type.set(type);
-//        this.startDate.set(String.valueOf(startDate));
-//        this.principal.set(String.valueOf(principal));
-//        this.rate.set(String.valueOf(rate));
-//        this.deadline.set(String.valueOf(deadline));
-//        this.description.set(description);
-//    }
 
     public String getItemID() {
         return itemID.get();
@@ -172,6 +161,14 @@ public class Items {
         this.closingAmount.set(closingAmount);
     }
 
+    public int getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(int isActive) {
+        this.isActive = isActive;
+    }
+
     public Date getDeadline() {
         return deadline;
     }
@@ -206,6 +203,8 @@ public class Items {
                 ", updatedAt=" + updatedAt +
                 ", closerName=" + closerName +
                 ", totalAmount=" + totalAmount +
+                ", closingAmount=" + closingAmount +
+                ", isActive=" + isActive +
                 ", deadline=" + deadline +
                 ", closingDate=" + closingDate +
                 '}';

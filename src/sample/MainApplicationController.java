@@ -165,8 +165,6 @@ public class MainApplicationController {
     private Alert alertSuccess = new Alert(AlertType.INFORMATION);
     private BusinessImplementation businessImplementation = new BusinessImplementation();
     private Customers selectionCustomer = new Customers();
-    private String errorEntry = ApplicationConstants.ERROR_ENTRY;
-    private String correctEntry = ApplicationConstants.CORRECT_ENTRY;
 
     public void initialize() {
     }
@@ -181,7 +179,6 @@ public class MainApplicationController {
 
     /**
      * Display items according to Pagination
-     *
      * @param pageIndex
      * @return
      */
@@ -223,7 +220,6 @@ public class MainApplicationController {
     /**
      * Searching of Customers
      * Gets selected Customer for showing items
-     *
      * @throws BusinessException
      */
     @FXML
@@ -261,7 +257,6 @@ public class MainApplicationController {
 
     /**
      * Get Customers to be displayed in ListView
-     *
      * @param searchString
      * @throws BusinessException
      */
@@ -369,28 +364,33 @@ public class MainApplicationController {
                             setGraphic(null);
                             setText(null);
                         } else {
-                            btnAddInstallment.setOnAction(event -> {
-                                Items selectedItem = getTableView().getItems().get(getIndex());
-                                Dialog<ButtonType> dialog = new Dialog<>();
-                                dialog.initOwner(mainBorderPane.getScene().getWindow());
-                                dialog.setTitle("Add Installment");
-                                FXMLLoader fxmlLoader = new FXMLLoader();
-                                fxmlLoader.setLocation(getClass().getResource("addInstallmentDialog.fxml"));
-                                dialogWindow = dialog.getDialogPane().getScene().getWindow();
-                                try {
-                                    dialog.getDialogPane().setContent(fxmlLoader.load());
-                                    AddInstallmentDialogController addInstallmentDialogController = fxmlLoader.getController();
-                                    addInstallmentDialogController.initialize(selectedItem);
-                                    dialogWindow.setOnCloseRequest(closeEvent -> dialog.close());
-                                    dialog.showAndWait();
-                                } catch (IOException e) {
+                            Items selectedItem = getTableView().getItems().get(getIndex());
+                            if(selectedItem.getIsActive() == 1){
+                                btnAddInstallment.setOnAction(event -> {
+                                    Dialog<ButtonType> dialog = new Dialog<>();
+                                    dialog.initOwner(mainBorderPane.getScene().getWindow());
+                                    dialog.setTitle("Add Installment");
+                                    FXMLLoader fxmlLoader = new FXMLLoader();
+                                    fxmlLoader.setLocation(getClass().getResource("addInstallmentDialog.fxml"));
+                                    dialogWindow = dialog.getDialogPane().getScene().getWindow();
                                     try {
-                                        throw new BusinessException(e);
-                                    } catch (BusinessException ex) {
-                                        ex.printStackTrace();
+                                        dialog.getDialogPane().setContent(fxmlLoader.load());
+                                        AddInstallmentDialogController addInstallmentDialogController = fxmlLoader.getController();
+                                        addInstallmentDialogController.initialize(selectedItem);
+                                        dialogWindow.setOnCloseRequest(closeEvent -> dialog.close());
+                                        dialog.showAndWait();
+                                    } catch (IOException e) {
+                                        try {
+                                            throw new BusinessException(e);
+                                        } catch (BusinessException ex) {
+                                            ex.printStackTrace();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            } else {
+                                btnAddInstallment.setDisable(true);
+                            }
+
                             setGraphic(btnAddInstallment);
                             setText(null);
                         }
@@ -493,6 +493,7 @@ public class MainApplicationController {
         } catch (IOException e) {
             throw new BusinessException(e);
         }
+        viewCustomers();
     }
 
     /**
@@ -519,6 +520,7 @@ public class MainApplicationController {
         } catch (IOException | BusinessException e) {
             throw new BusinessException(e);
         }
+        fetchCustomerItem(selectionCustomer.getCustomerID());
     }
 
     /**
@@ -546,30 +548,30 @@ public class MainApplicationController {
         alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
         User user = new User();
         if (nameProfile.getText().length() <= 0) {
-            nameProfile.setStyle(errorEntry);
+            nameProfile.setStyle(ApplicationConstants.ERROR_ENTRY);
             alertWarning.setContentText("Enter name");
             alertWarning.showAndWait();
         } else if (firmNameProfile.getText().length() <= 0) {
-            firmNameProfile.setStyle(errorEntry);
+            firmNameProfile.setStyle(ApplicationConstants.ERROR_ENTRY);
             alertWarning.setContentText("Enter firm name");
             alertWarning.showAndWait();
         } else if (!contactProfile.getText().matches(ApplicationConstants.CONTACT_NUMBER_VALIDATION_REGEX)) {
-            contactProfile.setStyle(errorEntry);
+            contactProfile.setStyle(ApplicationConstants.ERROR_ENTRY);
             alertWarning.setContentText("Enter contact number");
             alertWarning.showAndWait();
         } else if (!emailProfile.getText().matches(ApplicationConstants.EMAIL_VALIDATION_REGEX)) {
-            emailProfile.setStyle(errorEntry);
+            emailProfile.setStyle(ApplicationConstants.ERROR_ENTRY);
             alertWarning.setContentText("Enter email address");
             alertWarning.showAndWait();
         } else if (addressProfile.getText().length() <= 0) {
-            addressProfile.setStyle(errorEntry);
+            addressProfile.setStyle(ApplicationConstants.ERROR_ENTRY);
             alertWarning.setContentText("Enter address");
             alertWarning.showAndWait();
         } else {
-            nameProfile.setStyle(correctEntry);
-            firmNameProfile.setStyle(correctEntry);
-            contactProfile.setStyle(correctEntry);
-            addressProfile.setStyle(correctEntry);
+            nameProfile.setStyle(ApplicationConstants.CORRECT_ENTRY);
+            firmNameProfile.setStyle(ApplicationConstants.CORRECT_ENTRY);
+            contactProfile.setStyle(ApplicationConstants.CORRECT_ENTRY);
+            addressProfile.setStyle(ApplicationConstants.CORRECT_ENTRY);
 
             user.setName(nameProfile.getText());
             user.setFirmname(firmNameProfile.getText());
@@ -595,11 +597,11 @@ public class MainApplicationController {
         btnViewCustomer.setOnAction(event -> {
             String customerID = getCustomerID.getText();
             if (!customerID.matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
-                getCustomerID.setStyle(errorEntry);
+                getCustomerID.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter Customer ID");
                 alertWarning.showAndWait();
             } else {
-                getCustomerID.setStyle(correctEntry);
+                getCustomerID.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 try {
                     Customers customers = businessImplementation.getCustomerByID(Integer.parseInt(customerID));
                     if (customers == null) {
@@ -616,11 +618,11 @@ public class MainApplicationController {
         btnViewItem.setOnAction(event -> {
             String itemID = getItemID.getText();
             if (!itemID.matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
-                getItemID.setStyle(errorEntry);
+                getItemID.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter Item ID");
                 alertWarning.showAndWait();
             } else {
-                getItemID.setStyle(correctEntry);
+                getItemID.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 try {
                     Items items = businessImplementation.getItemByID(Integer.parseInt(itemID));
                     if (null == items) {
@@ -637,11 +639,11 @@ public class MainApplicationController {
         btnViewInstallment.setOnAction(event -> {
             String installmentID = getInstallmentID.getText();
             if (!installmentID.matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
-                getInstallmentID.setStyle(errorEntry);
+                getInstallmentID.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter Installment ID");
                 alertWarning.showAndWait();
             } else {
-                getInstallmentID.setStyle(correctEntry);
+                getInstallmentID.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 try {
                     Installment installment = businessImplementation.getInstallmentByID(Integer.parseInt(installmentID));
                     if (null == installment) {
@@ -690,41 +692,41 @@ public class MainApplicationController {
 
         btnUpdateCustomer.setOnAction(event -> {
             if (adminFullName.getText().length() <= 0) {
-                adminFullName.setStyle(errorEntry);
+                adminFullName.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter full name");
                 alertWarning.showAndWait();
             } else if (adminAddress.getText().length() <= 0) {
-                adminAddress.setStyle(errorEntry);
+                adminAddress.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter address");
                 alertWarning.showAndWait();
             } else if (!adminWard.getText().matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
-                adminWard.setStyle(errorEntry);
+                adminWard.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter ward number in integer");
                 alertWarning.showAndWait();
             } else if (adminFatherName.getText().length() <= 0) {
-                adminFatherName.setStyle(errorEntry);
+                adminFatherName.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter father's name");
                 alertWarning.showAndWait();
             } else if (adminSpouseName.getText().length() <= 0) {
-                adminSpouseName.setStyle(errorEntry);
+                adminSpouseName.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter spouse's name");
                 alertWarning.showAndWait();
             } else if (!adminContactNumber.getText().matches(ApplicationConstants.CONTACT_NUMBER_VALIDATION_REGEX)) {
-                adminContactNumber.setStyle(errorEntry);
+                adminContactNumber.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter contact number");
                 alertWarning.showAndWait();
             } else if (adminRemarks.getText().length() <= 0) {
-                adminRemarks.setStyle(errorEntry);
+                adminRemarks.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter remarks");
                 alertWarning.showAndWait();
             } else {
-                adminFullName.setStyle(correctEntry);
-                adminAddress.setStyle(correctEntry);
-                adminWard.setStyle(correctEntry);
-                adminFatherName.setStyle(correctEntry);
-                adminSpouseName.setStyle(correctEntry);
-                adminContactNumber.setStyle(correctEntry);
-                adminRemarks.setStyle(correctEntry);
+                adminFullName.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminAddress.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminWard.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminFatherName.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminSpouseName.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminContactNumber.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminRemarks.setStyle(ApplicationConstants.CORRECT_ENTRY);
 
                 customers.setFullName(adminFullName.getText());
                 customers.setAddress(adminAddress.getText());
@@ -763,31 +765,31 @@ public class MainApplicationController {
 
         btnUpdateItem.setOnAction(event -> {
             if (!adminItemAmount.getText().matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
-                adminItemAmount.setStyle(errorEntry);
+                adminItemAmount.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Input fields not valid");
                 alertWarning.showAndWait();
             } else if (!(adminStartDate.getValue().compareTo(LocalDate.now()) <= 0)) {
-                adminStartDate.setStyle(errorEntry);
+                adminStartDate.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Date field should be upto today");
                 alertWarning.showAndWait();
             } else if (!adminRate.getText().matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
-                adminRate.setStyle(errorEntry);
+                adminRate.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Rate should be in decimal");
                 alertWarning.showAndWait();
             } else if (!(adminDeadline.getValue().compareTo(LocalDate.now()) > 0)) {
-                adminDeadline.setStyle(errorEntry);
+                adminDeadline.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Deadline should be in future");
                 alertWarning.showAndWait();
             } else if (adminDescription.getText().length() <= 0) {
-                adminDescription.setStyle(errorEntry);
+                adminDescription.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter description");
                 alertWarning.showAndWait();
             } else {
-                adminItemAmount.setStyle(correctEntry);
-                adminStartDate.setStyle(correctEntry);
-                adminRate.setStyle(correctEntry);
-                adminDeadline.setStyle(correctEntry);
-                adminDescription.setStyle(correctEntry);
+                adminItemAmount.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminStartDate.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminRate.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminDeadline.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminDescription.setStyle(ApplicationConstants.CORRECT_ENTRY);
 
                 items.setPrincipal(adminItemAmount.getText());
                 items.setStartDate(Date.valueOf(adminStartDate.getValue()));
@@ -821,21 +823,21 @@ public class MainApplicationController {
 
         btnUpdateInstallment.setOnAction(event -> {
             if (!adminInstallmentAmount.getText().matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
-                adminInstallmentAmount.setStyle(errorEntry);
+                adminInstallmentAmount.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Input fields not valid");
                 alertWarning.showAndWait();
             } else if (adminDepositor.getText().length() <= 0) {
-                adminDepositor.setStyle(errorEntry);
+                adminDepositor.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Enter Depositor Name");
                 alertWarning.showAndWait();
             } else if (!(adminDepositDate.getValue().compareTo(LocalDate.now()) <= 0)) {
-                adminDepositDate.setStyle(errorEntry);
+                adminDepositDate.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alertWarning.setContentText("Date field should be upto today");
                 alertWarning.showAndWait();
             } else {
-                adminInstallmentAmount.setStyle(correctEntry);
-                adminDepositor.setStyle(correctEntry);
-                adminDepositDate.setStyle(correctEntry);
+                adminInstallmentAmount.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminDepositor.setStyle(ApplicationConstants.CORRECT_ENTRY);
+                adminDepositDate.setStyle(ApplicationConstants.CORRECT_ENTRY);
 
                 installment.setDepositAmount(Integer.parseInt(adminInstallmentAmount.getText()));
                 installment.setDepositor(adminDepositor.getText());
