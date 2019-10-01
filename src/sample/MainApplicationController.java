@@ -150,9 +150,14 @@ public class MainApplicationController {
     private Button btnBackup;
 
     private ObservableList<Customers> customersObservableList = FXCollections.observableArrayList();
+    private BusinessImplementation businessImplementation = new BusinessImplementation();
+    private Alert alertWarning = new Alert(Alert.AlertType.WARNING);
+    private Alert alertSuccess = new Alert(AlertType.INFORMATION);
     private ObservableList<Items> itemsObservableList;
+    private Customers selectionCustomer = new Customers();
     private int id = LoginController.id();
     private String searchString = "";
+    private Dialog<ButtonType> dialog = new Dialog<>();
     private Stage window;
     private Window dialogWindow;
     private int rowsPerPage = 50;
@@ -161,12 +166,9 @@ public class MainApplicationController {
         itemsObservableList = FXCollections.observableArrayList();
     }
 
-    private Alert alertWarning = new Alert(Alert.AlertType.WARNING);
-    private Alert alertSuccess = new Alert(AlertType.INFORMATION);
-    private BusinessImplementation businessImplementation = new BusinessImplementation();
-    private Customers selectionCustomer = new Customers();
-
     public void initialize() {
+        alertSuccess.setTitle(ApplicationConstants.SUCCESS_DIALOG);
+        alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
     }
 
     /**
@@ -179,11 +181,11 @@ public class MainApplicationController {
 
     /**
      * Display items according to Pagination
+     *
      * @param pageIndex
      * @return
      */
     private Node createPage(int pageIndex) {
-        int lastIndex;
         int count = 0;
         ArrayList<DashboardItem> dashboardItem = new ArrayList<>();
         try {
@@ -196,22 +198,12 @@ public class MainApplicationController {
         int itemsPerPage = 1;
         int page = pageIndex * itemsPerPage;
         int pageCount = (count / rowsPerPage) + 1;
-        int displace = count % rowsPerPage;
-        if (displace > 0) {
-            lastIndex = count / rowsPerPage;
-        } else {
-            lastIndex = count / rowsPerPage - 1;
-        }
-        for (int i = page; i < page + itemsPerPage; i++) {
+        for (int iterator = page; iterator < page + itemsPerPage; iterator++) {
             TableView<DashboardItem> table = new TableView<>();
             serialNoDashboard.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
                     dashboardTableView.getItems().indexOf(cellData.getValue()) + (pageIndex * rowsPerPage) + 1));
             dashboardTableView.setItems(dashboardItemObservableList);
-            if (lastIndex == pageIndex) {
-                table.setItems(FXCollections.observableArrayList(dashboardItemObservableList.subList(pageIndex * rowsPerPage, pageIndex * rowsPerPage + displace)));
-            } else {
-                table.setItems(FXCollections.observableArrayList(dashboardItemObservableList.subList(pageIndex * rowsPerPage, pageIndex * rowsPerPage + dashboardItemObservableList.size())));
-            }
+            table.setItems(FXCollections.observableArrayList(dashboardItemObservableList.subList(0, dashboardItemObservableList.size())));
         }
         pagination.setPageCount(pageCount);
         return new BorderPane(dashboardTableView);
@@ -220,6 +212,7 @@ public class MainApplicationController {
     /**
      * Searching of Customers
      * Gets selected Customer for showing items
+     *
      * @throws BusinessException
      */
     @FXML
@@ -257,6 +250,7 @@ public class MainApplicationController {
 
     /**
      * Get Customers to be displayed in ListView
+     *
      * @param searchString
      * @throws BusinessException
      */
@@ -304,7 +298,7 @@ public class MainApplicationController {
         itemsObservableList = FXCollections.observableArrayList(itemList);
         itemNo.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(itemsTableView.getItems().indexOf(cellData.getValue()) + 1));
 
-        viewInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy"));
+        viewInstallment.setCellValueFactory(new PropertyValueFactory<>(""));
         Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryView = new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
             @Override
             public TableCell call(final TableColumn<Items, String> param) {
@@ -316,11 +310,10 @@ public class MainApplicationController {
                         super.updateItem(item, empty);
                         if (empty) {
                             setGraphic(null);
-                            setText(null);
+                            setText("");
                         } else {
                             btnViewInstallment.setOnAction(event -> {
                                 Items selectionItem = getTableView().getItems().get(getIndex());
-                                Dialog<ButtonType> dialog = new Dialog<>();
                                 dialog.initOwner(mainBorderPane.getScene().getWindow());
                                 dialog.setTitle("Installments");
                                 FXMLLoader fxmlLoader = new FXMLLoader();
@@ -341,7 +334,7 @@ public class MainApplicationController {
                                 }
                             });
                             setGraphic(btnViewInstallment);
-                            setText(null);
+                            setText("");
                         }
                     }
                 };
@@ -350,7 +343,7 @@ public class MainApplicationController {
         };
         viewInstallment.setCellFactory(cellFactoryView);
 
-        addInstallment.setCellValueFactory(new PropertyValueFactory<>("Dummy1"));
+        addInstallment.setCellValueFactory(new PropertyValueFactory<>(""));
         Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryAdd = new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
             @Override
             public TableCell call(final TableColumn<Items, String> param) {
@@ -362,10 +355,10 @@ public class MainApplicationController {
                         super.updateItem(item, empty);
                         if (empty) {
                             setGraphic(null);
-                            setText(null);
+                            setText("");
                         } else {
                             Items selectedItem = getTableView().getItems().get(getIndex());
-                            if(selectedItem.getIsActive() == 1){
+                            if (selectedItem.getIsActive() == 1) {
                                 btnAddInstallment.setOnAction(event -> {
                                     Dialog<ButtonType> dialog = new Dialog<>();
                                     dialog.initOwner(mainBorderPane.getScene().getWindow());
@@ -390,7 +383,6 @@ public class MainApplicationController {
                             } else {
                                 btnAddInstallment.setDisable(true);
                             }
-
                             setGraphic(btnAddInstallment);
                             setText(null);
                         }
@@ -401,7 +393,7 @@ public class MainApplicationController {
         };
         addInstallment.setCellFactory(cellFactoryAdd);
 
-        calculate.setCellValueFactory(new PropertyValueFactory<>("Dummy2"));
+        calculate.setCellValueFactory(new PropertyValueFactory<>(""));
         Callback<TableColumn<Items, String>, TableCell<Items, String>> cellFactoryCalculate = new Callback<TableColumn<Items, String>, TableCell<Items, String>>() {
             @Override
             public TableCell call(final TableColumn<Items, String> param) {
@@ -413,7 +405,7 @@ public class MainApplicationController {
                         super.updateItem(item, empty);
                         if (empty) {
                             setGraphic(null);
-                            setText(null);
+                            setText("");
                         } else {
                             btnCalculate.setOnAction(event -> {
                                 Items items = getTableView().getItems().get(getIndex());
@@ -431,9 +423,14 @@ public class MainApplicationController {
                                 } catch (IOException | BusinessException e) {
                                     e.printStackTrace();
                                 }
+                                try {
+                                    fetchCustomerItem(id);
+                                } catch (BusinessException e) {
+                                    e.printStackTrace();
+                                }
                             });
                             setGraphic(btnCalculate);
-                            setText(null);
+                            setText("");
                         }
                     }
                 };
@@ -449,13 +446,12 @@ public class MainApplicationController {
         table1HorizontalScrollBar.setVisible(true);
         assert table1VerticalScrollBar != null;
         table1VerticalScrollBar.setVisible(false);
-        VirtualFlow flow1 = (VirtualFlow) itemsTableView.lookup(".virtual-flow");
-        flow1.requestLayout();
+        VirtualFlow flow = (VirtualFlow) itemsTableView.lookup(".virtual-flow");
+        flow.requestLayout();
     }
 
     /**
      * Property for Scrollbar
-     *
      * @param table
      * @param orientation
      * @return
@@ -478,7 +474,6 @@ public class MainApplicationController {
      */
     @FXML
     public void addNewCustomer() throws BusinessException {
-        Dialog<ButtonType> dialog = new Dialog<>();
         dialog.initOwner(mainBorderPane.getScene().getWindow());
         dialog.setTitle("Add New Customer");
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -503,7 +498,6 @@ public class MainApplicationController {
      */
     @FXML
     public void addNewItem() throws BusinessException {
-        Dialog<ButtonType> dialog = new Dialog<>();
         dialog.initOwner(mainBorderPane.getScene().getWindow());
         dialog.setTitle("Add New Item");
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -545,7 +539,6 @@ public class MainApplicationController {
      */
     @FXML
     public void updateProfile() throws BusinessException {
-        alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
         User user = new User();
         if (nameProfile.getText().length() <= 0) {
             nameProfile.setStyle(ApplicationConstants.ERROR_ENTRY);
@@ -557,11 +550,11 @@ public class MainApplicationController {
             alertWarning.showAndWait();
         } else if (!contactProfile.getText().matches(ApplicationConstants.CONTACT_NUMBER_VALIDATION_REGEX)) {
             contactProfile.setStyle(ApplicationConstants.ERROR_ENTRY);
-            alertWarning.setContentText("Enter contact number");
+            alertWarning.setContentText("Enter valid contact number");
             alertWarning.showAndWait();
         } else if (!emailProfile.getText().matches(ApplicationConstants.EMAIL_VALIDATION_REGEX)) {
             emailProfile.setStyle(ApplicationConstants.ERROR_ENTRY);
-            alertWarning.setContentText("Enter email address");
+            alertWarning.setContentText("Enter valid email address");
             alertWarning.showAndWait();
         } else if (addressProfile.getText().length() <= 0) {
             addressProfile.setStyle(ApplicationConstants.ERROR_ENTRY);
@@ -578,7 +571,10 @@ public class MainApplicationController {
             user.setContact(Long.parseLong(contactProfile.getText()));
             user.setEmail(emailProfile.getText());
             user.setAddress(addressProfile.getText());
+
             businessImplementation.updateUserProfile(user, id);
+            alertSuccess.setContentText("Profile updated successfully");
+            alertSuccess.showAndWait();
         }
     }
 
@@ -592,22 +588,20 @@ public class MainApplicationController {
         itemAdminPanel.setVisible(false);
         installmentAdminPanel.setVisible(false);
         backupAdminPanel.setVisible(false);
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(ApplicationConstants.WARNING_DIALOG);
         btnViewCustomer.setOnAction(event -> {
             String customerID = getCustomerID.getText();
             if (!customerID.matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
                 getCustomerID.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alertWarning.setContentText("Enter Customer ID");
+                alertWarning.setContentText("Enter valid customer ID");
                 alertWarning.showAndWait();
             } else {
-                getCustomerID.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 try {
                     Customers customers = businessImplementation.getCustomerByID(Integer.parseInt(customerID));
                     if (customers == null) {
-                        alert.setContentText("Enter valid customer ID");
-                        alert.showAndWait();
+                        alertWarning.setContentText("Enter valid customer ID");
+                        alertWarning.showAndWait();
                     } else {
+                        getCustomerID.setStyle(ApplicationConstants.CORRECT_ENTRY);
                         adminViewCustomer(customers);
                     }
                 } catch (BusinessException e) {
@@ -619,16 +613,16 @@ public class MainApplicationController {
             String itemID = getItemID.getText();
             if (!itemID.matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
                 getItemID.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alertWarning.setContentText("Enter Item ID");
+                alertWarning.setContentText("Enter valid item ID");
                 alertWarning.showAndWait();
             } else {
-                getItemID.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 try {
                     Items items = businessImplementation.getItemByID(Integer.parseInt(itemID));
                     if (null == items) {
-                        alert.setContentText("Enter valid item ID");
-                        alert.showAndWait();
+                        alertWarning.setContentText("Enter valid item ID");
+                        alertWarning.showAndWait();
                     } else {
+                        getItemID.setStyle(ApplicationConstants.CORRECT_ENTRY);
                         adminViewItem(items);
                     }
                 } catch (BusinessException e) {
@@ -640,16 +634,16 @@ public class MainApplicationController {
             String installmentID = getInstallmentID.getText();
             if (!installmentID.matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
                 getInstallmentID.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alertWarning.setContentText("Enter Installment ID");
+                alertWarning.setContentText("Enter valid installment ID");
                 alertWarning.showAndWait();
             } else {
-                getInstallmentID.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 try {
                     Installment installment = businessImplementation.getInstallmentByID(Integer.parseInt(installmentID));
                     if (null == installment) {
-                        alert.setContentText("Enter valid installment ID");
-                        alert.showAndWait();
+                        alertWarning.setContentText("Enter valid installment ID");
+                        alertWarning.showAndWait();
                     } else {
+                        getInstallmentID.setStyle(ApplicationConstants.CORRECT_ENTRY);
                         adminViewInstallment(installment);
                     }
                 } catch (BusinessException e) {
@@ -658,10 +652,6 @@ public class MainApplicationController {
             }
         });
         btnViewBackup.setOnAction(event -> {
-            customerAdminPanel.setVisible(false);
-            itemAdminPanel.setVisible(false);
-            installmentAdminPanel.setVisible(false);
-            backupAdminPanel.setVisible(true);
             try {
                 backup();
             } catch (BusinessException e) {
@@ -680,7 +670,6 @@ public class MainApplicationController {
         itemAdminPanel.setVisible(false);
         installmentAdminPanel.setVisible(false);
         backupAdminPanel.setVisible(false);
-        alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
 
         adminFullName.setText(customers.getFullName());
         adminAddress.setText(customers.getAddress());
@@ -689,7 +678,6 @@ public class MainApplicationController {
         adminSpouseName.setText(customers.getSpouseName());
         adminContactNumber.setText("" + customers.getContactNo());
         adminRemarks.setText(customers.getRemarks());
-
         btnUpdateCustomer.setOnAction(event -> {
             if (adminFullName.getText().length() <= 0) {
                 adminFullName.setStyle(ApplicationConstants.ERROR_ENTRY);
@@ -701,7 +689,7 @@ public class MainApplicationController {
                 alertWarning.showAndWait();
             } else if (!adminWard.getText().matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
                 adminWard.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alertWarning.setContentText("Enter ward number in integer");
+                alertWarning.setContentText("Enter valid ward number");
                 alertWarning.showAndWait();
             } else if (adminFatherName.getText().length() <= 0) {
                 adminFatherName.setStyle(ApplicationConstants.ERROR_ENTRY);
@@ -713,7 +701,7 @@ public class MainApplicationController {
                 alertWarning.showAndWait();
             } else if (!adminContactNumber.getText().matches(ApplicationConstants.CONTACT_NUMBER_VALIDATION_REGEX)) {
                 adminContactNumber.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alertWarning.setContentText("Enter contact number");
+                alertWarning.setContentText("Enter valid contact number");
                 alertWarning.showAndWait();
             } else if (adminRemarks.getText().length() <= 0) {
                 adminRemarks.setStyle(ApplicationConstants.ERROR_ENTRY);
@@ -740,6 +728,8 @@ public class MainApplicationController {
                 } catch (BusinessException e) {
                     e.printStackTrace();
                 }
+                alertSuccess.setContentText("Customer updated successfully");
+                alertSuccess.showAndWait();
             }
         });
     }
@@ -754,7 +744,6 @@ public class MainApplicationController {
         itemAdminPanel.setVisible(true);
         installmentAdminPanel.setVisible(false);
         backupAdminPanel.setVisible(false);
-        alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
 
         adminItemAmount.setText(items.getPrincipal());
         adminTypeChooser.setValue(items.getType());
@@ -762,7 +751,6 @@ public class MainApplicationController {
         adminRate.setText(items.getRate());
         adminDeadline.setValue(items.getDeadline().toLocalDate());
         adminDescription.setText(items.getDescription());
-
         btnUpdateItem.setOnAction(event -> {
             if (!adminItemAmount.getText().matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
                 adminItemAmount.setStyle(ApplicationConstants.ERROR_ENTRY);
@@ -801,6 +789,8 @@ public class MainApplicationController {
                 } catch (BusinessException e) {
                     e.printStackTrace();
                 }
+                alertSuccess.setContentText("Item updated successfully");
+                alertSuccess.showAndWait();
             }
         });
     }
@@ -815,12 +805,10 @@ public class MainApplicationController {
         itemAdminPanel.setVisible(false);
         installmentAdminPanel.setVisible(true);
         backupAdminPanel.setVisible(false);
-        alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
 
         adminInstallmentAmount.setText("" + installment.getDepositAmount());
         adminDepositor.setText(installment.getDepositor());
         adminDepositDate.setValue(installment.getDate().toLocalDate());
-
         btnUpdateInstallment.setOnAction(event -> {
             if (!adminInstallmentAmount.getText().matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
                 adminInstallmentAmount.setStyle(ApplicationConstants.ERROR_ENTRY);
@@ -847,6 +835,8 @@ public class MainApplicationController {
                 } catch (BusinessException e) {
                     e.printStackTrace();
                 }
+                alertSuccess.setContentText("Installment data updated successfully");
+                alertSuccess.showAndWait();
             }
         });
     }
@@ -879,23 +869,25 @@ public class MainApplicationController {
      * Backup User Data
      */
     private void backup() throws BusinessException {
-        btnBackup.setVisible(false);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ApplicationConstants.BACKUP_DATE_FORMAT);
-        LocalDateTime now = LocalDateTime.now();
-        String formatDateTime = now.format(formatter);
         String mySQLDumpPath = businessImplementation.getMySQLDumpPath();
+        String formatDateTime = LocalDateTime.now().format(formatter);
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        FileChooser fileChooser = new FileChooser();
         mySQLPathViewer.setText(mySQLDumpPath);
-
+        customerAdminPanel.setVisible(false);
+        itemAdminPanel.setVisible(false);
+        installmentAdminPanel.setVisible(false);
+        backupAdminPanel.setVisible(true);
+        btnBackup.setVisible(false);
         btnBrowse.setOnAction(event -> {
-
-            DirectoryChooser directoryChooser = new DirectoryChooser();
             File selectedDirectory = directoryChooser.showDialog(mainBorderPane.getScene().getWindow());
             if (null != selectedDirectory) {
                 File file = new File(selectedDirectory + "/Lagani-dump-" + formatDateTime + ".sql");
                 adminPathViewer.setText(String.valueOf(file));
                 btnBackup.setVisible(true);
                 btnBackup.setOnAction(event1 -> {
-                    String finalMySQLDumpPath = null;
+                    String finalMySQLDumpPath;
                     try {
                         finalMySQLDumpPath = businessImplementation.getMySQLDumpPath();
                         file.createNewFile();
@@ -904,11 +896,9 @@ public class MainApplicationController {
                         e.printStackTrace();
                     }
                 });
-
             }
         });
         btnSelectMySQL.setOnAction(event -> {
-            FileChooser fileChooser = new FileChooser();
             File selectedFile = fileChooser.showOpenDialog(mainBorderPane.getScene().getWindow());
             if (null != selectedFile) {
                 mySQLPathViewer.setText(String.valueOf(selectedFile));
@@ -923,6 +913,7 @@ public class MainApplicationController {
 
     /**
      * Backup data
+     *
      * @param dbUsername
      * @param dbPassword
      * @param dbName
@@ -935,11 +926,9 @@ public class MainApplicationController {
             runtimeProcess = Runtime.getRuntime().exec(executeCmd);
             int processComplete = runtimeProcess.waitFor();
             if (processComplete == 0) {
-                alertSuccess.setTitle(ApplicationConstants.SUCCESS_DIALOG);
                 alertSuccess.setContentText("Backup created successfully at " + path);
                 alertSuccess.showAndWait();
             } else {
-                alertWarning.setTitle(ApplicationConstants.WARNING_DIALOG);
                 alertWarning.setContentText("Could not create the backup");
                 alertWarning.showAndWait();
             }

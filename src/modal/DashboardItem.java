@@ -5,8 +5,9 @@ public class DashboardItem {
     private int amount;
     private String name;
     private String address;
-    private int duration;
+    private double duration;
     private int totalInstallment;
+    private int totalInterest;
 
     public int getCustomerID() {
         return customerID;
@@ -40,11 +41,11 @@ public class DashboardItem {
         this.address = address;
     }
 
-    public int getDuration() {
+    public double getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(double duration) {
         this.duration = duration;
     }
 
@@ -56,6 +57,14 @@ public class DashboardItem {
         this.totalInstallment = totalInstallment;
     }
 
+    public int getTotalInterest() {
+        return totalInterest;
+    }
+
+    public void setTotalInterest(int totalInterest) {
+        this.totalInterest = totalInterest;
+    }
+
     @Override
     public String toString() {
         return "DashboardItem{" +
@@ -65,6 +74,7 @@ public class DashboardItem {
                 ", address='" + address + '\'' +
                 ", duration=" + duration +
                 ", totalInstallment=" + totalInstallment +
+                ", totalInterest=" + totalInterest +
                 '}';
     }
 }

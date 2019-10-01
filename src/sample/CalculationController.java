@@ -12,9 +12,10 @@ import modal.Items;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Optional;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 public class CalculationController {
     @FXML
@@ -42,13 +43,17 @@ public class CalculationController {
     @FXML
     private Button btnCompletePayment;
 
+    private BusinessImplementation businessImplementation=new BusinessImplementation();
     private ObservableList<Installment> observableInstallmentList = FXCollections.observableArrayList();
     private ArrayList<Installment> installmentList;
     private double rate;
     private int totalInstallmentAmount = 0;
 
-    private BusinessImplementation businessImplementation=new BusinessImplementation();
-
+    /**
+     * gets item to be displayed in calculate section
+     * @param items
+     * @throws BusinessException
+     */
     public void initialize(Items items) throws BusinessException {
         rate = Double.parseDouble(items.getRate());
         rateFieldI.setText("@" + rate);
@@ -57,6 +62,11 @@ public class CalculationController {
         updateCalculationSection(items);
     }
 
+    /**
+     * gets item to be displayed in installment column in calculate section
+     * @param items
+     * @throws BusinessException
+     */
     private void updateInstallmentListView(Items items) throws BusinessException {
         loadInstallmentData(Integer.parseInt(items.getItemID()));;
         for (Installment installment: installmentList) {
@@ -88,6 +98,12 @@ public class CalculationController {
         });
     }
 
+    /**
+     * gets specific data
+     * passes data for calculating duration and interest
+     * @param itemId
+     * @throws BusinessException
+     */
     private void loadInstallmentData(int itemId) throws BusinessException {
         installmentList = businessImplementation.getInstallmentData(itemId);
         for(Installment installment: installmentList){
@@ -99,17 +115,21 @@ public class CalculationController {
         }
     }
 
+    /**
+     * gets item data to display in calculate column in calculate section
+     * @param items
+     */
     private void updateCalculationSection(Items items) {
         int principal = Integer.parseInt(items.getPrincipal());
-        int duration;
+        double duration;
         calculationPrincipal.setText("" + principal);
         calculationStartDate.setText("" + items.getStartDate());
         if (items.getIsActive() == 0) {
             calculationEndDate.setText(items.getClosingDate());
-            duration = calculateDurationInMonths(items.getStartDate(), Date.valueOf(String.valueOf(calculationEndDate.getText())));
+            duration = calculateDurationInMonths(items.getStartDate(), Date.valueOf(calculationEndDate.getText()));
         } else {
             calculationEndDate.setText(LocalDate.now().toString());
-            duration = calculateDurationInMonths(items.getStartDate(), Date.valueOf(String.valueOf(calculationEndDate.getText())));
+            duration = calculateDurationInMonths(items.getStartDate(), Date.valueOf(calculationEndDate.getText()));
         }
         int interest = calculateInterestAmount(duration, rate, principal);
         int totalAmount = principal + interest;
@@ -119,7 +139,6 @@ public class CalculationController {
         calculationTotalAmount.setText("" + totalAmount);
         calculationInstallment.setText("" + totalInstallmentAmount);
         calculationGrandTotal.setText("" + grandTotal);
-
         if (items.getIsActive() == 1) {
             btnCompletePayment.setOnAction(event -> {
                 TextInputDialog dialog = new TextInputDialog();
@@ -140,15 +159,34 @@ public class CalculationController {
         }
     }
 
-    private int calculateDurationInMonths(Date fromDate, Date endDate){
-        long monthsBetween = ChronoUnit.MONTHS.between(
-                LocalDate.parse(fromDate.toString()).withDayOfMonth(1),
-                LocalDate.parse(endDate.toString()).withDayOfMonth(1));
-        return (int) monthsBetween;
+    /**
+     * calculates duration of loan
+     * @param fromDate
+     * @param endDate
+     * @return
+     */
+    private double calculateDurationInMonths(Date fromDate, Date endDate){
+        double months=0;
+        long days = DAYS.between(LocalDate.parse(fromDate.toString()), LocalDate.parse(endDate.toString()));
+        if(days<15){
+            months = 0.5;
+        }else{
+            months = (int) days/30;
+            int monthsRem = (int) days%30;
+            months = monthsRem<=15?months+0.5:months+1;
+        }
+        return months;
     }
 
-    private int calculateInterestAmount(int noOfMonths, double rate, int amount){
-        int months = noOfMonths;
+    /**
+     * calculates total interest
+     * @param noOfMonths
+     * @param rate
+     * @param amount
+     * @return
+     */
+    private int calculateInterestAmount(double noOfMonths, double rate, int amount){
+        double months = noOfMonths;
         int totalAmount = amount;
         while(months>12){
             totalAmount+=(totalAmount * rate * 12)/100;

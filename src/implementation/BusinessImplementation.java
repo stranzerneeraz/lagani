@@ -7,12 +7,20 @@ import modal.*;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 public class BusinessImplementation {
     private Connection connection = null;
 
+    /**
+     * Checks whether user is authorize or not
+     * @param username
+     * @param password
+     * @return
+     * @throws BusinessException
+     */
     public int authenticateUser(String username, String password) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -57,6 +65,11 @@ public class BusinessImplementation {
         return id;
     }
 
+    /**
+     * count total items that needs to be displayed in dashboard
+     * @return
+     * @throws BusinessException
+     */
     public int countDashboardItem() throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -98,6 +111,12 @@ public class BusinessImplementation {
         return count;
     }
 
+    /**
+     * gets item to be displayed in the dashboard table view
+     * @param offset
+     * @return
+     * @throws BusinessException
+     */
     public ArrayList<DashboardItem> getDashboardItem(int offset) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -119,6 +138,9 @@ public class BusinessImplementation {
                 dashboardItem.setAddress(resultSet.getString("address"));
                 if (null != resultSet.getDate("startDate")) {
                     dashboardItem.setDuration(calculateDurationInMonths(resultSet.getDate("startDate")));
+                }
+                if (0 != resultSet.getDouble("rate") && resultSet.getInt("principal") != 0) {
+                    dashboardItem.setTotalInterest(calculateInterestAmount(dashboardItem.getDuration(), resultSet.getDouble("rate"), resultSet.getInt("principal")));
                 }
                 dashboardItem.setTotalInstallment(resultSet.getInt("installmentAmount"));
 
@@ -153,6 +175,12 @@ public class BusinessImplementation {
         return itemArrayList;
     }
 
+    /**
+     * gets list of customers
+     * @param searchString
+     * @return
+     * @throws BusinessException
+     */
     public ArrayList<Customers> getCustomers(String searchString) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -213,6 +241,12 @@ public class BusinessImplementation {
         return customerList;
     }
 
+    /**
+     * gets list of items of specific customer
+     * @param id
+     * @return
+     * @throws BusinessException
+     */
     public ArrayList<Items> getItems(int id) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -308,6 +342,12 @@ public class BusinessImplementation {
         return itemList;
     }
 
+    /**
+     * gets list of installment for specific item
+     * @param itemId
+     * @return
+     * @throws BusinessException
+     */
     public ArrayList<Installment> getInstallmentData(int itemId) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -359,6 +399,11 @@ public class BusinessImplementation {
         return installmentList;
     }
 
+    /**
+     * adds new customer to the list
+     * @param customers
+     * @throws BusinessException
+     */
     public void addNewCustomer(Customers customers) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -406,6 +451,12 @@ public class BusinessImplementation {
         System.out.println("Customer added successfully");
     }
 
+    /**
+     * adds new item for the customer
+     * @param items
+     * @param customerID
+     * @throws BusinessException
+     */
     public void addNewCustomerItem(Items items, int customerID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -459,6 +510,12 @@ public class BusinessImplementation {
         System.out.println("Item added successfully");
     }
 
+    /**
+     * adds installment to the item
+     * @param installment
+     * @param itemID
+     * @throws BusinessException
+     */
     public void addInstallment(Installment installment, int itemID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -500,6 +557,13 @@ public class BusinessImplementation {
         System.out.println("Installment added successfully");
     }
 
+    /**
+     * close item after all payment is complete
+     * @param closerName
+     * @param closingAmount
+     * @param id
+     * @throws BusinessException
+     */
     public void closeCustomerItem(String closerName, int closingAmount, int id) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -541,6 +605,12 @@ public class BusinessImplementation {
         }
     }
 
+    /**
+     * gets user data to display in profile
+     * @param id
+     * @return
+     * @throws BusinessException
+     */
     public User getUser(int id) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -587,6 +657,12 @@ public class BusinessImplementation {
         return user;
     }
 
+    /**
+     * updates user data from profile tab
+     * @param user
+     * @param id
+     * @throws BusinessException
+     */
     public void updateUserProfile(User user, int id) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -629,6 +705,12 @@ public class BusinessImplementation {
         }
     }
 
+    /**
+     * gets customer detail that needs to be updated
+     * @param customerID
+     * @return
+     * @throws BusinessException
+     */
     public Customers getCustomerByID(int customerID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement;
@@ -657,6 +739,11 @@ public class BusinessImplementation {
         return customers;
     }
 
+    /**
+     * updates customer data
+     * @param customer
+     * @throws BusinessException
+     */
     public void updateCustomerData(Customers customer) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -702,6 +789,12 @@ public class BusinessImplementation {
         System.out.println("Customer updated");
     }
 
+    /**
+     * gets item detail that needs to be updated
+     * @param itemID
+     * @return
+     * @throws BusinessException
+     */
     public Items getItemByID(int itemID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement;
@@ -728,6 +821,11 @@ public class BusinessImplementation {
         return items;
     }
 
+    /**
+     * updates item data
+     * @param item
+     * @throws BusinessException
+     */
     public void updateItemData(Items item) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -772,6 +870,12 @@ public class BusinessImplementation {
         System.out.println("Item updated");
     }
 
+    /**
+     * gets installment detail that needs to be updated
+     * @param installmentID
+     * @return
+     * @throws BusinessException
+     */
     public Installment getInstallmentByID(int installmentID) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement;
@@ -795,6 +899,11 @@ public class BusinessImplementation {
         return installment;
     }
 
+    /**
+     * updates installment data
+     * @param installment
+     * @throws BusinessException
+     */
     public void updateInstallmentData(Installment installment) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -835,6 +944,11 @@ public class BusinessImplementation {
         }
     }
 
+    /**
+     * gets MySQL dump path for backup process
+     * @return
+     * @throws BusinessException
+     */
     public String getMySQLDumpPath() throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement;
@@ -852,6 +966,11 @@ public class BusinessImplementation {
         return mySQLDumpPath;
     }
 
+    /**
+     * updates MySQL dump path if necessary
+     * @param selectedFile
+     * @throws BusinessException
+     */
     public void updateMySQLDumpPath(String selectedFile) throws BusinessException {
         connection = DatabaseConnection.getConnection();
         PreparedStatement statement = null;
@@ -889,10 +1008,42 @@ public class BusinessImplementation {
         }
     }
 
-    public int calculateDurationInMonths(Date fromDate){
-        long monthsBetween = ChronoUnit.MONTHS.between(
-                LocalDate.parse(fromDate.toString()).withDayOfMonth(1),
-                LocalDate.parse(new Date(System.currentTimeMillis()).toString()).withDayOfMonth(1));
-        return (int) monthsBetween;
+    /**
+     * calculates duration of loan
+     * @param fromDate
+     * @return
+     */
+    private double calculateDurationInMonths(Date fromDate){
+        double months=0;
+        long days = DAYS.between(LocalDate.parse(fromDate.toString()),
+                LocalDate.parse(new Date(System.currentTimeMillis()).toString()));
+        if(days<15){
+            months = 0.5;
+        }else{
+            months = (int) days/30;
+            int monthsRem = (int) days%30;
+            months = monthsRem<=15?months+0.5:months+1;
+        }
+        return months;
+    }
+
+    /**
+     * calculates total interest
+     * @param noOfMonths
+     * @param rate
+     * @param amount
+     * @return
+     */
+    private int calculateInterestAmount(double noOfMonths, double rate, int amount){
+        double months = noOfMonths;
+        int totalAmount = amount;
+        while(months>12){
+            totalAmount+=(totalAmount * rate * 12)/100;
+            months-=12;
+        }
+        if(months>0){
+            totalAmount+=(totalAmount*rate*months)/100;
+        }
+        return totalAmount-amount;
     }
 }

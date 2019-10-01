@@ -3,24 +3,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane fx:id="loginPane" alignment="center" hgap="10" stylesheets="@style.css" vgap="10" xmlns:fx="http://javafx.com/fxml/1"
-          xmlns="http://javafx.com/javafx/8" fx:controller="sample.LoginController">
-    <children>
-        <HBox id="hbox-header" GridPane.columnIndex="0" GridPane.columnSpan="3"
-              GridPane.rowIndex="0">
-            <Label text="Login Page" id="header-label"/>
-        </HBox>
-        <Label text="Username" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+<GridPane fx:id="loginPane" hgap="10"  vgap="10" alignment="CENTER" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+          stylesheets="@style.css" fx:controller="sample.LoginController">
+    <HBox id="hbox-header" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0">
+        <Label text="Login Page" id="header-label"/>
+    </HBox>
+    <Label text="Username" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <TextField fx:id="username" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-        <Label text="Password" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    <Label text="Password" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
-        <HBox id="button-section" GridPane.columnIndex="1" GridPane.rowIndex="3">
-            <children>
-                <Button fx:id="loginButton" text="Login" onAction="#checkUser"/>
-                <Button text="Cancel"/>
-            </children>
-        </HBox>
-    </children>
+    <HBox id="button-section" GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <Button fx:id="loginButton" text="Login" onAction="#checkUser"/>
+        <Button text="Cancel"/>
+    </HBox>
 </GridPane>

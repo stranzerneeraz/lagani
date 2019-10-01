@@ -18,11 +18,15 @@ public class ViewInstallmentDialogController {
     private ListView installmentView;
 
     private ObservableList<Installment> observableInstallmentList = FXCollections.observableArrayList();
-    private ArrayList<Installment> installmentList;
-    BusinessImplementation businessImplementation = new BusinessImplementation();
+    private BusinessImplementation businessImplementation = new BusinessImplementation();
 
+    /**
+     * displays installment detail in view installment dialog
+     * @param selectedItem
+     * @throws BusinessException
+     */
     public void initialize(Items selectedItem) throws BusinessException {
-        installmentList = businessImplementation.getInstallmentData(Integer.valueOf(selectedItem.getItemID()));
+        ArrayList<Installment> installmentList = businessImplementation.getInstallmentData(Integer.parseInt(selectedItem.getItemID()));
         for (Installment installment : installmentList) {
             observableInstallmentList.add(installment);
         }

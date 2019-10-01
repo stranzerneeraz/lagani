@@ -5,10 +5,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 <DialogPane fx:controller="sample.AddNewCustomerDialogController" xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml" stylesheets="@style.css" >
+            xmlns:fx="http://javafx.com/fxml" stylesheets="@style.css">
     <header>
         <HBox id="hbox-header">
-            <Label text="Add New Customer" fx:id="dialogHeaderLabel" id="header-label"/>
+            <Label text="Add New Customer" id="header-label"/>
         </HBox>
     </header>
     <content>
@@ -34,7 +34,8 @@
             <Label text="Remarks" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
             <TextField fx:id="remarksField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
 
-            <Button id="btnAdd" text="Add New Customer" fx:id="btnUpdateCustomer" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+            <Button id="btnAdd" text="Add New Customer" fx:id="btnAddNewCustomer" GridPane.rowIndex="7"
+                    GridPane.columnIndex="1"/>
         </GridPane>
     </content>
 </DialogPane>

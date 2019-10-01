@@ -27,13 +27,17 @@ public class AddNewCustomerDialogController {
     @FXML
     private TextField remarksField;
     @FXML
-    private Button btnUpdateCustomer;
-
+    private Button btnAddNewCustomer;
     private Alert alert = new Alert(Alert.AlertType.WARNING);
 
+    /**
+     * gets input from add customer dialog
+     * verifies the input field
+     * close the window on adding customer
+     */
     public void initialize() {
         alert.setTitle(ApplicationConstants.WARNING_DIALOG);
-        btnUpdateCustomer.setOnAction(event -> {
+        btnAddNewCustomer.setOnAction(event -> {
             if (fullNameField.getText().length() <= 0) {
                 fullNameField.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Enter full name");
@@ -42,38 +46,22 @@ public class AddNewCustomerDialogController {
                 addressField.setStyle(ApplicationConstants.ERROR_ENTRY);
                 alert.setContentText("Enter address");
                 alert.showAndWait();
-            } else if (!wardNoField.getText().matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
+            } else if (wardNoField.getText().length() > 0 && !wardNoField.getText().matches(ApplicationConstants.WARD_ID_VALIDATION_REGEX)) {
                 wardNoField.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alert.setContentText("Enter ward number");
+                alert.setContentText("Enter valid ward number");
                 alert.showAndWait();
-            } else if (fatherNameField.getText().length() <= 0) {
-                fatherNameField.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alert.setContentText("Enter father's name");
-                alert.showAndWait();
-            } else if (spouseNameField.getText().length() <= 0) {
-                spouseNameField.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alert.setContentText("Enter spouse's name");
-                alert.showAndWait();
-            } else if (!contactNumberField.getText().matches(ApplicationConstants.CONTACT_NUMBER_VALIDATION_REGEX)) {
+            } else if (contactNumberField.getText().length() > 0 &&!contactNumberField.getText().matches(ApplicationConstants.CONTACT_NUMBER_VALIDATION_REGEX)) {
                 contactNumberField.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alert.setContentText("Enter contact number");
-                alert.showAndWait();
-            } else if (remarksField.getText().length() <= 0) {
-                remarksField.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alert.setContentText("Enter remarks");
+                alert.setContentText("Enter valid contact number");
                 alert.showAndWait();
             } else {
                 fullNameField.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 addressField.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 wardNoField.setStyle(ApplicationConstants.CORRECT_ENTRY);
-                fatherNameField.setStyle(ApplicationConstants.CORRECT_ENTRY);
-                spouseNameField.setStyle(ApplicationConstants.CORRECT_ENTRY);
                 contactNumberField.setStyle(ApplicationConstants.CORRECT_ENTRY);
-                remarksField.setStyle(ApplicationConstants.CORRECT_ENTRY);
-
                 try {
                     addNewCustomer();
-                    Scene scene = btnUpdateCustomer.getScene();
+                    Scene scene = btnAddNewCustomer.getScene();
                     if (scene != null) {
                         Window window = scene.getWindow();
                         if (window != null) {
@@ -87,15 +75,27 @@ public class AddNewCustomerDialogController {
         });
     }
 
+    /**
+     * adds customer data to database
+     * @throws BusinessException
+     */
     private void addNewCustomer() throws BusinessException {
         BusinessImplementation businessImplementation = new BusinessImplementation();
         Customers customers = new Customers();
         customers.setFullName(fullNameField.getText());
         customers.setAddress(addressField.getText());
-        customers.setWard(Integer.parseInt(wardNoField.getText()));
+        if (wardNoField.getText().length()>0) {
+            customers.setWard(Integer.parseInt(wardNoField.getText()));
+        } else {
+            customers.setWard(0);
+        }
         customers.setFatherName(fatherNameField.getText());
         customers.setSpouseName(spouseNameField.getText());
-        customers.setContactNo(Long.parseLong(contactNumberField.getText()));
+        if (contactNumberField.getText().length() > 0) {
+            customers.setContactNo(Long.parseLong(contactNumberField.getText()));
+        } else {
+            customers.setContactNo(0);
+        }
         customers.setRemarks(remarksField.getText());
         businessImplementation.addNewCustomer(customers);
     }

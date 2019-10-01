@@ -8,9 +8,8 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import java.lang.String?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
-<?import javafx.scene.text.Text?>
-<BorderPane fx:id="mainBorderPane" fx:controller="sample.MainApplicationController" stylesheets="@style.css"
-            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="mainBorderPane" fx:controller="sample.MainApplicationController" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1" stylesheets="@style.css">
     <top>
         <HBox style="-fx-padding: 10 10 4 10">
             <Pane HBox.hgrow="ALWAYS"/>
@@ -21,8 +20,8 @@
     </top>
 
     <center>
-        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
-            <Tab fx:id="dashboardTab" onSelectionChanged="#dashboardTab" text="Dashboard">
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <Tab onSelectionChanged="#dashboardTab" text="Dashboard">
                 <Pagination fx:id="pagination">
                     <fx:define>
                         <TableView fx:id="dashboardTableView" id="tableStyle">
@@ -31,12 +30,12 @@
                             </columnResizePolicy>
                             <columns>
                                 <TableColumn fx:id="serialNoDashboard" text="S.No."/>
-                                <TableColumn fx:id="customerIDDashboard" text="Customer ID">
+                                <TableColumn text="Customer ID">
                                     <cellValueFactory>
                                         <PropertyValueFactory property="customerID"/>
                                     </cellValueFactory>
                                 </TableColumn>
-                                <TableColumn fx:id="amountDashboard" text="Amount">
+                                <TableColumn text="Amount">
                                     <cellValueFactory>
                                         <PropertyValueFactory property="amount"/>
                                     </cellValueFactory>
@@ -56,6 +55,11 @@
                                         <PropertyValueFactory property="duration"/>
                                     </cellValueFactory>
                                 </TableColumn>
+                                <TableColumn fx:id="interestDashboard" text="Interest">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="totalInterest"/>
+                                    </cellValueFactory>
+                                </TableColumn>
                                 <TableColumn fx:id="totalInstallmentDashboard" text="Total Installment">
                                     <cellValueFactory>
                                         <PropertyValueFactory property="totalInstallment"/>
@@ -67,11 +71,11 @@
                 </Pagination>
             </Tab>
 
-            <Tab fx:id="viewCustomersTab" onSelectionChanged="#viewCustomers" text="Customers">
-                <SplitPane dividerPositions="0.29797979797979796" prefHeight="800">
-                    <AnchorPane maxWidth="-Infinity" prefWidth="200.0" style="-fx-padding: 0 1 0 2">
-                        <TextField fx:id="searchCustomer" alignment="CENTER" promptText="Search Customer"
-                                   AnchorPane.leftAnchor="4" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="3"/>
+            <Tab onSelectionChanged="#viewCustomers" text="Customers">
+                <SplitPane prefHeight="800">
+                    <AnchorPane maxWidth="-Infinity" prefWidth="200.0" style="-fx-padding: 0 0 0 2">
+                        <TextField AnchorPane.topAnchor="3" AnchorPane.leftAnchor="4" AnchorPane.rightAnchor="35.0"
+                                   fx:id="searchCustomer" alignment="CENTER" promptText="Search Customer"/>
                         <Label AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                             <tooltip>
                                 <Tooltip text="Search Customers"/>
@@ -83,10 +87,9 @@
                             </graphic>
                         </Label>
                         <ListView fx:id="customerListView" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="0.0"
-                                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
-                        </ListView>
-                        <Button onAction="#addNewCustomer" text="Add New Customer" id="btnAddFXML"
-                                AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.bottomAnchor="5.0"/>
+                                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0"/>
+                        <Button AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.bottomAnchor="5.0"
+                                onAction="#addNewCustomer" text="Add New Customer" id="btnAdd"/>
                     </AnchorPane>
                     <BorderPane>
                         <top>
@@ -104,8 +107,8 @@
                                 <HBox>
                                     <Label fx:id="contactViewLabel"/>
                                     <Pane HBox.hgrow="ALWAYS"/>
-                                    <Button id="btnAddFXML" fx:id="btnAddNewItem" onAction="#addNewItem"
-                                            text="Add New Item"/>
+                                    <Button fx:id="btnAddNewItem" onAction="#addNewItem" text="Add New Item"
+                                            id="btnAdd"/>
                                 </HBox>
                             </VBox>
                         </top>
@@ -127,7 +130,7 @@
                                             <PropertyValueFactory property="type"/>
                                         </cellValueFactory>
                                     </TableColumn>
-                                    <TableColumn prefWidth="150" text="Description">
+                                    <TableColumn prefWidth="200" text="Description">
                                         <cellValueFactory>
                                             <PropertyValueFactory property="description"/>
                                         </cellValueFactory>
@@ -157,7 +160,7 @@
                 </SplitPane>
             </Tab>
 
-            <Tab fx:id="profileTab" onSelectionChanged="#profileTab" text="Profile">
+            <Tab onSelectionChanged="#profileTab" text="Profile">
                 <HBox style="-fx-padding: 50 0">
                     <Pane HBox.hgrow="ALWAYS"/>
                     <VBox prefHeight="100.0" prefWidth="100.0" style="-fx-padding: 10 30 0 0;">
@@ -193,9 +196,9 @@
                 </HBox>
             </Tab>
 
-            <Tab fx:id="adminTab" onSelectionChanged="#adminTab" text="Admin">
+            <Tab onSelectionChanged="#adminTab" text="Admin">
                 <HBox>
-                    <VBox prefWidth="200" id="admin-VBox">
+                    <VBox id="adminVBox">
                         <GridPane vgap="20">
                             <VBox GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-spacing: 5">
                                 <Label text="Enter Customer ID"/>
@@ -225,17 +228,15 @@
                             </VBox>
                         </GridPane>
                         <Pane VBox.vgrow="ALWAYS"/>
-                        <VBox prefWidth="200" style="-fx-padding: 0 0 10 0">
+                        <VBox style="-fx-padding: 0 0 15 0">
                             <Button fx:id="btnViewBackup" id="btnBackupView" text="Backup"/>
                         </VBox>
                     </VBox>
                     <Pane HBox.hgrow="ALWAYS"/>
-                    <GridPane style="-fx-padding: 0 300 0 0">
-                        <VBox id="admin-VBox" fx:id="customerAdminPanel" prefWidth="400" GridPane.rowIndex="0"
-                              GridPane.columnIndex="0">
+                    <GridPane>
+                        <VBox id="admin-VBox" fx:id="customerAdminPanel" GridPane.rowIndex="0" GridPane.columnIndex="0">
                             <HBox>
-                                <Pane HBox.hgrow="ALWAYS"/>
-                                <Label id="header-label" text="Customer"/>
+                                <Label id="header-label" text="Customer" style="-fx-padding: 0 0 0 100"/>
                                 <Pane HBox.hgrow="ALWAYS"/>
                             </HBox>
                             <GridPane vgap="10" hgap="20">
@@ -267,11 +268,9 @@
                             </GridPane>
                         </VBox>
 
-                        <VBox id="admin-VBox" fx:id="itemAdminPanel" prefWidth="400" GridPane.rowIndex="0"
-                              GridPane.columnIndex="0">
+                        <VBox id="admin-VBox" fx:id="itemAdminPanel" GridPane.rowIndex="0" GridPane.columnIndex="0">
                             <HBox>
-                                <Pane HBox.hgrow="ALWAYS"/>
-                                <Label id="header-label" text="Item"/>
+                                <Label id="header-label" text="Item" style="-fx-padding: 0 0 0 100"/>
                                 <Pane HBox.hgrow="ALWAYS"/>
                             </HBox>
                             <GridPane vgap="10" hgap="20">
@@ -312,11 +311,10 @@
                             </GridPane>
                         </VBox>
 
-                        <VBox id="admin-VBox" fx:id="installmentAdminPanel" prefWidth="400" GridPane.rowIndex="0"
+                        <VBox id="admin-VBox" fx:id="installmentAdminPanel" GridPane.rowIndex="0"
                               GridPane.columnIndex="0">
                             <HBox>
-                                <Pane HBox.hgrow="ALWAYS"/>
-                                <Label id="header-label" text="Installment"/>
+                                <Label id="header-label" text="Installment" style="-fx-padding: 0 0 0 100"/>
                                 <Pane HBox.hgrow="ALWAYS"/>
                             </HBox>
                             <GridPane hgap="10" vgap="20">
@@ -337,20 +335,20 @@
                             </GridPane>
                         </VBox>
 
-                        <VBox id="admin-VBox" fx:id="backupAdminPanel" prefWidth="400" GridPane.rowIndex="0"
-                              GridPane.columnIndex="0">
+                        <VBox id="admin-VBox" fx:id="backupAdminPanel" GridPane.rowIndex="0" GridPane.columnIndex="0">
                             <HBox>
                                 <Pane HBox.hgrow="ALWAYS"/>
                                 <Label id="header-label" text="Backup"/>
                                 <Pane HBox.hgrow="ALWAYS"/>
                             </HBox>
-                            <GridPane hgap="10" vgap="20">
+                            <GridPane hgap="10" vgap="30">
                                 <HBox GridPane.rowIndex="0" GridPane.columnIndex="0">
-                                    <Button text="Browse" fx:id="btnBrowse"/>
-                                    <Pane HBox.hgrow="ALWAYS"/>
+                                    <Button text="Select MySQL Dump" fx:id="btnSelectMySQL" id="btnBackupView"/>
+                                    <Label fx:id="mySQLPathViewer" style="-fx-padding: 4 0 4 20;"/>
                                 </HBox>
                                 <HBox GridPane.rowIndex="1" GridPane.columnIndex="0">
-                                    <Text fx:id="adminPathViewer"/>
+                                    <Button text="Browse" fx:id="btnBrowse" id="btnBackupView"/>
+                                    <Label fx:id="adminPathViewer" style="-fx-padding: 4 0 4 20;"/>
                                 </HBox>
                                 <HBox GridPane.rowIndex="2" GridPane.columnIndex="0">
                                     <Pane HBox.hgrow="ALWAYS"/>

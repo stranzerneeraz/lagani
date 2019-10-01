@@ -8,7 +8,7 @@ public class Installment {
     private int depositAmount;
     private Date date;
     private String endDate;
-    private int duration;
+    private double duration;
     private int totalInterest;
     private int totalAmount;
     private int itemIdFk;
@@ -53,11 +53,11 @@ public class Installment {
         this.endDate = endDate;
     }
 
-    public int getDuration() {
+    public double getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(double duration) {
         this.duration = duration;
     }
 

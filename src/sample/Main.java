@@ -7,13 +7,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("loginPage.fxml"));
         primaryStage.setTitle("Lagani");
         primaryStage.setScene(new Scene(root, 720, 480));
-
         primaryStage.show();
     }
 

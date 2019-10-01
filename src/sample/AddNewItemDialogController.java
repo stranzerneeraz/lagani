@@ -32,32 +32,36 @@ public class AddNewItemDialogController {
     @FXML
     private Button btnUpdateNewItem;
     private Customers customers;
+    private Alert alert = new Alert(Alert.AlertType.WARNING);
 
+    /**
+     * gets input from add item dialog
+     * verifies the input field
+     * close the window on adding item
+     * @param selectionCustomer
+     */
     public void updateDialogBox(Customers selectionCustomer) {
-        customers = selectionCustomer;
+        alert.setTitle(ApplicationConstants.WARNING_DIALOG);
         dialogHeaderLabel.setText("Add New Item for " + selectionCustomer.getFullName());
         startDatePicker.setValue(LocalDate.now());
         rateField.setText("2.5");
         deadlinePicker.setValue(LocalDate.now().plusYears(1));
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(ApplicationConstants.WARNING_DIALOG);
-
+        customers = selectionCustomer;
         btnUpdateNewItem.setOnAction(event -> {
             String amountString = amountField.getText();
             LocalDate startDate = startDatePicker.getValue();
             String rateString = rateField.getText();
             LocalDate deadline = deadlinePicker.getValue();
             String description = descriptionArea.getText();
-
             if (!amountString.matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
                 if (Integer.parseInt(amountString) > 2_000_000_000) {
                     amountField.setStyle(ApplicationConstants.ERROR_ENTRY);
-                    alert.setContentText("Input fields not valid");
+                    alert.setContentText("Enter valid amount");
                     alert.showAndWait();
                 }
             } else if (!(startDate.compareTo(LocalDate.now()) <= 0)) {
                 startDatePicker.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alert.setContentText("Date field should be upto today");
+                alert.setContentText("Date should not be in future");
                 alert.showAndWait();
             } else if (!rateString.matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
                 rateField.setStyle(ApplicationConstants.ERROR_ENTRY);
@@ -94,6 +98,10 @@ public class AddNewItemDialogController {
         });
     }
 
+    /**
+     * adds item data to database
+     * @throws BusinessException
+     */
     private void addNewItem() throws BusinessException {
         int customerID = customers.getCustomerID();
         BusinessImplementation businessImplementation = new BusinessImplementation();

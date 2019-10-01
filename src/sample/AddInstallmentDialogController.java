@@ -25,21 +25,26 @@ public class AddInstallmentDialogController {
     private DatePicker depositDate;
     @FXML
     private Button btnAddInstallment;
-    private Items items;
+    Alert alert = new Alert(Alert.AlertType.WARNING);
+   private Items items;
 
+    /**
+     * gets input from add installment dialog
+     * verifies the input field
+     * close the window on adding installment
+     * @param selectedItem
+     */
     public void initialize(Items selectedItem) {
-        items = selectedItem;
-        depositDate.setValue(LocalDate.now());
-        Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(ApplicationConstants.WARNING_DIALOG);
-
+        depositDate.setValue(LocalDate.now());
+        items = selectedItem;
         btnAddInstallment.setOnAction(event -> {
             String installmentString = installmentAmount.getText();
             String depositor = depositorName.getText();
             LocalDate date = depositDate.getValue();
             if (!installmentString.matches(ApplicationConstants.NUMBER_VALIDATION_REGEX)) {
                 installmentAmount.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alert.setContentText("Input fields not valid");
+                alert.setContentText("Enter valid installment amount");
                 alert.showAndWait();
             } else if (depositor.length() <= 0) {
                 depositorName.setStyle(ApplicationConstants.ERROR_ENTRY);
@@ -47,7 +52,7 @@ public class AddInstallmentDialogController {
                 alert.showAndWait();
             } else if (!(date.compareTo(LocalDate.now()) <= 0)) {
                 depositDate.setStyle(ApplicationConstants.ERROR_ENTRY);
-                alert.setContentText("Date field should be upto today");
+                alert.setContentText("Date should not be in future");
                 alert.showAndWait();
             } else {
                 installmentAmount.setStyle(ApplicationConstants.CORRECT_ENTRY);
@@ -69,6 +74,10 @@ public class AddInstallmentDialogController {
         });
     }
 
+    /**
+     *adds new installment to database
+     * @throws BusinessException
+     */
     public void addInstallment() throws BusinessException {
         int itemID = Integer.parseInt(items.getItemID());
         BusinessImplementation businessImplementation = new BusinessImplementation();

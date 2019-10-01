@@ -28,6 +28,12 @@ public class LoginController {
     private Button loginButton;
     public static int id;
 
+    /**
+     * user login section
+     * @return
+     * @throws BusinessException
+     * @throws IOException
+     */
     public int checkUser() throws BusinessException, IOException {
         BusinessImplementation businessImplementation = new BusinessImplementation();
         id = businessImplementation.authenticateUser(username.getText(), password.getText());
@@ -60,6 +66,10 @@ public class LoginController {
         return id;
     }
 
+    /**
+     * sets id for accessing in main application controller
+     * @return
+     */
     public static int id() {
         return id;
     }
